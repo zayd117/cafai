@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cafai.local/schema/offering.schema.json",
+  "title": "Offering (plan §11 fields, §19 resource profile, §10 kinds)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id", "kind", "identity", "capabilities", "need_signals", "skip_if", "resource_profile",
+    "distributions", "access", "runtime", "cost", "trust", "editorial", "last_verified_on"
+  ],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "fixture": { "type": "boolean", "description": "Development sample. Refused by the loader unless fixtures are explicitly allowed." },
+    "kind": { "enum": ["mcp_server", "skill", "plugin", "api", "library", "play"], "description": "MVP kinds (plan §10, §24)." },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["display_name", "vendor"],
+      "properties": {
+        "display_name": { "type": "string", "minLength": 1, "description": "Outcome in plain words (plan §8 part 1); no protocol terms." },
+        "vendor": { "type": "string", "minLength": 1 },
+        "technical_name": { "type": "string" },
+        "registry_namespace": { "type": "string" },
+        "package_id": { "type": "string" },
+        "repo_url": { "type": "string", "format": "uri" }
+      }
+    },
+    "capabilities": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+    "need_signals": { "$ref": "#/$defs/needSignals" },
+    "skip_if": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "resource_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provides", "requires", "supports", "limits"],
+      "properties": {
+        "provides": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/fact" } },
+        "requires": { "type": "array", "items": { "$ref": "#/$defs/fact" } },
+        "supports": { "type": "array", "items": { "$ref": "#/$defs/fact" } },
+        "limits": { "type": "array", "items": { "$ref": "#/$defs/fact" } }
+      }
+    },
+    "distributions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["client", "method", "compatibility", "verified_on", "source_url"],
+        "properties": {
+          "client": { "type": "string", "description": "Client id from clients.yaml, or 'any'." },
+          "method": { "enum": ["cli_command", "deeplink", "connector", "plugin_marketplace", "config_file", "package_manager", "manual_steps", "signup"] },
+          "command": { "type": "string", "description": "Full, untruncated command (plan §14 install UX)." },
+          "link": { "type": "string", "format": "uri" },
+          "url": { "type": "string", "format": "uri" },
+          "steps": { "type": "array", "items": { "type": "string" } },
+          "version_pin": { "type": "string" },
+          "compatibility": { "enum": ["tested", "reported", "derived", "declared"], "description": "Plan §11 compatibility evidence; maps to observed/observed/inferred/claimed (§19)." },
+          "verified_on": { "type": "string", "format": "date" },
+          "source_url": { "type": "string", "format": "uri" }
+        },
+        "anyOf": [
+          { "required": ["command"] }, { "required": ["link"] }, { "required": ["url"] }, { "required": ["steps"] }
+        ]
+      }
+    },
+    "access": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["auth", "read_write", "access_plain", "effort_plain"],
+      "properties": {
+        "auth": { "enum": ["oauth", "api_key", "none"] },
+        "credential_needed": { "type": "string" },
+        "scopes": { "type": "array", "items": { "type": "string" } },
+        "read_write": { "enum": ["read_only", "read_write", "not_applicable"] },
+        "data_touched": { "type": "array", "items": { "type": "string" } },
+        "access_plain": { "type": "string", "minLength": 1, "description": "Plain-language access, e.g. 'reads error events; cannot change code' (plan §8). Wording format is an open question." },
+        "effort_plain": { "type": "string", "minLength": 1, "description": "Effort in a few words (plan §8 part 11). Units are an open question." },
+        "least_privilege_steps": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["location"],
+      "properties": {
+        "location": { "enum": ["local", "remote", "not_applicable"] },
+        "os": { "type": "array", "items": { "type": "string" } },
+        "requires": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "cost": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "source_url", "as_of"],
+      "properties": {
+        "model": { "enum": ["free", "paid", "usage_based"] },
+        "plan_required": { "type": "string" },
+        "source_url": { "type": "string", "format": "uri" },
+        "as_of": { "type": "string", "format": "date" }
+      }
+    },
+    "trust": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "vendor_official", "namespace_verified"],
+      "properties": {
+        "state": { "enum": ["reviewed", "checked", "unmatched", "flagged", "revoked"], "description": "Plan §11. An eligibility gate, never a ranking bonus." },
+        "vendor_official": { "type": "boolean" },
+        "namespace_verified": { "type": "boolean" },
+        "notes": { "type": "string" },
+        "third_party_grade": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["provider", "grade", "as_of"],
+          "properties": {
+            "provider": { "type": "string" },
+            "grade": { "type": "string" },
+            "as_of": { "type": "string", "format": "date" }
+          },
+          "description": "Attributed third-party evidence only; reuse terms unvalidated (plan §11, open question)."
+        }
+      }
+    },
+    "editorial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["what_it_is", "could_help_with", "first_prompt", "reviewer", "reviewed_on"],
+      "properties": {
+        "what_it_is": { "type": "string", "minLength": 1 },
+        "could_help_with": { "type": "string", "minLength": 1 },
+        "first_prompt": { "type": "string", "minLength": 1, "description": "The 'first sip' prompt (plan §6)." },
+        "reviewer": { "type": "string", "minLength": 1 },
+        "reviewed_on": { "type": "string", "format": "date" }
+      }
+    },
+    "last_verified_on": { "type": "string", "format": "date", "description": "Drives staleness rules (plan §11: 60 days lowers Confidence, 90 removes; ASSUMPTION)." }
+  },
+  "$defs": {
+    "needSignals": {
+      "type": "array",
+      "description": "Shape is not specified by the plan (register A-019); free text with a need type until the engine needs more.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["text", "need_type"],
+        "properties": {
+          "text": { "type": "string", "minLength": 1 },
+          "need_type": { "enum": ["implied", "latent"] }
+        }
+      }
+    },
+    "fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "evidence", "source_url", "as_of"],
+      "properties": {
+        "text": { "type": "string", "minLength": 1 },
+        "evidence": { "enum": ["claimed", "observed", "inferred"], "description": "Plan §9: CLAIMED (source says so), OBSERVED (docs/code/tests support it), INFERRED (Caf.ai's reading)." },
+        "source_url": { "type": "string", "format": "uri" },
+        "as_of": { "type": "string", "format": "date" }
+      }
+    }
+  }
+}

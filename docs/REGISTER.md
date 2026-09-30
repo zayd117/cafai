@@ -1,0 +1,50 @@
+# Assumption / Unknown Register
+
+Source of truth: Caf.ai Master Plan v3.1 (Claude Docs `d31d9fc8-62f8-41a3-ba3b-f8498017b70b`; summary in the session upload). Section numbers below are the plan's.
+Status: **RESOLVED** (user-confirmed), **DEFERRED** (decision postponed to a named chunk), **OPEN**, **BLOCKED** (cannot proceed on that item without an answer).
+
+| ID | Question | Plan source | Status |
+|---|---|---|---|
+| A-001 | Plan gates MVP code behind Phase 0 evidence (G0). Build now? | §25, §29 | RESOLVED: gate-compatible work first (L0–L4 + UI on labeled mock data). Real catalog content and labeled set wait for user data. |
+| A-002 | Which three clients first? | §27 (ASSUMPTION) | RESOLVED: Claude Code, Cursor, Claude Desktop. |
+| A-003 | Identity provider for magic link + GitHub sign-in | §13 (unnamed) | DEFERRED by the user (2026-09-30). L7 blocked; anonymous runs work. |
+| A-004 | Stack | §17 ("such as Next.js", "managed Postgres") | RESOLVED: Next.js + TypeScript + Postgres. Hosting, email, bot-check and other vendors remain undecided. |
+| A-005 | Email provider, bot-check provider | §14, §17 (unnamed) | DEFERRED by the user (2026-09-30). Follow-up email and budget-cap queue blocked; honeypot in place of a bot check. |
+| A-006 | Catalog content (~100 offerings, curator-approved profiles) | §24 | BLOCKED on curation. Dev uses entries labeled `FIXTURE`, never shown as real. |
+| A-007 | Taxonomy v1 (40–60 capabilities) | §29 "from concierge needs, not from any catalog" | BLOCKED on concierge data. Dev uses a tiny `FIXTURE` taxonomy. |
+| A-008 | Labeled evaluation set (60–100 cases, eight input types) | §25 | BLOCKED on real concierge projects. Harness is built; data is not invented. |
+| A-009 | Numeric Match/Confidence weights and band cut-points | §9 (all ASSUMPTION; none given) | OPEN. Placeholders live in versioned config and are labeled `PLACEHOLDER`. |
+| A-010 | Anonymous run text: 30 days or delete after session | §12 (30 days ASSUMPTION), §27 (open) | OPEN, decide before launch. Config default 30 days, labeled ASSUMPTION. |
+| A-011 | Admin app screens in MVP | §18 "MVP, minimal" | OPEN, needed at L8. |
+| A-012 | Where the follow-up email address is captured | §24 | OPEN, needed at L8. |
+| A-013 | Does the five-pick cap include the "Also worth knowing" pick? | §6, §8, §9 | Assumed yes (§8 "3–5 cards" including it). Confirm if wrong. |
+| A-014 | Saved-project re-run in MVP vs Phase 2 | §18 vs §25 | Assumed: manual re-run only in MVP; re-run on change is Phase 2. |
+| A-015 | TypeScript version | not in plan | Engineering decision: pinned 5.9.x. The 7.x native compiler is unverified against Next 16's build-time type check. |
+| A-016 | Brand icon / favicon | not in plan or wireframes | Placeholder (empty data URI) to avoid a `/favicon.ico` 404. |
+| A-017 | Real model calls | §9, §17 | `ANTHROPIC_API_KEY` is not set in this environment. Engine runs against a `MOCK` provider until it is provided; mock results are never presented as real. |
+| A-018 | Postgres for dev/test | §17 | Server binaries exist (`/usr/lib/postgresql/16`); Docker daemon is down. Decide start method at L2. |
+| A-019 | Structure of a "need signal" | §9, §11 name it but give no shape | Stored as `{text, need_type: implied\|latent}` until the engine design needs more; change is a schema migration of YAML only. |
+| A-021 | A low-confidence or Checked-trust pick when fewer than three other picks exist | §9 "never in the top three" | Interpreted literally: it is not shown as a pick and appears under Not needed now as "held back" with the plan's wording ("looks relevant, but not enough evidence to be confident"). Confirm. |
+| A-022 | Five-pick cap when an "Also worth knowing" pick exists | §6, §8, §9 | Direct picks capped at 4 so the one AWK pick fits (follows A-013). |
+| A-023 | "Do you need it?" mapping | §8 part 6 names three answers, no mapping | stated/implied → needed now; latent → useful later; everything under Not needed now → probably not. |
+| A-024 | Match dimension formulas | §9 table gives one-line rules only | Literal minimal forms in `src/engine/match.ts`; backward direction folded into Capability match ("the core of the two-way match"). All PLACEHOLDER (A-009). |
+| A-025 | Which model per call | §9 cost section names Sonnet 5.5 and Haiku 4.5 splits; none chosen | Default `claude-sonnet-5-5` for all three calls ("Sonnet throughout ≈ $0.04"), each overridable by env. Adaptive thinking at default effort may exceed the plan's output-token estimate; measure in Phase 0. Server-side refusal fallback (`fallbacks: "default"`) enabled for Sonnet 5.5. |
+| A-026 | Per-call timeout | §17 latency target (15 s p95 for picks), no timeout given | PLACEHOLDER 30 s per call; SDK retries off, engine retries once. |
+| A-027 | Storing explanation text per pick | §19 "stores IDs, versions and score components, not rendered text" | Validated explanation fields are stored so shared runs re-render without a new model call; catalog facts still render from the snapshot. |
+| A-028 | Project-type chip values | §8 names the chips, no list | Not built. |
+| A-029 | Plain wording for offering types at level 3 | §8 requires plain words; glossary is a §24 should-have | Draft wording in `src/app/_components/labels.ts`; replace with the glossary. |
+| A-030 | UI copy the plan does not give (out of scope, degraded banner, run not found) | §9 failure table, wireframe board 6 [COPY TBC] | Short placeholder sentences in the pages, marked in code comments. |
+| A-031 | Setup tabs when no AI tool was declared | §8 "tabs for declared clients only" | Shows the three supported clients. |
+| A-032 | Run cap and daily AI budget | §22, §24; wireframe [RUN CAP] | PLACEHOLDER defaults 10 runs/hour/client and $5/day, env-overridable (`CAFAI_RUNS_PER_HOUR`, `CAFAI_DAILY_AI_BUDGET_USD`). |
+| A-033 | Budget cap behaviour | §9: "queue the run and email when ready, if the user opts in" | Queueing needs email (A-005). Interim: runs continue with no model calls (deterministic rules, degraded banner). |
+| A-034 | Client address for quotas | §14 | Uses the first `x-forwarded-for` value; only trustworthy behind a known proxy. Hosting is undecided (A-004), so revisit at deploy. |
+| A-035 | Bot check | §14, §24 name a bot check, no vendor | Honeypot field as an interim measure; real bot check waits for a vendor (A-005). |
+| A-036 | Manifest paste → stack signals | §12, §24 | Needs a curated mapping from dependency names to capabilities; no such field exists yet. Not built. |
+| A-037 | Caf.ai MCP server (`recommend` tool, §24 should-have) | §3, §13: build to MCP spec 2026-07-28 (stateless) | DECIDED 2026-09-30 (user delegated): wait for SDK support. The official TypeScript SDK 1.31.0 supports protocol versions up to 2025-11-25 only. Revisit when `@modelcontextprotocol/sdk` lists 2026-07-28. |
+| A-038 | Legal texts (terms, privacy, disclaimers, takedown and security contacts) | §24 minimum legal set, counsel review | Not written: pages show "Not written yet". Footer carries only plan-stated facts (AI can be wrong; installed tools can misbehave; no installs, no keys; no paid ranking). Security contact address unknown. |
+| A-039 | Hosting and deployment | §17 "managed host", none named | DEFERRED by the user (2026-09-30). Production build passes; no deploy config, HSTS or `upgrade-insecure-requests` yet. |
+| A-020 | GitHub push access | environment | RESOLVED 2026-09-30: access fixed by the user; all commits pushed. |
+
+Wireframe canvas unknowns (21 items, exact answers needed) are listed on the canvas sticky note: https://claude.ai/artifact/Ws1hft8GALEGne1L616Y4Y
+
+Source-document defects: several ASCII diagrams in the plan are truncated in the source itself (§6 map, §8 card layout, §9 stages 9–10 labels, §10 relationships, §19 data model). Tables and prose were used instead.

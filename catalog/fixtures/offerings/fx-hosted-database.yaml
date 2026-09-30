@@ -1,0 +1,51 @@
+# FIXTURE (register A-006): fictional sample for development and tests. Not a real offering; never present as real.
+id: fx-hosted-database
+fixture: true
+kind: mcp_server
+identity:
+  display_name: Sample hosted database helper
+  vendor: Example Two Co
+capabilities:
+  - app-data-storage
+need_signals: []
+skip_if:
+  - SAMPLE skip condition for Sample hosted database helper
+resource_profile:
+  provides:
+    - text: "SAMPLE: Sample hosted database helper provides its stated function"
+      evidence: claimed
+      source_url: https://example.org/docs
+      as_of: 2026-09-29
+  requires: []
+  supports: []
+  limits: []
+distributions:
+  - client: claude_code
+    method: cli_command
+    command: example-two-cli add sample
+    compatibility: declared
+    verified_on: 2026-09-29
+    source_url: https://example.org/docs
+access:
+  auth: api_key
+  credential_needed: a key from the vendor
+  read_write: read_write
+  access_plain: "SAMPLE: reads and writes your dev database"
+  effort_plain: "[effort placeholder]"
+runtime:
+  location: remote
+cost:
+  model: free
+  source_url: https://example.org/docs
+  as_of: 2026-09-29
+trust:
+  state: reviewed
+  vendor_official: true
+  namespace_verified: true
+editorial:
+  what_it_is: "SAMPLE: Sample hosted database helper, a fictional offering used to exercise alternatives."
+  could_help_with: "SAMPLE: a stated job."
+  first_prompt: "SAMPLE: ask your assistant to try it once."
+  reviewer: fixture
+  reviewed_on: 2026-09-29
+last_verified_on: 2026-09-29

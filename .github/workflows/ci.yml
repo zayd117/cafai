@@ -1,0 +1,35 @@
+# Plan §11: catalog YAML is schema-checked in CI; §14: lockfile + CI checks on every change.
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: ci_superuser_only
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PSQL_SUPERUSER_URL: postgres://postgres:ci_superuser_only@localhost:5432/postgres
+      CAFAI_DEV_DB_PASSWORD: ci_only
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: ./scripts/db-bootstrap.sh
+      - run: npm run typecheck
+      - run: npm run catalog:check
+      - run: npm test
+      - run: npm run eval
+      - run: npm run build
