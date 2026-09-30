@@ -74,5 +74,28 @@ to compare only the raters. Use 10 or more real cases before reading anything in
 `excel-php-notifications` and `calorie-tracker` use the scripted interpretations from `npm run discover -- --mock`. Only
 their query labels are set (one off-topic query each, off topic by construction), so ranking metrics print `—` until you label them.
 
-`hiking-trails-app` and `ios-apps-dashboards` are the first real interview answers (30 Sep 2026), words as given. They have no fixed
-interpretation, so they run only once Claude can interpret them (`ANTHROPIC_API_KEY`); until then the bake-off skips them with a warning.
+`hiking-trails-app` and `ios-apps-dashboards` are the first real interview answers (30 Sep 2026), words as given. Their interpretations
+came from one live Claude call each and are saved in the case files, so both arms and the labelling sheet use the same items and queries
+(7 items / 26 queries and 6 items / 26 queries, far more than the 5 of the shipped cases; the sheet has 185 and 149 rows for them). No labels yet.
+
+In this project's environment the Anthropic key is stored as `CAFAI_ANTHROPIC_KEY`; the scripts read `ANTHROPIC_API_KEY`, so run with
+`ANTHROPIC_API_KEY="$CAFAI_ANTHROPIC_KEY" npm run discover:bakeoff -- ...` until the variable is renamed.
+
+## First live run (30 Sep 2026): no accuracy number yet
+
+4 cases, 3 repeats, `claude` (claude-sonnet-5-5) vs `claude+jev` (jev-1.13.0), live mcp.market cached, 0 errors. Unlabelled, so precision,
+recall and false positives print `—`. Query drop/keep rates use the one off-topic query set in the two shipped cases, so they say little.
+
+| | claude | claude+jev |
+|---|---|---|
+| Bad queries dropped / good queries kept | 1 / 1 | 1 / 1 |
+| Top-5 consistency across repeats | 0.73 | 0.94 |
+| Time per run, p50 / p95 | 7.7 s / 14.4 s | 0.57 s / 1.1 s |
+| Input / output tokens per run | 16.3k / 7.6k | 42.4k / 7.5k |
+| Cost per run | $0.108 | $0.0018 |
+
+Top-5 agreement between the arms is 0.32 (per case: calorie 0.43, excel 0.25, hiking 0.25, ios 0.37). Per-case cost on the real cases:
+hiking $0.214 vs $0.004, ios $0.159 vs $0.002. Observations: both arms dropped 12 of 26 (hiking) and 14 of 26 (ios) queries, including
+"Google Maps JavaScript API" for a person who named Google Maps; whether that is over-filtering needs labels. Jev sends more input tokens (not investigated why)
+but its output is free, so it costs far less. The two top 5s differ by 2 to 3 of 5 listings per case (majority over the 3 repeats); those
+listings are what the labelling sheet should settle.
