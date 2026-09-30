@@ -1,6 +1,7 @@
 // Discovery bake-off (docs/DISCOVER_BAKEOFF.md): the same interpretation and the same cached mcp.market results go through
 // each arm, so the only thing that differs is who rates queries and listings. Accuracy needs human labels; time, tokens,
 // cost, consistency and agreement between arms do not.
+import { createHash } from "node:crypto";
 import { costMicros } from "@/config/pricing";
 import { DISCOVER_CONFIG } from "./rank";
 import { discover, type Scorer } from "./run";
@@ -174,6 +175,24 @@ export function cachedFetch(inner: FetchLike, store: Map<string, { status: numbe
       return new Response(body, { status: res.status, headers: { "content-type": "application/json" } });
     }
     return res;
+  };
+}
+
+/**
+ * Evaluation only: replay Jev answers for identical requests (Jev is near-deterministic: identical requests differed by at most 0.03).
+ * Keyed by URL + body, so any change to a question, the state or the model is a fresh, paid request. Usage in the replayed body still
+ * counts, so token and cost figures stay comparable; time does not.
+ */
+export function cachedPostFetch(store: Map<string, { status: number; body: string }>, inner: typeof fetch = fetch) {
+  return async (input: string | URL | Request, init?: RequestInit): Promise<Response> => {
+    const key = createHash("sha256").update(String(input)).update("\n").update(String(init?.body ?? "")).digest("hex");
+    const hit = store.get(key);
+    if (hit) return new Response(hit.body, { status: hit.status, headers: { "content-type": "application/json" } });
+    const res = await inner(input, init);
+    if (!res.ok) return res;
+    const body = await res.text();
+    store.set(key, { status: res.status, body });
+    return new Response(body, { status: res.status, headers: { "content-type": "application/json" } });
   };
 }
 

@@ -11,3 +11,4 @@ coverage/
 eval/reports/
 eval/discover/search-cache.json
 eval/discover/known-item-cache.json
+eval/discover/known-item-jev-cache.json

@@ -2,8 +2,10 @@
 //   1. Claude interprets the description into needs (items) and search queries.
 //   2. Jev weighs the needs (how central each is) and rates every query; code picks the best queries overall, not a fixed few per need.
 //   3. Code searches mcp.market with those queries (a plain HTTP call: a model adds cost and risk there, nothing else).
-//   4. Jev rates each result per need, overall, and against the search terms that found it; code weighs that by how relevant the terms and needs were.
-//   5. Jev compares the shortlist head to head (both orders); code combines the wins with the ratings and cuts the list.
+//   4. Jev screens every result with one question, then rates the best per need and overall (and, optionally, against the search terms that found it).
+//   5. Jev orders the shortlist with one pick-the-best question asked twice (list reversed the second time); code combines that with the ratings and cuts the list.
+// Defaults (tuned on the known-item test, docs/DISCOVER_BAKEOFF.md): results are screened with one question and only the best 20 get the
+// full set; each result's text goes once per request; the term questions are off. Same accuracy as the first version, about a third of the tokens.
 //   6. Claude explains the picks (same as the classic loop).
 // Every threshold here is a PLACEHOLDER (same status as JEV_THRESHOLDS, REGISTER A-040/A-043): tune on labelled cases, then freeze.
 import { JEV_THRESHOLDS } from "@/engine/providers/jev";
@@ -29,18 +31,30 @@ export const LED_CONFIG = {
   /** A need's weight counts as itemWeightFloor + (1 - itemWeightFloor) x weight; 1 turns need weights off. */
   itemWeightFloor: 0.7,
   resultsPerQuery: 8,
-  /** Search terms asked about per result (the best-scoring ones that found it). */
-  termsPerListing: 2,
+  /**
+   * Search terms asked about per result (the best-scoring ones that found it). Off by default: in the known-item test the term
+   * questions changed nothing measurable and cost about 13% of the rating tokens. 2 / 0.7 / 0.3 turns them back on.
+   */
+  termsPerListing: 0,
   /** base = fit x (termFloor + termWeight x term) x (trustFloor + trustWeight x trust). Trust only nudges. */
-  termFloor: 0.7,
-  termWeight: 0.3,
+  termFloor: 1,
+  termWeight: 0,
   trustFloor: 0.8,
   trustWeight: 0.2,
-  /** Ask Jev to compare the shortlist head to head. False leaves the order to the ratings alone (for ablation tests). */
-  usePairs: true,
-  /** Results compared head to head. */
+  /**
+   * How Jev orders the shortlist: "pairs" = every pair head to head, both orders (n(n-1) questions); "choice" = one pick-the-best
+   * question over the whole shortlist, asked twice with the order reversed (2 questions); "both" = the two averaged; "none" = ratings only.
+   */
+  order: "choice" as "pairs" | "choice" | "both" | "none",
+  /** Send each result's text once per request (in state) instead of inside every question about it. */
+  compact: true,
+  /** Per-need fit as a yes/no probability ("noul") or a 0-3 graded score scaled to 0-1 ("score"). */
+  fit: "noul" as "noul" | "score",
+  /** Screen every result with one quick question first and ask the full set only about the best this many (0 = full set for all). */
+  screen: 20,
+  /** Results Jev orders at the end. */
   shortlist: 8,
-  /** final = base x (pairFloor + pairWeight x pair). Pair wins dominate when ratings tie near 100%. */
+  /** final = base x (pairFloor + pairWeight x standing). Jev's ordering dominates when ratings tie near 100%. */
   pairFloor: 0.4,
   pairWeight: 0.6,
   /** Base score below this is cut, but at least minKeep results stay (flagged weak). */
@@ -54,8 +68,10 @@ type Cfg = typeof LED_CONFIG;
 export interface LedScorer {
   scoreItems(items: Item[]): Promise<ItemScore[]>;
   scoreQueries(items: Interpretation["items"], queries: Interpretation["queries"]): Promise<QueryScore[]>;
-  scoreListingsLed(items: Item[], cands: { listing: Listing; terms: string[] }[]): Promise<ListingScore[]>;
+  scoreListingsLed(items: Item[], cands: { listing: Listing; terms: string[] }[], opts?: { compact?: boolean; fit?: "noul" | "score" }): Promise<ListingScore[]>;
   comparePairs(items: Item[], pairs: [Listing, Listing][]): Promise<{ a: string; b: string; p_a: number }[]>;
+  rankList(items: Item[], listings: Listing[]): Promise<Map<string, number>>;
+  screenListings(items: Item[], listings: Listing[], opts?: { compact?: boolean }): Promise<Map<string, number>>;
 }
 
 export interface PickedQuery extends QueryScore {
@@ -140,7 +156,13 @@ export function pairScores(slugs: string[], results: { a: string; b: string; p_a
   return new Map(slugs.map((s) => [s, wins.get(s)!.length ? wins.get(s)!.reduce((x, y) => x + y, 0) / wins.get(s)!.length : 0.5]));
 }
 
-/** Shortlist by base score (best for every need kept), reorder by head-to-head wins, then cut the tail. */
+/** Each result's share of the pick-the-best vote, scaled so the favourite is 1. */
+export function scaleToTop(shares: Map<string, number>): Map<string, number> {
+  const top = Math.max(0, ...shares.values());
+  return new Map([...shares].map(([slug, v]) => [slug, top > 0 ? v / top : 0.5]));
+}
+
+/** Shortlist by base score (best for every need kept), reorder by Jev's standing, then cut the tail. */
 export function finalize(ranked: Ranked[], pair: Map<string, number> | null, cfg: Cfg = LED_CONFIG): Ranked[] {
   const short = withEachNeed(ranked, cfg.shortlist);
   const scored = short
@@ -163,6 +185,10 @@ export interface DiscoverLedResult extends DiscoverResult {
   gaps: string[];
   /** Head-to-head comparisons asked (each in both orders). */
   pairs_asked: number;
+  /** Every result Jev rated, with its ratings (for evaluation and debugging). */
+  listingScores: ListingScore[];
+  /** Optional Jev steps that failed and were skipped ("screen", "order"); the ranking stands on the ratings. Empty when all ran. */
+  degraded: string[];
 }
 
 export async function discoverLed(args: { text: string; claude: Interpreter; jev: LedScorer; fetch?: FetchLike; cfg?: Cfg }): Promise<DiscoverLedResult> {
@@ -203,9 +229,20 @@ export async function discoverLed(args: { text: string; claude: Interpreter; jev
   const candidates = dedupe([...bySlug.values()]);
   const withTerms = candidates.map((c) => ({
     ...c,
-    terms: [...new Set(c.found_by.sort((a, b) => (rankOf.get(b) ?? 0) - (rankOf.get(a) ?? 0)).slice(0, cfg.termsPerListing).map((id) => textOf.get(id)!))],
+    terms: [...new Set([...c.found_by].sort((a, b) => (rankOf.get(b) ?? 0) - (rankOf.get(a) ?? 0)).slice(0, cfg.termsPerListing).map((id) => textOf.get(id)!))],
   }));
-  const listingScores = withTerms.length ? await args.jev.scoreListingsLed(items, withTerms.map((c) => ({ listing: c.listing, terms: c.terms }))) : [];
+  // The screen and the final ordering are optional: if either request fails, the loop carries on without it and says so.
+  const degraded: string[] = [];
+  let toRate = withTerms;
+  if (cfg.screen > 0 && withTerms.length > cfg.screen) {
+    try {
+      const quick = await args.jev.screenListings(items, withTerms.map((c) => c.listing), { compact: cfg.compact });
+      toRate = [...withTerms].sort((a, b) => (quick.get(b.listing.slug) ?? 0) - (quick.get(a.listing.slug) ?? 0) || a.listing.slug.localeCompare(b.listing.slug)).slice(0, cfg.screen);
+    } catch {
+      degraded.push("screen"); // rate them all instead
+    }
+  }
+  const listingScores = toRate.length ? await args.jev.scoreListingsLed(items, toRate.map((c) => ({ listing: c.listing, terms: c.terms })), { compact: cfg.compact, fit: cfg.fit }) : [];
   const base = rankBase({
     listings: candidates,
     listingScores: new Map(listingScores.map((s) => [s.slug, s])),
@@ -214,11 +251,21 @@ export async function discoverLed(args: { text: string; claude: Interpreter; jev
     cfg,
   });
 
-  // 5. Jev compares the shortlist head to head; code combines the wins with the ratings.
+  // 5. Jev orders the shortlist; code combines that standing with the ratings.
   const short = withEachNeed(base, cfg.shortlist);
+  const slugs = short.map((r) => r.listing.slug);
   const pairList: [Listing, Listing][] = short.flatMap((x, i) => short.slice(i + 1).map((y): [Listing, Listing] => [x.listing, y.listing]));
-  const pair = cfg.usePairs && pairList.length ? pairScores(short.map((r) => r.listing.slug), await args.jev.comparePairs(items, pairList)) : null;
-  const ranked = finalize(base, pair, cfg);
+  const usePairs = (cfg.order === "pairs" || cfg.order === "both") && pairList.length > 0;
+  const useChoice = (cfg.order === "choice" || cfg.order === "both") && short.length > 1;
+  const [pairs, picks] = await Promise.all([
+    usePairs ? args.jev.comparePairs(items, pairList).then((r) => pairScores(slugs, r)) : Promise.resolve(null),
+    useChoice ? args.jev.rankList(items, short.map((r) => r.listing)).then(scaleToTop) : Promise.resolve(null),
+  ]).catch(() => {
+    degraded.push("order"); // keep the order the ratings give
+    return [null, null] as const;
+  });
+  const standing = pairs && picks ? new Map(slugs.map((s) => [s, (pairs.get(s)! + picks.get(s)!) / 2])) : (pairs ?? picks);
+  const ranked = finalize(base, standing, cfg);
 
   const gaps = items.filter((it) => !dropped_items.includes(it.id) && !ranked.some((r) => r.covers.includes(it.id))).map((it) => it.id);
 
@@ -231,5 +278,5 @@ export async function discoverLed(args: { text: string; claude: Interpreter; jev
       // ignore
     }
   }
-  return { interpretation, queryScores, searched, ranked, explanations, uncovered_items, itemScores, pickedQueries: picked, dropped_items, gaps, pairs_asked: cfg.usePairs ? pairList.length : 0 };
+  return { interpretation, queryScores, searched, ranked, explanations, uncovered_items, itemScores, pickedQueries: picked, dropped_items, gaps, pairs_asked: usePairs ? pairList.length : 0, listingScores, degraded };
 }

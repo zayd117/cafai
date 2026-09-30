@@ -1,6 +1,7 @@
 // Stub transport tests for the Jev-led loop: no network, no live model.
 import { describe, expect, it } from "vitest";
-import { dedupe, discoverLed, finalize, LED_CONFIG, pairScores, pickQueriesLed, rankBase } from "./led";
+import { cachedPostFetch } from "./bakeoff";
+import { dedupe, discoverLed, finalize, LED_CONFIG, pairScores, pickQueriesLed, rankBase, scaleToTop } from "./led";
 import { JevScorer } from "./scorer";
 import type { FetchLike } from "./search";
 import type { ItemScore, Listing, ListingScore, Ranked, QueryScore } from "./types";
@@ -154,7 +155,9 @@ describe("discoverLed end to end", () => {
       return undefined;
     });
     const jev = new JevScorer({ apiKey: "k", fetch: stub.fetch as never });
-    const r = await discoverLed({ text: "SECRET raw description", claude: { interpret: async () => interp }, jev, fetch: market });
+    // The first version of the loop: head to head, text in every question, term questions on, no screen.
+    const first = { ...LED_CONFIG, order: "pairs" as const, compact: false, screen: 0, termsPerListing: 2, termFloor: 0.7, termWeight: 0.3 };
+    const r = await discoverLed({ text: "SECRET raw description", claude: { interpret: async () => interp }, jev, fetch: market, cfg: first });
     expect(r.itemScores.map((s) => s.item_id)).toEqual(["i0", "i1"]);
     expect(r.dropped_items).toEqual([]); // needs are weighed, never dropped, by default
     expect(r.searched.map((s) => s.text).sort()).toEqual(["calorie lookup", "food database", "stock prices"]);
@@ -163,5 +166,129 @@ describe("discoverLed end to end", () => {
     expect(r.pairs_asked).toBe(1);
     expect(r.gaps).toEqual(["i1"]); // nothing returned covers the second need with confidence
     expect(JSON.stringify(stub.calls)).not.toContain("SECRET");
+  });
+});
+
+/** Typed Jev stub: answers noul, score and choice questions from one script, and records what it was sent. */
+function typedStub(script: (key: string, q: { type: string; instructions: any; criteria: any }) => any) {
+  const calls: { questions: Record<string, any>; state: any }[] = [];
+  const fetch = async (_url: string | URL | Request, init?: RequestInit) => {
+    const body = JSON.parse(String(init!.body));
+    calls.push(body);
+    const answers = Object.fromEntries(
+      Object.entries(body.questions as Record<string, any>).flatMap(([k, q]): [string, unknown][] => {
+        const v = script(k, q);
+        if (v === undefined) return [];
+        if (q.type === "choice") return [[k, { type: "choice", choice: Object.keys(v)[0], confidence: 1, probabilities: v }]];
+        if (q.type === "score") return [[k, { type: "score", score: v, confidence: 1, legend: {}, probabilities: {} }]];
+        return [[k, { type: "noul", noul: v }]];
+      }),
+    );
+    return new Response(JSON.stringify({ model: "jev-1.13.0", answers, usage: { input_tokens: 100, output_tokens: 1 } }), { status: 200, headers: { "content-type": "application/json" } });
+  };
+  return { fetch, calls };
+}
+
+describe("Jev-led options", () => {
+  const items = [{ id: "a", text: "one" }];
+
+  it("compact mode sends each result once, in state, and refers to it by id", () => {
+    const { questions, state } = JevScorer.listingQuestionsLed(items, [{ listing: listing("x"), terms: ["t"] }], { compact: true });
+    expect(state).toEqual({ candidates: { c0: { name: "x", description: "x description", category: null } } });
+    const q = (questions as Record<string, any>)["l0_i0"];
+    expect(q.instructions.candidate_id).toBe("c0");
+    expect(q.instructions.candidate).toBeUndefined();
+    expect(JSON.stringify(questions)).not.toContain("x description");
+  });
+
+  it("graded fit turns a 0-3 score into 0-1", async () => {
+    const stub = typedStub((k, q) => (q.type === "score" ? (k === "l0_i0" ? 3 : 1.5) : 0.5));
+    const jev = new JevScorer({ apiKey: "k", fetch: stub.fetch as never });
+    const out = await jev.scoreListingsLed([{ id: "a", text: "one" }, { id: "b", text: "two" }], [{ listing: listing("x"), terms: [] }], { fit: "score" });
+    expect(out[0]!.per_item).toEqual({ a: 1, b: 0.5 });
+    expect(stub.calls[0]!.questions["l0_i0"].type).toBe("score");
+  });
+
+  it("pick-the-best asks twice with the list reversed, so a lean toward the first option cancels out", async () => {
+    const stub = typedStub((_k, q) => (q.type === "choice" ? { c0: 0.7, c1: 0.3 } : undefined)); // always favours whichever is listed first
+    const jev = new JevScorer({ apiKey: "k", fetch: stub.fetch as never });
+    const m = await jev.rankList(items, [listing("x"), listing("y")]);
+    expect(m.get("x")).toBeCloseTo(0.5);
+    expect(m.get("y")).toBeCloseTo(0.5);
+    expect(Object.keys(stub.calls[0]!.questions)).toEqual(["fwd", "rev"]);
+    expect(scaleToTop(new Map([["x", 0.6], ["y", 0.3]]))).toEqual(new Map([["x", 1], ["y", 0.5]]));
+  });
+
+  it("counts answers Jev did not return instead of hiding them", async () => {
+    const stub = typedStub((k) => (k === "q0_faithful" ? 0.9 : undefined));
+    const jev = new JevScorer({ apiKey: "k", fetch: stub.fetch as never });
+    const [s] = await jev.scoreQueries(items, [{ id: "q0", item_id: "a", text: "t" }]);
+    expect(s!.drift).toBe(1);
+    expect(jev.missing).toBe(1);
+    expect(jev.usage[0]!.step).toBe("queries");
+  });
+
+  it("discoverLed with order 'choice' ranks the shortlist by the pick-the-best vote and asks no pairs", async () => {
+    const interp = { items: [{ id: "i0", text: "look up food data" }], queries: [{ id: "q0", item_id: "i0", text: "food database" }] };
+    const market: FetchLike = async () => new Response(JSON.stringify({ results: [{ slug: "aa", description: "food facts" }, { slug: "zz", description: "meal notes" }] }), { status: 200 });
+    const stub = typedStub((k, q) => {
+      if (q.type === "choice") return Object.fromEntries(Object.entries(q.criteria).map(([label, c]: [string, any]) => [label, c.name === "zz" ? 0.9 : 0.1]));
+      return k.endsWith("_drift") ? 0.1 : 0.9; // every rating ties
+    });
+    const jev = new JevScorer({ apiKey: "k", fetch: stub.fetch as never });
+    const r = await discoverLed({ text: "t", claude: { interpret: async () => interp }, jev, fetch: market, cfg: { ...LED_CONFIG, order: "choice" } });
+    expect(r.ranked.map((x) => x.listing.slug)).toEqual(["zz", "aa"]);
+    expect(r.pairs_asked).toBe(0);
+    expect(jev.usage.map((u) => u.step)).toContain("choice");
+    expect(jev.usage.map((u) => u.step)).not.toContain("pairs");
+  });
+});
+
+describe("discoverLed defaults", () => {
+  it("screens with one question, rates only the best in full, sends each result's text once, and orders by pick-the-best", async () => {
+    const interp = { items: [{ id: "i0", text: "look up food data" }], queries: [{ id: "q0", item_id: "i0", text: "food database" }] };
+    const market: FetchLike = async () => new Response(JSON.stringify({ results: ["aa", "bb", "cc"].map((slug) => ({ slug, description: `${slug} tool` })) }), { status: 200 });
+    const stub = typedStub((k, q) => {
+      if (q.type === "choice") return Object.fromEntries(Object.keys(q.criteria).map((label) => [label, 1 / Object.keys(q.criteria).length]));
+      return k.endsWith("_drift") ? 0.1 : 0.9;
+    });
+    const jev = new JevScorer({ apiKey: "k", fetch: stub.fetch as never });
+    const r = await discoverLed({ text: "t", claude: { interpret: async () => interp }, jev, fetch: market, cfg: { ...LED_CONFIG, screen: 2 } });
+    const full = stub.calls.find((c) => Object.keys(c.questions).some((k) => /_i0$/.test(k)))!;
+    expect(Object.keys(full.questions).filter((k) => k.endsWith("_useful"))).toHaveLength(2); // only the best 2 of 3 got the full set
+    expect(Object.keys(full.state.candidates)).toHaveLength(2);
+    expect(JSON.stringify(full.questions)).not.toContain("tool"); // result text lives in state, not in the questions
+    expect(jev.usage.map((u) => u.step)).toEqual(expect.arrayContaining(["screen", "listings", "choice"]));
+    expect(r.ranked).toHaveLength(2);
+  });
+});
+
+describe("discoverLed when an optional Jev step fails", () => {
+  it("keeps the ratings' order and says which step was skipped", async () => {
+    const interp = { items: [{ id: "i0", text: "look up food data" }], queries: [{ id: "q0", item_id: "i0", text: "food database" }] };
+    const market: FetchLike = async () => new Response(JSON.stringify({ results: ["aa", "bb", "cc"].map((slug) => ({ slug, description: `${slug} tool` })) }), { status: 200 });
+    const ok = typedStub((k) => (k.endsWith("_drift") ? 0.1 : 0.9));
+    const failing = async (url: string | URL | Request, init?: RequestInit) => {
+      const body = JSON.parse(String(init!.body));
+      if (Object.values(body.questions).some((q: any) => q.type === "choice") || Object.keys(body.questions).length === 3) return new Response("{}", { status: 400 });
+      return ok.fetch(url, init);
+    };
+    const jev = new JevScorer({ apiKey: "k", fetch: failing as never });
+    const r = await discoverLed({ text: "t", claude: { interpret: async () => interp }, jev, fetch: market, cfg: { ...LED_CONFIG, screen: 2 } });
+    expect(r.degraded).toEqual(["screen", "order"]);
+    expect(r.ranked.length).toBeGreaterThan(0);
+  });
+});
+
+describe("cachedPostFetch", () => {
+  it("replays an identical request and pays for a changed one", async () => {
+    let calls = 0;
+    const inner = (async () => { calls++; return new Response(`{"n":${calls}}`, { status: 200 }); }) as unknown as typeof fetch;
+    const f = cachedPostFetch(new Map(), inner);
+    const a = await (await f("https://x/v1", { method: "POST", body: "same" })).json();
+    const b = await (await f("https://x/v1", { method: "POST", body: "same" })).json();
+    await f("https://x/v1", { method: "POST", body: "other" });
+    expect(a).toEqual(b);
+    expect(calls).toBe(2);
   });
 });

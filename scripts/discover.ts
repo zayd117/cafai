@@ -97,11 +97,12 @@ for (const q of r.interpretation.queries) {
 }
 if (r.uncovered_items.length) console.log(`\nno query kept for: ${r.uncovered_items.join(", ")}`);
 if (led?.gaps.length) console.log(`\nno confident match for: ${led.gaps.join(", ")}`);
+if (led?.degraded.length) console.log(`\nskipped after a Jev error (ranking uses the ratings instead): ${led.degraded.join(", ")}`);
 console.log(`\nranked (${r.ranked.length}):`);
 r.ranked.forEach((x, n) => {
   const l = x.listing;
   const price = l.price_micros ? `$${(l.price_micros / 1e6).toFixed(2)}/call` : "free";
-  console.log(`${n + 1}. ${l.title ?? l.name}  [${l.grade ?? "no grade"} ${l.grade_score ?? "-"}, ${price}]  final ${x.final.toFixed(3)} = fit ${x.fit.toFixed(2)}, ${loop === "led" ? "term" : "query"} ${x.p_query.toFixed(2)}${x.pair !== undefined ? `, head-to-head ${x.pair.toFixed(2)}` : ""}, trust ${x.trust.toFixed(2)}${x.weak ? "  WEAK FIT" : ""}`);
+  console.log(`${n + 1}. ${l.title ?? l.name}  [${l.grade ?? "no grade"} ${l.grade_score ?? "-"}, ${price}]  final ${x.final.toFixed(3)} = fit ${x.fit.toFixed(2)}, ${loop === "led" ? "term" : "query"} ${x.p_query.toFixed(2)}${x.pair !== undefined ? `, Jev standing ${x.pair.toFixed(2)}` : ""}, trust ${x.trust.toFixed(2)}${x.weak ? "  WEAK FIT" : ""}`);
   console.log(`   covers: ${x.covers.join(", ") || "none confidently"}; found by ${x.found_by.join(", ")}\n   ${r.explanations.get(l.slug) ?? l.description}\n   ${l.url}`);
 });
 const usage = [...jev.usage, ...(claude?.usage ?? [])];

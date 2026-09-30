@@ -68,7 +68,7 @@ export interface Ranked {
   /** Query ids that retrieved it. */
   found_by: string[];
   p_query: number;
-  /** Jev-led loop only: mean chance this server beats the other shortlisted servers, both orders averaged. */
+  /** Jev-led loop only: Jev's 0-1 standing on the shortlist (head-to-head wins, a pick-the-best share, or both averaged). */
   pair?: number;
   fit: number;
   trust: number;
@@ -82,4 +82,6 @@ export interface Usage {
   model: string;
   input_tokens: number;
   output_tokens: number;
+  /** The loop step that made the request (Jev scorer only): needs, queries, listings, pairs, choice. */
+  step?: string;
 }

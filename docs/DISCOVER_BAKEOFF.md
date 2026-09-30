@@ -83,28 +83,35 @@ In this project's environment the Anthropic key is stored as `CAFAI_ANTHROPIC_KE
 
 ## The Jev-led loop and the known-item test (30 Sep 2026)
 
-`npm run discover` now runs the Jev-led loop (`src/discover/led.ts`); `--loop classic` runs the older one. Steps: Claude interprets; Jev weighs
+`npm run discover` runs the Jev-led loop (`src/discover/led.ts`); `--loop classic` runs the older one. Steps: Claude interprets; Jev weighs
 the needs and rates every query, and code keeps each need's best two queries then fills a budget of 18 by Jev's ranking; code searches
-mcp.market; Jev rates each result per need, overall and against the search terms that found it; Jev compares the shortlist of 8 head to head
-(every pair in both orders, averaged, so a lean toward whichever is named first cancels out); code combines the scores and cuts the list. Needs
-are never dropped: Jev sees only the needs, not the person's words, and rated needs the person named as minor. All thresholds are placeholders.
+mcp.market; Jev screens every result with one question and rates the best 20 per need and overall; Jev orders the shortlist of 8 with one
+pick-the-best question asked twice (list reversed the second time, so a lean toward a position cancels out); code combines the scores and cuts
+the list. Needs are never dropped: Jev sees only the needs, not the person's words, and rated needs the person named as minor. All thresholds
+are placeholders. How Jev is used, and why, is in `docs/JEV_USAGE.md`.
 
 `npm run discover:known` measures it without labels. Each task is a project description written from one real listing, so that listing is the
 known right answer (`eval/discover/known-item/`: 28 tasks, with interpretations written in-session as stand-ins for the API). Every arm gets the
-same interpretation and the same mcp.market responses. Arms: `claude`, `jev-classic`, `jev-led`, and `jev-led-nopair` / `-noweights` /
-`-noterms` (one Jev step switched off). Only the known listing counts as right, so other good results count as misses for every arm alike.
+same interpretation and the same mcp.market responses. Jev answers are replayed for identical requests (`--fresh-jev` turns that off for timing).
+Arms: `claude`, `jev-classic`, `jev-led` (current default), `jev-led-v1` (first version) and variants that switch one option (see the script).
+Only the known listing counts as right, so other good results count as misses for every arm alike.
 
-| 28 tasks x 3 repeats, Jev only | classic | Jev-led | Jev-led, no head-to-head |
+| 28 tasks, fresh Jev answers, Jev only | classic | Jev-led v1 | Jev-led (default) |
 |---|---|---|---|
-| Known listing ranked 1st / in top 3 / in top 5 | 14% / 25% / 46% | 35% / 46% / 58% | 24% / 36% / 46% |
-| Ranking score (MRR) | 0.24 | 0.43 | 0.32 |
-| Known listing never searched for | 9 of 28 | 6 of 28 | 6 of 28 |
-| Cost / time per project | $0.0019 / 0.55 s | $0.0034 / 0.88 s | $0.0030 / 0.50 s |
+| Known listing ranked 1st / in top 3 / in top 5 | 14% / 21% / 43% | 36% / 50% / 57% | 50% / 50% / 61% |
+| Ranking score (MRR) | 0.24 | 0.44 | 0.53 |
+| Jev input / output tokens per search | 44k / 8k | 82k / 15k | 25k / 5k |
+| Jev requests per search | 13.5 | 22.8 | 11.9 |
+| Cost / time per search | $0.0019 / 0.47 s | $0.0034 / 0.93 s | $0.0011 / 0.88 s |
 
-Sign test over projects, Jev-led vs classic: ranking score better on 12, worse on 3 (p = 0.04); top 5 better on 5, worse on 2 (p = 0.45).
-The head-to-head step carries the gain; weighing needs (MRR 0.42 without) and rating against terms (0.44 without) changed nothing measurable.
-The first 14 tasks (t13-t26) and last 14 (t27-t40) point the same way. Nothing was tuned on these tasks. Not measured: Claude alone (no credit
-on the Anthropic account; run `--arms claude,jev-classic,jev-led` once there is), the real API interpretations, and human-labelled accuracy.
+Ranking score, default vs classic: better on 13 projects, worse on 2 (sign test p = 0.007); default vs v1: better on 5, worse on 1 (p = 0.22).
+v1 to default was chosen on the first 14 tasks (t13-t26) and checked on the last 14 (t27-t40): ranking score 0.57 vs 0.56 and 0.47 vs 0.35.
+What each change did (all measured on the same tasks): one pick-the-best question instead of 56 pairwise ones, same accuracy, the ordering
+step 6x cheaper; each result's text sent once per request, rating tokens down 28%; the one-question screen, rating tokens down a further
+two thirds with no loss; the search-term questions, no measurable effect, now off. Tried and dropped: a graded 0-3 fit (more tokens, no gain),
+a smaller query budget (lost accuracy), a shortlist of 12 (no gain). Earlier (3 repeats, v1): need weights changed nothing measurable.
+Not measured: Claude alone (no credit on the Anthropic account; run `--arms claude,jev-classic,jev-led` once there is), the real API
+interpretations, and human-labelled accuracy.
 
 ## First live run (30 Sep 2026): no accuracy number yet
 

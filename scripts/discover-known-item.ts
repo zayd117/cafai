@@ -12,7 +12,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { costMicros } from "../src/config/pricing";
-import { cachedFetch } from "../src/discover/bakeoff";
+import { cachedFetch, cachedPostFetch } from "../src/discover/bakeoff";
 import { DiscoverClaude } from "../src/discover/claude";
 import { ClaudeScorer } from "../src/discover/claudeScorer";
 import { discoverLed, LED_CONFIG } from "../src/discover/led";
@@ -30,9 +30,32 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const dir = join(root, "eval/discover/known-item");
 const cachePath = join(root, arg("cache") ?? "eval/discover/known-item-cache.json");
 const outPath = join(root, arg("out") ?? "eval/reports/known-item-latest.json");
+// Jev answers are replayed from here for identical requests (git-ignored). --fresh-jev skips it, for honest timings.
+const jevCachePath = join(root, arg("jev-cache") ?? "eval/discover/known-item-jev-cache.json");
+const freshJev = process.argv.includes("--fresh-jev");
 const ARMS = (arg("arms") ?? "jev-classic,jev-led").split(",").map((s) => s.trim()).filter(Boolean);
 // Jev-led variants switch one Jev step off at a time, to show which step earns its keep.
-const LED_VARIANTS: Record<string, Partial<typeof LED_CONFIG>> = { "jev-led": {}, "jev-led-nopair": { usePairs: false }, "jev-led-noweights": { itemWeightFloor: 1 }, "jev-led-noterms": { termWeight: 0, termFloor: 1 } };
+const LED_VARIANTS: Record<string, Partial<typeof LED_CONFIG>> = {
+  "jev-led": {},
+  // the first Jev-led version (30 Sep 2026): head to head, text in every question, term questions on, no screen
+  "jev-led-v1": { order: "pairs", compact: false, screen: 0, termsPerListing: 2, termFloor: 0.7, termWeight: 0.3 },
+  "jev-led-nopair": { order: "none" },
+  "jev-led-noweights": { itemWeightFloor: 1 },
+  "jev-led-noterms": { termWeight: 0, termFloor: 1 },
+  "jev-led-choice": { order: "choice" },
+  "jev-led-both": { order: "both" },
+  "jev-led-compact": { compact: true },
+  "jev-led-score": { fit: "score" },
+  "jev-led-budget12": { queryBudget: 12 },
+  "jev-led-choice12": { order: "choice", shortlist: 12 },
+  "jev-led-c-compact": { order: "choice", compact: true },
+  "jev-led-c-noterms": { order: "choice", termsPerListing: 0, termFloor: 1, termWeight: 0 },
+  "jev-led-c-compact-noterms": { order: "choice", compact: true, termsPerListing: 0, termFloor: 1, termWeight: 0 },
+  "jev-led-c-screen20": { order: "choice", screen: 20 },
+  "jev-led-c-screen30": { order: "choice", screen: 30 },
+  "jev-led-lean": { order: "choice", compact: true, termsPerListing: 0, termFloor: 1, termWeight: 0, screen: 20 },
+  "jev-led-c-compact-screen20": { order: "choice", compact: true, screen: 20 },
+};
 const KNOWN_ARMS = ["claude", "jev-classic", ...Object.keys(LED_VARIANTS)];
 for (const a of ARMS) if (!KNOWN_ARMS.includes(a)) { console.error(`unknown arm "${a}"; known: ${KNOWN_ARMS.join(", ")}`); process.exit(2); }
 
@@ -52,6 +75,9 @@ const selected = tasks.filter(pick).filter((t) => interps[t.id]);
 const store = new Map<string, { status: number; body: string }>(existsSync(cachePath) ? JSON.parse(readFileSync(cachePath, "utf8")) : []);
 const saveCache = () => { mkdirSync(dirname(cachePath), { recursive: true }); writeFileSync(cachePath, JSON.stringify([...store])); };
 const cf = cachedFetch(fetch as FetchLike, store);
+const jevStore = new Map<string, { status: number; body: string }>(!freshJev && existsSync(jevCachePath) ? JSON.parse(readFileSync(jevCachePath, "utf8")) : []);
+const jevFetch = freshJev ? undefined : cachedPostFetch(jevStore);
+const saveJev = () => { if (!freshJev) writeFileSync(jevCachePath, JSON.stringify([...jevStore])); };
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 const cost = (u: Usage[]) => u.reduce((s, x) => s + (costMicros(x) ?? NaN), 0) / 1e6;
 
@@ -61,7 +87,7 @@ const active = ARMS.filter((a) => a !== "claude" || hasClaude);
 const isLed = (a: string) => a in LED_VARIANTS;
 const skipped = ARMS.filter((a) => !active.includes(a));
 
-interface ArmResult { rank: number | null; retrieved: boolean; queries: number; ranked: string[]; input: number; output: number; cost: number; ms: number; error?: string }
+interface ArmResult { rank: number | null; retrieved: boolean; queries: number; ranked: string[]; input: number; output: number; cost: number; ms: number; requests?: number; steps?: Record<string, number>; missing?: number; error?: string }
 const results: { id: string; text: string; known: string; reachable: boolean; arms: Record<string, ArmResult> }[] = [];
 
 for (const t of selected) {
@@ -77,7 +103,7 @@ for (const t of selected) {
   for (const arm of active) {
     const s = performance.now();
     try {
-      const scorer = arm === "claude" ? new ClaudeScorer(new DiscoverClaude()) : new JevScorer();
+      const scorer = arm === "claude" ? new ClaudeScorer(new DiscoverClaude()) : new JevScorer({ fetch: jevFetch as never });
       const r = isLed(arm)
         ? await discoverLed({ text: t.text, claude: { interpret: async () => interp }, jev: scorer as JevScorer, fetch: cf, cfg: { ...LED_CONFIG, ...LED_VARIANTS[arm] } })
         : await discover({ text: t.text, claude: { interpret: async () => interp }, jev: scorer, fetch: cf });
@@ -93,12 +119,16 @@ for (const t of selected) {
         output: u.reduce((a, x) => a + x.output_tokens, 0),
         cost: cost(u),
         ms: performance.now() - s,
+        steps: u.reduce<Record<string, number>>((acc, x) => ({ ...acc, [x.step ?? "all"]: (acc[x.step ?? "all"] ?? 0) + x.input_tokens }), {}),
+        missing: scorer instanceof JevScorer ? scorer.missing : 0,
+        requests: u.length,
       };
     } catch (e) {
       arms[arm] = { rank: null, retrieved: false, queries: 0, ranked: [], input: 0, output: 0, cost: 0, ms: performance.now() - s, error: String(e instanceof Error ? e.message : e).slice(0, 160) };
     }
   }
   results.push({ id: t.id, text: t.text, known: t.known.slug, reachable, arms });
+  saveJev();
   console.log(`${t.id} reachable=${reachable ? "y" : "n"} ${active.map((a) => `${a}=${arms[a]!.error ? "ERR" : arms[a]!.rank ?? "-"}`).join(" ")}`);
 }
 
@@ -121,8 +151,13 @@ for (const a of active) {
     queries: mean(valid.map((r) => r.arms[a]!.queries)), input: mean(valid.map((r) => r.arms[a]!.input)), output: mean(valid.map((r) => r.arms[a]!.output)),
     cost: mean(valid.map((r) => r.arms[a]!.cost)), ms_median: median(valid.map((r) => r.arms[a]!.ms)),
   };
-  summary[a] = row;
-  console.log(`${a.padEnd(12)} hit@1 ${pct(row.hit1 / row.n)} hit@3 ${pct(row.hit3 / row.n)} hit@5 ${pct(row.hit5 / row.n)} (${pct(row.hit5_ci[0])}-${pct(row.hit5_ci[1])})  MRR ${row.mrr.toFixed(2)}  never searched ${never}  queries ${row.queries.toFixed(1)}  tokens ${Math.round(row.input)}/${Math.round(row.output)}  $${row.cost.toFixed(4)}  ${Math.round(row.ms_median)} ms`);
+  const steps: Record<string, number> = {};
+  for (const r of valid) for (const [k, v] of Object.entries(r.arms[a]!.steps ?? {})) steps[k] = (steps[k] ?? 0) + v / valid.length;
+  const missing = valid.reduce((s, r) => s + (r.arms[a]!.missing ?? 0), 0);
+  const requests = mean(valid.map((r) => r.arms[a]!.requests ?? 0));
+  summary[a] = { ...row, steps, missing, requests };
+  console.log(`${a.padEnd(18)} hit@1 ${pct(row.hit1 / row.n)} hit@3 ${pct(row.hit3 / row.n)} hit@5 ${pct(row.hit5 / row.n)} (${pct(row.hit5_ci[0])}-${pct(row.hit5_ci[1])})  MRR ${row.mrr.toFixed(2)}  never searched ${never}  queries ${row.queries.toFixed(1)}  tokens ${Math.round(row.input)}/${Math.round(row.output)}  $${row.cost.toFixed(4)}  ${Math.round(row.ms_median)} ms${freshJev ? "" : " (replayed Jev answers: time not comparable)"}`);
+  console.log(`${"".padEnd(18)} input tokens by step: ${Object.entries(steps).map(([k, v]) => `${k} ${Math.round(v)}`).join(", ")}; ${requests.toFixed(1)} model requests per search; missing answers ${missing}`);
 }
 const paired: Record<string, unknown> = {};
 for (let i = 0; i < active.length; i++) for (let j = i + 1; j < active.length; j++) {
