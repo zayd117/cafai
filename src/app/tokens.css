@@ -1,0 +1,133 @@
+/* CAF.ai design tokens. PROPOSAL from the Figma file "CAF.ai Design System" (1gCS6RVfLxkdP3AH95D4UY).
+   Not imported by the app yet. Names match the WEB code syntax set on every Figma variable, so Dev Mode shows these exact names.
+   Generated together with tokens.json; edit both or neither. One light theme (plan defines no dark theme). */
+:root {
+  /* Primitives (alias targets only; components use the semantic layer) */
+  --prim-neutral-0: #FFFFFF;
+  --prim-neutral-50: #F7F5F0;
+  --prim-neutral-100: #EFECE5;
+  --prim-neutral-200: #E4E0D8;
+  --prim-neutral-300: #C9C4BA;
+  --prim-neutral-400: #A39D93;
+  --prim-neutral-500: #78716C;
+  --prim-neutral-600: #6B655E;
+  --prim-neutral-700: #57534E;
+  --prim-neutral-800: #3D3833;
+  --prim-neutral-900: #1C1917;
+  --prim-brand-50: #E2F0EC;
+  --prim-brand-100: #C4E2DA;
+  --prim-brand-200: #9CCDC1;
+  --prim-brand-600: #0F6B5C;
+  --prim-brand-700: #0B5549;
+  --prim-brand-800: #0A4A40;
+  --prim-brand-900: #06332C;
+  --prim-amber-50: #FBEFD0;
+  --prim-amber-100: #F6DFA3;
+  --prim-amber-500: #B7791F;
+  --prim-amber-800: #6B4507;
+  --prim-red-50: #FCEBE8;
+  --prim-red-600: #B42318;
+  --prim-red-800: #912018;
+
+  /* Semantic colour */
+  --color-bg-canvas: var(--prim-neutral-50); /* Page background */
+  --color-bg-surface: var(--prim-neutral-0); /* Cards, inputs, panels */
+  --color-bg-sunken: var(--prim-neutral-100); /* Code blocks, quiet fills */
+  --color-bg-inverse: var(--prim-neutral-900); /* Inverse strips, current tab */
+  --color-bg-brand: var(--prim-brand-600); /* Primary buttons */
+  --color-bg-brand-hover: var(--prim-brand-700); /* Primary hover / pressed */
+  --color-bg-brand-soft: var(--prim-brand-50); /* Needed-now pill, selected chip, observed evidence */
+  --color-bg-accent-soft: var(--prim-amber-50); /* Also worth knowing, notice banner, inferred evidence */
+  --color-bg-danger: var(--prim-red-600); /* Destructive emphasis */
+  --color-bg-danger-soft: var(--prim-red-50); /* Check-this notes, revoked */
+  --color-text-primary: var(--prim-neutral-900); /* Body and headings */
+  --color-text-secondary: var(--prim-neutral-700); /* Supporting text */
+  --color-text-muted: var(--prim-neutral-600); /* Meta, dates, hostnames */
+  --color-text-inverse: var(--prim-neutral-0); /* Text on bg-inverse */
+  --color-text-on-brand: var(--prim-neutral-0); /* Text on bg-brand */
+  --color-text-brand: var(--prim-brand-600); /* Links, labels */
+  --color-text-on-brand-soft: var(--prim-brand-800); /* Text on brand-soft */
+  --color-text-on-accent-soft: var(--prim-amber-800); /* Text on accent-soft */
+  --color-text-danger: var(--prim-red-800); /* Text on danger-soft */
+  --color-border-subtle: var(--prim-neutral-200); /* Card and section rules */
+  --color-border-default: var(--prim-neutral-300); /* Dividers, disabled */
+  --color-border-strong: var(--prim-neutral-500); /* Inputs, chips, secondary buttons (3:1 non-text) */
+  --color-border-brand: var(--prim-brand-600); /* Selected outline */
+  --color-border-accent: var(--prim-amber-500); /* Also-worth-knowing dashed border */
+  --color-border-danger: var(--prim-red-600); /* Danger rule */
+  --color-border-focus: var(--prim-brand-600); /* Focus ring */
+  --color-fill-meter-on: var(--prim-brand-600); /* Match bar, filled segment */
+  --color-fill-meter-off: var(--prim-neutral-300); /* Match bar, empty segment */
+  --color-fill-dot-on: var(--prim-neutral-900); /* Confidence dot, filled */
+  --color-fill-dot-off: var(--prim-neutral-300); /* Confidence dot, empty */
+
+  /* Spacing (n x 4px) */
+  --space-0: 0px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+
+  /* Radius */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 999px;
+
+  /* Size, stroke, containers */
+  --size-touch: 44px;
+  --size-control: 48px;
+  --size-control-lg: 56px;
+  --size-icon-sm: 16px;
+  --size-icon-md: 20px;
+  --size-icon-lg: 24px;
+  --stroke-thin: 1px;
+  --stroke-thick: 2px;
+  --container-counter: 720px;
+  --container-reading: 680px;
+  --container-setup: 960px;
+  --container-results: 1200px;
+  --container-aside: 340px;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px rgb(28 25 23 / 0.06), 0 1px 1px rgb(28 25 23 / 0.04);
+  --shadow-md: 0 4px 12px -2px rgb(28 25 23 / 0.10), 0 1px 3px rgb(28 25 23 / 0.05);
+  --shadow-lg: 0 16px 40px -8px rgb(28 25 23 / 0.14), 0 2px 6px rgb(28 25 23 / 0.06);
+
+  /* Families: set --font-instrument-sans and --font-jetbrains-mono via next/font/google `variable` option */
+  --font-sans: var(--font-instrument-sans), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, "Courier New", monospace;
+
+  /* Type styles: use as  font: var(--type-body);  letter-spacing: var(--tracking-body);  */
+  --type-display-xl: 600 56px/60px var(--font-sans); --tracking-display-xl: -0.02em;
+  --type-display-l: 600 40px/44px var(--font-sans); --tracking-display-l: -0.01em;
+  --type-display-m: 600 36px/40px var(--font-sans); --tracking-display-m: -0.02em;
+  --type-heading-l: 600 28px/34px var(--font-sans); --tracking-heading-l: -0.01em;
+  --type-heading-m: 600 22px/28px var(--font-sans); --tracking-heading-m: -0.01em;
+  --type-heading-s: 600 18px/24px var(--font-sans); --tracking-heading-s: 0em;
+  --type-body-lede: 400 20px/30px var(--font-sans); --tracking-body-lede: 0em;
+  --type-body: 400 16px/24px var(--font-sans); --tracking-body: 0em;
+  --type-body-strong: 600 16px/24px var(--font-sans); --tracking-body-strong: 0em;
+  --type-body-quote: italic 400 16px/24px var(--font-sans); --tracking-body-quote: 0em;
+  --type-small: 400 14px/20px var(--font-sans); --tracking-small: 0em;
+  --type-small-strong: 600 14px/20px var(--font-sans); --tracking-small-strong: 0em;
+  --type-label-caps: 500 12px/16px var(--font-mono); --tracking-label-caps: 0.06em; /* uppercase */
+  --type-label-tag: 700 12px/16px var(--font-mono); --tracking-label-tag: 0.08em; /* uppercase */
+  --type-mono-meta: 400 13px/20px var(--font-mono); --tracking-mono-meta: 0em;
+  --type-mono-code: 400 14px/22px var(--font-mono); --tracking-mono-code: 0em;
+}
+
+/* Focus: 2px canvas gap + 2px brand ring (matches the Figma "Focus ring" layer, 4px outside the edge). */
+:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
+
+/* Mobile display size (Figma Display/M replaces Display/XL under 700px). */
+@media (max-width: 700px) { :root { --type-display-xl: 600 36px/40px var(--font-sans); --tracking-display-xl: -0.02em; } }
