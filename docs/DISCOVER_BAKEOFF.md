@@ -95,7 +95,10 @@ recall and false positives print `—`. Query drop/keep rates use the one off-to
 | Cost per run | $0.108 | $0.0018 |
 
 Top-5 agreement between the arms is 0.32 (per case: calorie 0.43, excel 0.25, hiking 0.25, ios 0.37). Per-case cost on the real cases:
-hiking $0.214 vs $0.004, ios $0.159 vs $0.002. Observations: both arms dropped 12 of 26 (hiking) and 14 of 26 (ios) queries, including
-"Google Maps JavaScript API" for a person who named Google Maps; whether that is over-filtering needs labels. Jev sends more input tokens (not investigated why)
+hiking $0.214 vs $0.004, ios $0.159 vs $0.002. Observations: on the real cases both arms kept exactly 2 queries per item (hiking 14 of 26, ios 12 of 26), so the drops come from the
+placeholder cap `queriesPerItem: 2` in `src/discover/rank.ts`, not from the score floor. Checked for Jev on hiking: all 26 query scores
+are 0.47 to 0.89, above the 0.3 floor; "Google Maps JavaScript API" scored 0.48 (drift 0.43), lowest of its item, and lost to the cap even though the
+person named Google Maps (the interpretation's item text does not). Claude's query scores were not checked. So drop/keep rates on these cases do
+not test the filter. Jev sends more input tokens (not investigated why)
 but its output is free, so it costs far less. The two top 5s differ by 2 to 3 of 5 listings per case (majority over the 3 repeats); those
 listings are what the labelling sheet should settle.
