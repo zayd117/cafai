@@ -15,7 +15,8 @@
     "catalog:check": "tsx scripts/check-catalog.ts && tsx scripts/check-catalog.ts --fixtures",
     "db:bootstrap": "./scripts/db-bootstrap.sh",
     "db:migrate": "tsx scripts/migrate.ts",
-    "eval": "tsx scripts/eval.ts"
+    "eval": "tsx scripts/eval.ts",
+    "flow": "node scripts/flow.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.129.0",
