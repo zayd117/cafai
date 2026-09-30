@@ -64,3 +64,16 @@ Format: MD section → requirement → engineering task → files → test. Kind
 | §17 | LLM and Decision interfaces (Jev can take Decision only after a bake-off win) | CONFIRMED | `providers/types.ts` | — |
 | §9, §17, A-017 | Real model provider: schema-bound calls, fenced data-only inputs, refusal/cut-off treated as invalid | CONFIRMED; UNVERIFIED LIVE (no credential) | `providers/anthropic.ts`, `prompts.ts`, `providers/index.ts` | `anthropic.test.ts` (stub client) |
 | §25 | Ablation switches: no expansion (H2), forward-only (H3), evidence gates off (H4) | CONFIRMED | `pipeline.ts` `Ablations` | exercised in L4 harness |
+
+## L4 Evaluation harness
+
+| Plan § | Requirement | Kind | Files | Test / verification |
+|---|---|---|---|---|
+| §9 Evaluation | Labeled cases with must-recommend, acceptable, must-not-recommend, potentially missed, probably-not-needed; eight input types | CONFIRMED | `src/eval/types.ts`, `eval/cases/fixture/*.json` (FIXTURE) | `npm run eval` |
+| §9 metrics | Recall at 5, precision at 3, novelty, evidence faithfulness, expansion coverage, not-needed accuracy, Match/Confidence calibration by band, cost per run, p95 latency; harmful picks and invalid ids must be 0 | CONFIRMED | `src/eval/metrics.ts` | `metrics.test.ts` |
+| §9 release gate | Any change reruns the suite; regressions block release | CONFIRMED | `gate()`, `eval/baseline.fixture.json`, CI step `npm run eval` | "fails the gate when a metric regresses" |
+| §25 ablations | No expansion (H2), forward-only (H3), evidence gates off (H4) | CONFIRMED | `scripts/eval.ts` arms | eval output table |
+| §25 H5 technical-wording card | Comprehension test with people | NOT BUILT (needs the UI and human testers) | — | — |
+| §9, §25 baseline | Blind pairs vs a general assistant, neutral format, random order, separate key; win rate | CONFIRMED | `src/eval/blind.ts`, `--export-pairs`, `--score-pairs` | "builds blind pairs…" |
+| §9 | Adversarial inputs (injection) in the suite | CONFIRMED (FIXTURE) | `fx-c-injection.json` | harmful_picks 0 |
+| A-008 | Real labeled set (60–100 cases) and assistant answers | BLOCKED on concierge data | `eval/cases/real/README.md` | — |

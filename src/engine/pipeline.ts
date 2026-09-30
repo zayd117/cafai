@@ -64,6 +64,7 @@ export async function runPipeline(input: RunInput): Promise<RunResult> {
       .filter((n) => n.need_type === "not_relevant")
       .map((n) => ({ capability_id: n.capability_id, reason: "not_relevant_yet" as const, ...(n.reason ? { detail: n.reason } : {}) })),
     present: understanding.needs.filter((n) => n.need_type === "present").map((n) => ({ capability_id: n.capability_id, evidence_ids: n.evidence_ids })),
+    concepts: understanding.concepts,
     gaps: { unmatched_terms: understanding.concepts.filter((c) => c.capability_id === null).map((c) => c.term), capabilities_without_offering: [] },
     degraded: u.failed ? "deterministic_only" : null,
     flags: {

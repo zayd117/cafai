@@ -14,7 +14,8 @@
     "test": "vitest run",
     "catalog:check": "tsx scripts/check-catalog.ts && tsx scripts/check-catalog.ts --fixtures",
     "db:bootstrap": "./scripts/db-bootstrap.sh",
-    "db:migrate": "tsx scripts/migrate.ts"
+    "db:migrate": "tsx scripts/migrate.ts",
+    "eval": "tsx scripts/eval.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.129.0",

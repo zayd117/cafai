@@ -31,4 +31,5 @@ jobs:
       - run: npm run typecheck
       - run: npm run catalog:check
       - run: npm test
+      - run: npm run eval
       - run: npm run build

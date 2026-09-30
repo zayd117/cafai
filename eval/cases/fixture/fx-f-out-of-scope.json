@@ -1,0 +1,25 @@
+{
+  "id": "fx-f-out-of-scope",
+  "fixture": true,
+  "input_type": "F",
+  "text": "What will the weather be tomorrow in Lisbon?",
+  "declared_clients": [],
+  "labels": {
+    "must_recommend": [],
+    "acceptable_offerings": [],
+    "must_not_recommend": [],
+    "potentially_missed": [],
+    "probably_not_needed": [],
+    "expected_outcome": "out_of_scope"
+  },
+  "mock": {
+    "understand": {
+      "in_scope": false,
+      "confidence": "high",
+      "items": [],
+      "concepts": [],
+      "needs": [],
+      "clarifying_question": null
+    }
+  }
+}

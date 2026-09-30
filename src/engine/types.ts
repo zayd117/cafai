@@ -116,6 +116,8 @@ export interface RunResult {
   picks: Pick[];
   not_needed: NotNeeded[];
   present: { capability_id: string; evidence_ids: string[] }[];
+  /** Concept expansion (internal; shown only under "How we understood this", §9). */
+  concepts: { term: string; capability_id: string | null }[];
   gaps: { unmatched_terms: string[]; capabilities_without_offering: string[] };
   degraded: "template_explanations" | "deterministic_only" | null;
   flags: { injection_suspected: boolean; input_truncated: boolean; redactions: number };
