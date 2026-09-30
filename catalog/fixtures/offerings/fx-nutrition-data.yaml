@@ -1,0 +1,56 @@
+# FIXTURE (register A-006): fictional sample for development and tests. Not a real offering; never present as real.
+id: fx-nutrition-data
+fixture: true
+kind: api
+identity:
+  display_name: Sample nutrition data service
+  vendor: Example Co
+capabilities:
+  - food-data-lookup
+need_signals: []
+skip_if:
+  - SAMPLE skip condition for Sample nutrition data service
+resource_profile:
+  provides:
+    - text: "SAMPLE: Sample nutrition data service provides its stated function"
+      evidence: claimed
+      source_url: https://example.com/docs
+      as_of: 2026-09-29
+  requires: []
+  supports: []
+  limits:
+    - text: "SAMPLE: limit stated by the vendor"
+      evidence: observed
+      source_url: https://example.com/docs
+      as_of: 2026-09-29
+distributions:
+  - client: any
+    method: signup
+    url: https://example.com/signup
+    compatibility: declared
+    verified_on: 2026-09-29
+    source_url: https://example.com/docs
+access:
+  auth: api_key
+  credential_needed: a free key from the vendor
+  read_write: read_only
+  access_plain: "SAMPLE: looks up food facts; cannot change anything"
+  effort_plain: "[effort placeholder]"
+runtime:
+  location: not_applicable
+cost:
+  model: free
+  source_url: https://example.com/docs
+  as_of: 2026-09-29
+trust:
+  state: reviewed
+  vendor_official: true
+  namespace_verified: true
+editorial:
+  what_it_is: "SAMPLE: Sample nutrition data service, a fictional offering used to
+    exercise the pipeline."
+  could_help_with: "SAMPLE: a stated job."
+  first_prompt: "SAMPLE: ask your assistant to try it once."
+  reviewer: fixture
+  reviewed_on: 2026-09-29
+last_verified_on: 2026-09-29

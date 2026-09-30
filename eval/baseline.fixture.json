@@ -1,0 +1,42 @@
+{
+  "cases": 4,
+  "capability_recall_at_5": 1,
+  "precision_at_3": 1,
+  "novelty_rate": 0.2,
+  "evidence_faithfulness": 1,
+  "expansion_coverage": 0.6666666666666666,
+  "probably_not_needed_accuracy": 1,
+  "outcome_accuracy": 1,
+  "useful_rate_by_match_band": {
+    "strong": 1,
+    "good": 1,
+    "possible": null
+  },
+  "useful_rate_by_confidence_band": {
+    "high": 1,
+    "medium": 1,
+    "low": null
+  },
+  "harmful_picks": 0,
+  "invalid_ids": 0,
+  "cost_per_run_usd": 0,
+  "latency_p95_ms": 8.925554000000034,
+  "degraded_runs": 0,
+  "by_input_type": {
+    "C": {
+      "cases": 2,
+      "recall_at_5": 1,
+      "precision_at_3": 1
+    },
+    "D": {
+      "cases": 1,
+      "recall_at_5": 1,
+      "precision_at_3": 1
+    },
+    "F": {
+      "cases": 1,
+      "recall_at_5": null,
+      "precision_at_3": null
+    }
+  }
+}

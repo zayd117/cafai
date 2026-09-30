@@ -1,0 +1,57 @@
+# FIXTURE (register A-006): fictional sample for development and tests. Not a real offering; never present as real.
+id: fx-flagged-tool
+fixture: true
+kind: mcp_server
+identity:
+  display_name: Sample flagged tool
+  vendor: Example Co
+capabilities:
+  - click-through-testing
+need_signals: []
+skip_if:
+  - SAMPLE skip condition for Sample flagged tool
+resource_profile:
+  provides:
+    - text: "SAMPLE: Sample flagged tool provides its stated function"
+      evidence: claimed
+      source_url: https://example.com/docs
+      as_of: 2026-09-29
+  requires: []
+  supports: []
+  limits:
+    - text: "SAMPLE: limit stated by the vendor"
+      evidence: observed
+      source_url: https://example.com/docs
+      as_of: 2026-09-29
+distributions:
+  - client: claude_code
+    method: cli_command
+    command: example-cli add sample
+    compatibility: declared
+    verified_on: 2026-09-29
+    source_url: https://example.com/docs
+access:
+  auth: none
+  read_write: read_only
+  data_touched: []
+  access_plain: "SAMPLE: reads sample data; cannot change anything"
+  effort_plain: "[effort placeholder]"
+runtime:
+  location: remote
+cost:
+  model: free
+  source_url: https://example.com/docs
+  as_of: 2026-09-29
+trust:
+  state: flagged
+  vendor_official: false
+  namespace_verified: false
+  notes: SAMPLE credible report; must never appear as a pick.
+editorial:
+  what_it_is: "SAMPLE: Sample flagged tool, a fictional offering used to exercise
+    the pipeline."
+  could_help_with: "SAMPLE: a stated job."
+  first_prompt: "SAMPLE: ask your assistant to try it once."
+  reviewer: fixture
+  reviewed_on: 2026-09-29
+last_verified_on: 2026-09-29

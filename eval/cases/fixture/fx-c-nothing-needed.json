@@ -1,0 +1,48 @@
+{
+  "id": "fx-c-nothing-needed",
+  "fixture": true,
+  "input_type": "C",
+  "text": "I already keep a project notes file so Claude Code knows what the app is for.",
+  "declared_clients": [
+    "claude_code"
+  ],
+  "labels": {
+    "must_recommend": [],
+    "acceptable_offerings": [],
+    "must_not_recommend": [
+      "fx-flagged-tool"
+    ],
+    "potentially_missed": [],
+    "probably_not_needed": [
+      "project-notes-file"
+    ],
+    "expected_outcome": "nothing_needed"
+  },
+  "mock": {
+    "understand": {
+      "in_scope": true,
+      "confidence": "high",
+      "items": [
+        {
+          "id": "m1",
+          "kind": "current_tool",
+          "text": "You already keep a project notes file",
+          "quote": "I already keep a project notes file"
+        }
+      ],
+      "concepts": [],
+      "needs": [
+        {
+          "capability_id": "project-notes-file",
+          "need_type": "present",
+          "evidence_ids": [
+            "m1"
+          ]
+        }
+      ],
+      "clarifying_question": null
+    },
+    "judge": "all_direct",
+    "explain": "template"
+  }
+}

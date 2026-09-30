@@ -1,0 +1,98 @@
+{
+  "id": "fx-d-calorie-tracker",
+  "fixture": true,
+  "input_type": "D",
+  "text": "I'm making a calorie and macro tracker app for phones. I use Claude Code. I don't really know what I need.",
+  "declared_clients": [
+    "claude_code"
+  ],
+  "labels": {
+    "must_recommend": [
+      "food-data-lookup",
+      "app-data-storage"
+    ],
+    "acceptable_offerings": [
+      "fx-notes-file"
+    ],
+    "must_not_recommend": [
+      "fx-flagged-tool",
+      "payments"
+    ],
+    "potentially_missed": [
+      "click-through-testing"
+    ],
+    "probably_not_needed": [
+      "payments"
+    ]
+  },
+  "mock": {
+    "understand": {
+      "in_scope": true,
+      "confidence": "high",
+      "items": [
+        {
+          "id": "m1",
+          "kind": "goal",
+          "text": "An app where people log meals and see calories and macros",
+          "quote": "calorie and macro tracker app for phones"
+        },
+        {
+          "id": "m2",
+          "kind": "environment",
+          "text": "You use Claude Code",
+          "quote": "I use Claude Code"
+        }
+      ],
+      "concepts": [
+        {
+          "term": "nutrition data",
+          "capability_id": "food-data-lookup"
+        },
+        {
+          "term": "barcode scanning",
+          "capability_id": null
+        }
+      ],
+      "needs": [
+        {
+          "capability_id": "food-data-lookup",
+          "need_type": "implied",
+          "evidence_ids": [
+            "m1"
+          ]
+        },
+        {
+          "capability_id": "app-data-storage",
+          "need_type": "implied",
+          "evidence_ids": [
+            "m1"
+          ]
+        },
+        {
+          "capability_id": "project-notes-file",
+          "need_type": "implied",
+          "evidence_ids": [
+            "m2"
+          ]
+        },
+        {
+          "capability_id": "click-through-testing",
+          "need_type": "latent",
+          "evidence_ids": [
+            "m1"
+          ],
+          "signal_id": "click-through-testing#0"
+        },
+        {
+          "capability_id": "payments",
+          "need_type": "not_relevant",
+          "evidence_ids": [],
+          "reason": "Nothing is sold yet"
+        }
+      ],
+      "clarifying_question": null
+    },
+    "judge": "all_direct",
+    "explain": "template"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "name": "cafai",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "catalog:check": "tsx scripts/check-catalog.ts && tsx scripts/check-catalog.ts --fixtures",
+    "db:bootstrap": "./scripts/db-bootstrap.sh",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "eval": "tsx scripts/eval.ts",
+    "flow": "node scripts/flow.mjs",
+    "a11y": "node scripts/a11y.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.129.0",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "next": "^16.3.7",
+    "pg": "^8.23.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@types/node": "^22.20.4",
+    "@types/pg": "^8.23.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "playwright-core": "^1.63.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.2"
+  }
+}

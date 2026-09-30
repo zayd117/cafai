@@ -1,0 +1,28 @@
+# REAL DATA: the three first clients (register A-002), handoff mechanics copied from plan §13 ("VERIFIED", 29 Sep 2026).
+# Nothing here goes beyond §13. Native capabilities per client are not specified by the plan, so they are omitted.
+- id: claude_code
+  name: Claude Code
+  install_methods: [cli_command, plugin_marketplace]
+  handoff:
+    - "claude mcp add --transport http <name> <url>, or --transport stdio, with local, project or user scope."
+    - "Project servers need approval in interactive sessions but load without it in claude -p, SDK and cloud sessions."
+    - "Plugins install through claude plugin marketplace add, then claude plugin install."
+  source: "Master Plan v3.1 section 13, handoff mechanics per client (VERIFIED 29 Sep 2026)"
+  verified_on: 2026-09-29
+- id: cursor
+  name: Cursor
+  install_methods: [deeplink]
+  handoff:
+    - "A cursor://anysphere.cursor-deeplink/mcp/install?name=...&config=... link carrying base64 JSON."
+    - "Caf.ai decodes and shows that config before offering the link."
+  source: "Master Plan v3.1 section 13, handoff mechanics per client (VERIFIED 29 Sep 2026)"
+  verified_on: 2026-09-29
+- id: claude_desktop
+  name: Claude Desktop
+  install_methods: [connector]
+  handoff:
+    - "The connectors directory, or a custom connector URL."
+  plan_limits:
+    - "Every plan has custom connectors; Free is limited to one."
+  source: "Master Plan v3.1 section 13, 'Claude web, Desktop and mobile' (VERIFIED 29 Sep 2026)"
+  verified_on: 2026-09-29
