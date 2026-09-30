@@ -1,0 +1,254 @@
+[
+ {
+  "id": "t13",
+  "topic": "video editing",
+  "text": "I'm putting together a small workflow to turn my raw hiking and travel footage into short highlight reels for Instagram. I need to be able to search my clips for things like \"sunset over the ridge,\" have the best moments pulled out and stitched together with titles, and keep a simple spreadsheet of which videos I've already posted.",
+  "known": {
+   "slug": "burningion-video-editing-mcp",
+   "title": "io.github.burningion/video-editing-mcp"
+  }
+ },
+ {
+  "id": "t14",
+  "topic": "slack messaging",
+  "text": "I'm building a small home-and-family helper that watches my garden sensors and my weekly chore schedule, then sends me and my relatives reminders and alerts. Everyone prefers a different app, some on Telegram, some on Discord or email, and my mom in Korea only uses KakaoTalk, so it has to reach each person where they already are and also keep a simple log of what was sent.",
+  "known": {
+   "slug": "fieldcure-outbox",
+   "title": "io.github.fieldcure/outbox"
+  }
+ },
+ {
+  "id": "t15",
+  "topic": "domain names",
+  "text": "I'm launching a small online shop selling handmade candles and I still need a brand name. I want to brainstorm name ideas, see which ones have a domain available in different endings like .com or .shop, and make sure the same name is free on Instagram and TikTok before I design a logo and set up the store.",
+  "known": {
+   "slug": "onymu",
+   "title": "Onymu"
+  }
+ },
+ {
+  "id": "t16",
+  "topic": "calendar scheduling",
+  "text": "I'm building a personal daily planner for myself because I have ADHD and normal to-do lists never work for me. I want to see my whole day as a circle, block out time for tasks, track how long things actually take, and get gentle reminders when it's time to switch to the next thing.",
+  "known": {
+   "slug": "reassign",
+   "title": "app.reassign/reassign"
+  }
+ },
+ {
+  "id": "t17",
+  "topic": "chatbot",
+  "text": "I'm building a small online shop in Germany selling handmade ceramics, and I want a friendly chat window on my site that answers common questions about shipping and returns and collects email addresses from people who want to be notified about new collections. I also need a simple way to see those leads, send a monthly newsletter, and keep track of orders.",
+  "known": {
+   "slug": "smartwebchat-chatbots-fad2a2",
+   "title": "Smartwebchat"
+  }
+ },
+ {
+  "id": "t18",
+  "topic": "qr codes",
+  "text": "I'm setting up a small Airbnb-style guest guide for my two rental cabins, with a printed welcome booklet and a simple webpage. I need nice-looking QR codes guests can scan to join the WiFi, open the house manual, and save my contact info, and I'd like to see roughly how often each one gets scanned.",
+  "known": {
+   "slug": "theqrcode-qr-code-generator",
+   "title": "TheQRCode.io"
+  }
+ },
+ {
+  "id": "t19",
+  "topic": "social media posting",
+  "text": "I'm starting a small candle business and I want to build a simple dashboard for running our social media. It should help me come up with post ideas and captions, schedule them to go out on Instagram, TikTok, Facebook and a few other sites, and show me which posts get the most likes so I know what to make more of.",
+  "known": {
+   "slug": "shensi8312-blogburst-mcp-server",
+   "title": "io.github.shensi8312/blogburst-mcp-server"
+  }
+ },
+ {
+  "id": "t20",
+  "topic": "public holidays",
+  "text": "I'm building a little web app for my family and a few friends in Germany and Austria that helps us decide when to take time off next year. It should show which days to book so we get the longest breaks around holidays and bridge days, let each person enter their remaining vacation days, and put the final plan into a shared calendar.",
+  "known": {
+   "slug": "urlaub-smart-planner",
+   "title": "Urlaub Smart"
+  }
+ },
+ {
+  "id": "t21",
+  "topic": "text recognition from images",
+  "text": "I'm building a little app to help my family organize years of paperwork, like scanned receipts, old medical bills, and PDF statements. I want to pull the text out of all of them, including photos of paper documents, then sort them into folders by type and let me search by keyword and date.",
+  "known": {
+   "slug": "filegraph-document-processing",
+   "title": "ai.filegraph/document-processing"
+  }
+ },
+ {
+  "id": "t22",
+  "topic": "music playback",
+  "text": "I'm building a little home assistant for myself that helps me manage my music habits, like making playlists for workouts and road trips from songs I already like and finding new albums that match. I want to be able to ask it in plain words to search the Apple Music catalog, add songs to my library, and start playing something, and also have it keep track of my listening notes in a simple spreadsheet.",
+  "known": {
+   "slug": "epheterson-applemusic-mcp",
+   "title": "io.github.epheterson/applemusic-mcp"
+  }
+ },
+ {
+  "id": "t23",
+  "topic": "sports scores",
+  "text": "I'm building a weekend dashboard for me and my friends' fantasy and pick'em league that shows upcoming games, live scores, and the betting odds for NFL, NBA, and a few other sports. I also want it to give a simple explanation of why a pick looks strong, let everyone save their picks, and keep a running leaderboard.",
+  "known": {
+   "slug": "lumify-sports-intelligence",
+   "title": "Lumify Sports Intelligence"
+  }
+ },
+ {
+  "id": "t24",
+  "topic": "book library",
+  "text": "I'm putting together a self-study plan to go from junior developer to a more senior software engineer over the next year. I want a simple app where I can look up good engineering books, see what each one covers, and build a reading order by topic like system design, testing, and clean code, while also tracking my progress and notes.",
+  "known": {
+   "slug": "aiengineerprofessional-engineerpro-library",
+   "title": "com.aiengineerprofessional/engineerpro-library"
+  }
+ },
+ {
+  "id": "t25",
+  "topic": "currency exchange",
+  "text": "I'm building a simple budgeting app for my family's upcoming trip through Europe and the UK, where I log each expense in whatever currency I paid in and see it converted to US dollars. It also needs to show a running trip total, split costs between people, and export everything to a spreadsheet at the end.",
+  "known": {
+   "slug": "theluckystrike-currency-exchange",
+   "title": "io.github.theluckystrike/currency-exchange"
+  }
+ },
+ {
+  "id": "t26",
+  "topic": "cryptocurrency",
+  "text": "I'm building a little desktop dashboard for myself that shows a random motivational quote each morning next to the current prices of Bitcoin and Ethereum, and I want it to update through the day. It should also let me save my favorite quotes to a list and send me a simple daily summary email.",
+  "known": {
+   "slug": "jgpas-mcp-first-server",
+   "title": "James's MCP Server"
+  }
+ },
+ {
+  "id": "t27",
+  "topic": "flight status",
+  "text": "I'm building a little travel helper for my family because we fly between Atlanta and three different cities to see relatives. I want it to look up flight options and prices for our dates, tell me if a flight is on time or delayed the morning we leave, and keep all our upcoming trips in one simple list with packing reminders and a shared calendar.",
+  "known": {
+   "slug": "markswendsen-code-delta",
+   "title": "io.github.markswendsen-code/delta"
+  }
+ },
+ {
+  "id": "t28",
+  "topic": "recipes",
+  "text": "I'm building a meal planning app for my family that lives between France and Spain, where we can look up dinner ideas in French, English or Spanish and have the ingredient amounts adjust for how many people are eating. It should also save our favorite meals, make a weekly calendar, and build a combined shopping list.",
+  "known": {
+   "slug": "smeet666-mcp-recipes",
+   "title": "io.github.smeet666/mcp-recipes"
+  }
+ },
+ {
+  "id": "t29",
+  "topic": "time tracking",
+  "text": "I'm starting out as a freelance illustrator and want to build a little app for myself that shows how many hours I spend on each client's job, so I can quote prices better and send invoices. I need to start and stop a timer for each project, add missed time by hand, see weekly totals, and export everything to a spreadsheet, with my data kept on my own computer.",
+  "known": {
+   "slug": "theluckystrike-timer-tracking",
+   "title": "io.github.theluckystrike/timer-tracking"
+  }
+ },
+ {
+  "id": "t30",
+  "topic": "weather forecast",
+  "text": "I'm building a small garden planner app for my backyard that tells me when to water, plant, or cover my vegetables based on the weather. It needs to show the forecast for my town, compare it with what the weather was like over the past few weeks, and also let me keep a simple journal of what I planted and when.",
+  "known": {
+   "slug": "nordicmcp-weather",
+   "title": "NordicMCP — Weather"
+  }
+ },
+ {
+  "id": "t31",
+  "topic": "note taking",
+  "text": "I'm setting up a personal knowledge base where I keep meeting notes, book highlights, and random ideas as plain text files that I can search and link together. I'd like to chat with an AI assistant to add new notes, find old ones, and tag them, and I also want everything backed up to a private git repo and easy to read on my phone.",
+  "known": {
+   "slug": "emcd-nb-mcp-server",
+   "title": "nb-mcp-server"
+  }
+ },
+ {
+  "id": "t32",
+  "topic": "home automation",
+  "text": "I'm setting up a smart home in my new apartment and want everything to run from one place: lights, thermostat, and door sensors that trigger automations like turning off everything when I leave. I also need a clean dashboard for my tablet on the wall, plus an easy way to manage my config files and add-ons without digging through menus all the time.",
+  "known": {
+   "slug": "jarahkon-hass-mcp-server",
+   "title": "Home Assistant MCP Server"
+  }
+ },
+ {
+  "id": "t33",
+  "topic": "pdf documents",
+  "text": "I'm building a small web app for my freelance design business where clients can fill out a form to get a project quote, and then it turns their answers into a nicely formatted contract PDF. I also need the client to sign it online, and I want all the signed contracts saved in one place so I can find them later.",
+  "known": {
+   "slug": "pdfgate-mcp-server",
+   "title": "com.pdfgate/mcp-server"
+  }
+ },
+ {
+  "id": "t34",
+  "topic": "text to speech",
+  "text": "I'm making a little 3D talking character for my website that greets visitors, listens to what they say out loud, and answers back in a natural voice with its mouth moving in sync. I also want it to do a few body animations like waving, and I still need to figure out the chat brain and how to put it on the page.",
+  "known": {
+   "slug": "nirholas-audio-mcp",
+   "title": "three.ws Audio"
+  }
+ },
+ {
+  "id": "t35",
+  "topic": "maps and directions",
+  "text": "I'm building a small web app to help tourists plan a weekend trip around Rajasthan, where they type in a city and get a list of nearby hotels, restaurants and sights plus driving directions between stops. It should also let them save a day's itinerary and share it with friends over WhatsApp.",
+  "known": {
+   "slug": "bhuvnsh-mcp-mapmyindia",
+   "title": "io.github.bhuvnsh/mcp-mapmyindia"
+  }
+ },
+ {
+  "id": "t36",
+  "topic": "travel booking",
+  "text": "I'm building a little trip planning assistant for me and my friends that helps us plan weekend getaways. We tell it our dates, budget, and what we like to do, and it should suggest places to stay and things to see, then put together a simple day-by-day plan we can share in a group chat.",
+  "known": {
+   "slug": "thenextgennexus-travel-mcp-server",
+   "title": "com.thenextgennexus/travel-mcp-server"
+  }
+ },
+ {
+  "id": "t37",
+  "topic": "github repositories",
+  "text": "I'm building a personal assistant setup where my AI chat app can look up my notes, check my calendar, and search a small recipe collection I keep in a few GitHub repos. I want to get the code for those helpers online and running without learning how to manage hosting myself, plus keep them updated whenever I change something.",
+  "known": {
+   "slug": "arlet-mcp",
+   "title": "Arlet"
+  }
+ },
+ {
+  "id": "t38",
+  "topic": "cloud file storage",
+  "text": "I'm putting together a small photo and document archive for my family's genealogy research, and I want everything stored online so my cousins can get to it from anywhere. I need to upload scanned files, organize them into folders by family branch, list and read what's already there, and later add a simple search page so people can find old records.",
+  "known": {
+   "slug": "pulsemcp-remote-filesystem",
+   "title": "com.pulsemcp/remote-filesystem"
+  }
+ },
+ {
+  "id": "t39",
+  "topic": "security scanning",
+  "text": "I'm putting together a small internal assistant for my team that connects to a handful of third-party plugins so it can pull data from our calendar, docs, and ticket system. Before anything goes live I want to check each plugin for security problems like hidden malicious instructions or unsafe permissions, and I also need a simple login setup and a log of what the assistant does.",
+  "known": {
+   "slug": "gentaarnezzi-mcpsentinel",
+   "title": "MCPSentinel"
+  }
+ },
+ {
+  "id": "t40",
+  "topic": "spreadsheet editing",
+  "text": "I'm putting together a monthly budget tracker for my small bakery, where I paste in sales and expense numbers each week and the workbook needs to update totals, profit by product, and a simple forecast for next month. I also want help checking that the formulas are right and nothing gets broken when I change things, plus a short summary email I can send to my business partner.",
+  "known": {
+   "slug": "psu3d0-spreadsheet-mcp",
+   "title": "spreadsheet-kit MCP"
+  }
+ }
+]

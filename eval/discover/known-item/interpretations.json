@@ -1,0 +1,3223 @@
+{
+ "t13": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a way to search my video clips by describing what is in them"
+   },
+   {
+    "id": "i1",
+    "text": "a way to pick out the best moments and cut them together"
+   },
+   {
+    "id": "i2",
+    "text": "a way to add titles and captions to the reels"
+   },
+   {
+    "id": "i3",
+    "text": "a way to post or export short videos for Instagram"
+   },
+   {
+    "id": "i4",
+    "text": "a simple spreadsheet to track which videos I've posted"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "video search by description"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "find moments in videos"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "video content search"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "semantic video search"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "video highlight generator"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "auto edit video clips"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "video editing automation"
+   },
+   {
+    "id": "q7",
+    "item_id": "i1",
+    "text": "stitch clips together"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "add titles to video"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "video caption generator"
+   },
+   {
+    "id": "q10",
+    "item_id": "i2",
+    "text": "text overlay video"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "instagram reels upload"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "export vertical video"
+   },
+   {
+    "id": "q13",
+    "item_id": "i3",
+    "text": "social video publishing"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "spreadsheet database"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "google sheets integration"
+   },
+   {
+    "id": "q16",
+    "item_id": "i4",
+    "text": "content posting tracker"
+   }
+  ]
+ },
+ "t14": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a way to read my garden sensors"
+   },
+   {
+    "id": "i1",
+    "text": "a place to keep my weekly chore schedule"
+   },
+   {
+    "id": "i2",
+    "text": "a way to send reminders and alerts to family members"
+   },
+   {
+    "id": "i3",
+    "text": "a way to reach people on Telegram, Discord, email and KakaoTalk"
+   },
+   {
+    "id": "i4",
+    "text": "a simple log of what was sent"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "garden sensor data"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "soil moisture sensor"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "iot sensor readings"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "home sensor integration"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "chore schedule manager"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "family task scheduler"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "recurring task planner"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "send notification alerts"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "reminder notification service"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "multi channel notifications"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "telegram bot messaging"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "discord message sender"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "kakaotalk messaging"
+   },
+   {
+    "id": "q13",
+    "item_id": "i3",
+    "text": "send email notifications"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "notification history log"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "message audit log"
+   },
+   {
+    "id": "q16",
+    "item_id": "i4",
+    "text": "send log tracking"
+   }
+  ]
+ },
+ "t15": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "help brainstorming brand name ideas"
+   },
+   {
+    "id": "i1",
+    "text": "a way to check if a domain name is available with .com, .shop and other endings"
+   },
+   {
+    "id": "i2",
+    "text": "a way to check if the name is free on Instagram and TikTok"
+   },
+   {
+    "id": "i3",
+    "text": "a way to design a logo"
+   },
+   {
+    "id": "i4",
+    "text": "a way to set up an online store"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "brand name generator"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "business name ideas"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "startup name brainstorm"
+   },
+   {
+    "id": "q3",
+    "item_id": "i1",
+    "text": "domain availability check"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "domain name search"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "check domain registration"
+   },
+   {
+    "id": "q6",
+    "item_id": "i2",
+    "text": "social media username check"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "instagram handle availability"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "tiktok username availability"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "brand name social check"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "logo generator"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "logo design tool"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "brand identity design"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "online store builder"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "ecommerce shop setup"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "shopify store"
+   },
+   {
+    "id": "q16",
+    "item_id": "i4",
+    "text": "handmade goods shop"
+   }
+  ]
+ },
+ "t16": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a daily view of my whole day as a circle"
+   },
+   {
+    "id": "i1",
+    "text": "a way to block out time for tasks"
+   },
+   {
+    "id": "i2",
+    "text": "a way to track how long tasks actually take"
+   },
+   {
+    "id": "i3",
+    "text": "gentle reminders when it is time to switch tasks"
+   },
+   {
+    "id": "i4",
+    "text": "a simple to-do list that works for ADHD"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "circular daily planner"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "day planner visual"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "time blocking calendar"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "visual timeline day"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "time blocking tasks"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "task scheduler calendar"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "schedule tasks in calendar"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "time tracking timer"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "task duration tracker"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "track time spent"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "task switch reminder"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "reminder notifications"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "focus timer pomodoro"
+   },
+   {
+    "id": "q13",
+    "item_id": "i3",
+    "text": "adhd productivity tools"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "adhd to do list"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "task manager simple"
+   },
+   {
+    "id": "q16",
+    "item_id": "i4",
+    "text": "daily task planner"
+   }
+  ]
+ },
+ "t17": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a friendly chat window on my website that answers shipping and return questions"
+   },
+   {
+    "id": "i1",
+    "text": "a way to collect email addresses from visitors"
+   },
+   {
+    "id": "i2",
+    "text": "a way to see and manage those leads"
+   },
+   {
+    "id": "i3",
+    "text": "a way to send a monthly newsletter"
+   },
+   {
+    "id": "i4",
+    "text": "a way to keep track of orders"
+   },
+   {
+    "id": "i5",
+    "text": "support for shops in Germany"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "website chatbot widget"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "customer support chatbot"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "faq chatbot"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "shop chat assistant"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "lead capture form"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "email signup form"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "collect email leads"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "lead management crm"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "contact list manager"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "simple crm"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "newsletter sending"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "email marketing tool"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "email campaign"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "order management"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "ecommerce orders tracking"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "shop order tracker"
+   },
+   {
+    "id": "q16",
+    "item_id": "i5",
+    "text": "german ecommerce"
+   },
+   {
+    "id": "q17",
+    "item_id": "i5",
+    "text": "shop in germany"
+   },
+   {
+    "id": "q18",
+    "item_id": "i5",
+    "text": "eu shop compliance"
+   }
+  ]
+ },
+ "t18": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "nice-looking QR codes guests can scan"
+   },
+   {
+    "id": "i1",
+    "text": "a QR code that joins the WiFi"
+   },
+   {
+    "id": "i2",
+    "text": "a QR code that opens a house manual or webpage"
+   },
+   {
+    "id": "i3",
+    "text": "a QR code that saves my contact info"
+   },
+   {
+    "id": "i4",
+    "text": "a way to see how often each QR code is scanned"
+   },
+   {
+    "id": "i5",
+    "text": "a simple webpage for the guest guide"
+   },
+   {
+    "id": "i6",
+    "text": "a printed welcome booklet"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "qr code generator"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "custom qr code design"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "styled qr codes"
+   },
+   {
+    "id": "q3",
+    "item_id": "i1",
+    "text": "wifi qr code"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "wifi network sharing"
+   },
+   {
+    "id": "q5",
+    "item_id": "i2",
+    "text": "qr code link"
+   },
+   {
+    "id": "q6",
+    "item_id": "i2",
+    "text": "dynamic qr code"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "qr code for website"
+   },
+   {
+    "id": "q8",
+    "item_id": "i3",
+    "text": "vcard qr code"
+   },
+   {
+    "id": "q9",
+    "item_id": "i3",
+    "text": "contact card qr"
+   },
+   {
+    "id": "q10",
+    "item_id": "i4",
+    "text": "qr code scan analytics"
+   },
+   {
+    "id": "q11",
+    "item_id": "i4",
+    "text": "track qr scans"
+   },
+   {
+    "id": "q12",
+    "item_id": "i4",
+    "text": "qr code statistics"
+   },
+   {
+    "id": "q13",
+    "item_id": "i5",
+    "text": "simple website builder"
+   },
+   {
+    "id": "q14",
+    "item_id": "i5",
+    "text": "landing page builder"
+   },
+   {
+    "id": "q15",
+    "item_id": "i5",
+    "text": "guest guide page"
+   },
+   {
+    "id": "q16",
+    "item_id": "i6",
+    "text": "pdf booklet generator"
+   },
+   {
+    "id": "q17",
+    "item_id": "i6",
+    "text": "print ready pdf"
+   },
+   {
+    "id": "q18",
+    "item_id": "i6",
+    "text": "document to pdf"
+   }
+  ]
+ },
+ "t19": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "ideas for social media posts and captions"
+   },
+   {
+    "id": "i1",
+    "text": "a way to schedule posts on Instagram, TikTok, Facebook and other sites"
+   },
+   {
+    "id": "i2",
+    "text": "a dashboard showing which posts get the most likes"
+   },
+   {
+    "id": "i3",
+    "text": "a way to see what to make more of"
+   },
+   {
+    "id": "i4",
+    "text": "a simple dashboard to run it all"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "social media post ideas"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "caption generator"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "content idea generator"
+   },
+   {
+    "id": "q3",
+    "item_id": "i1",
+    "text": "social media scheduler"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "schedule instagram posts"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "multi platform social posting"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "tiktok post scheduling"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "social media analytics"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "post engagement analytics"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "instagram insights"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "content performance report"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "top performing posts"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "social listening"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "social media dashboard"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "marketing dashboard"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "social management tool"
+   }
+  ]
+ },
+ "t20": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a list of public holidays in Germany and Austria"
+   },
+   {
+    "id": "i1",
+    "text": "a way to work out which days to book for the longest breaks"
+   },
+   {
+    "id": "i2",
+    "text": "a way for each person to enter their remaining vacation days"
+   },
+   {
+    "id": "i3",
+    "text": "a shared calendar to put the final plan in"
+   },
+   {
+    "id": "i4",
+    "text": "a simple web page where everyone can see the plan"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "public holidays germany"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "holiday calendar api"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "austria holidays"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "national holidays"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "vacation planner bridge days"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "optimize days off"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "bridge day calculator"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "leave balance tracker"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "vacation days tracker"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "pto tracker"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "shared calendar"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "google calendar integration"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "calendar event creator"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "simple web app builder"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "shareable plan page"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "group planning app"
+   }
+  ]
+ },
+ "t21": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a way to read text from scanned documents and photos"
+   },
+   {
+    "id": "i1",
+    "text": "a way to read text from PDF files"
+   },
+   {
+    "id": "i2",
+    "text": "a way to sort documents into folders by type"
+   },
+   {
+    "id": "i3",
+    "text": "a way to search documents by keyword and date"
+   },
+   {
+    "id": "i4",
+    "text": "a place to store the documents"
+   },
+   {
+    "id": "i5",
+    "text": "pulling dates and amounts out of receipts and bills"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "ocr text extraction"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "scan to text"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "extract text from images"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "document ocr"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "pdf text extraction"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "pdf parser"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "read pdf documents"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "document classification"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "auto file organizer"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "sort files into folders"
+   },
+   {
+    "id": "q10",
+    "item_id": "i2",
+    "text": "file organization"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "document search"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "full text search files"
+   },
+   {
+    "id": "q13",
+    "item_id": "i3",
+    "text": "search by date"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "file storage"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "cloud document storage"
+   },
+   {
+    "id": "q16",
+    "item_id": "i4",
+    "text": "document management"
+   },
+   {
+    "id": "q17",
+    "item_id": "i5",
+    "text": "receipt parser"
+   },
+   {
+    "id": "q18",
+    "item_id": "i5",
+    "text": "invoice data extraction"
+   },
+   {
+    "id": "q19",
+    "item_id": "i5",
+    "text": "bill data extraction"
+   }
+  ]
+ },
+ "t22": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a way to search the Apple Music catalog"
+   },
+   {
+    "id": "i1",
+    "text": "a way to add songs to my music library"
+   },
+   {
+    "id": "i2",
+    "text": "a way to start playing music from plain-language requests"
+   },
+   {
+    "id": "i3",
+    "text": "a way to make playlists for workouts and road trips"
+   },
+   {
+    "id": "i4",
+    "text": "a way to discover new albums that match my taste"
+   },
+   {
+    "id": "i5",
+    "text": "a simple spreadsheet for my listening notes"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "apple music search"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "music catalog search"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "apple music api"
+   },
+   {
+    "id": "q3",
+    "item_id": "i1",
+    "text": "add songs to library"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "music library manager"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "apple music library"
+   },
+   {
+    "id": "q6",
+    "item_id": "i2",
+    "text": "play music voice command"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "music player control"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "natural language music"
+   },
+   {
+    "id": "q9",
+    "item_id": "i3",
+    "text": "playlist generator"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "create playlists"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "workout playlist"
+   },
+   {
+    "id": "q12",
+    "item_id": "i4",
+    "text": "music recommendations"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "album discovery"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "similar artists finder"
+   },
+   {
+    "id": "q15",
+    "item_id": "i5",
+    "text": "spreadsheet notes"
+   },
+   {
+    "id": "q16",
+    "item_id": "i5",
+    "text": "google sheets"
+   },
+   {
+    "id": "q17",
+    "item_id": "i5",
+    "text": "notes database"
+   }
+  ]
+ },
+ "t23": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "upcoming game schedules for NFL, NBA and other sports"
+   },
+   {
+    "id": "i1",
+    "text": "live scores"
+   },
+   {
+    "id": "i2",
+    "text": "betting odds"
+   },
+   {
+    "id": "i3",
+    "text": "a simple explanation of why a pick looks strong"
+   },
+   {
+    "id": "i4",
+    "text": "a way for everyone to save their picks"
+   },
+   {
+    "id": "i5",
+    "text": "a running leaderboard"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "sports schedule"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "nfl schedule api"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "nba games schedule"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "upcoming games"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "live sports scores"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "real time scores api"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "scoreboard data"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "sports betting odds"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "odds api"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "point spread data"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "sports analytics picks"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "game prediction"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "matchup analysis"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "pick em app"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "save picks database"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "user picks storage"
+   },
+   {
+    "id": "q16",
+    "item_id": "i5",
+    "text": "leaderboard tracker"
+   },
+   {
+    "id": "q17",
+    "item_id": "i5",
+    "text": "league standings"
+   },
+   {
+    "id": "q18",
+    "item_id": "i5",
+    "text": "fantasy league scoring"
+   }
+  ]
+ },
+ "t24": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a way to look up good engineering books"
+   },
+   {
+    "id": "i1",
+    "text": "details of what each book covers"
+   },
+   {
+    "id": "i2",
+    "text": "a reading order built by topic"
+   },
+   {
+    "id": "i3",
+    "text": "tracking my reading progress"
+   },
+   {
+    "id": "i4",
+    "text": "a place for my notes"
+   },
+   {
+    "id": "i5",
+    "text": "guidance on system design, testing and clean code"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "book search"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "technical books catalog"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "programming book recommendations"
+   },
+   {
+    "id": "q3",
+    "item_id": "i1",
+    "text": "book details summary"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "book metadata"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "table of contents"
+   },
+   {
+    "id": "q6",
+    "item_id": "i2",
+    "text": "reading list builder"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "learning path planner"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "study plan generator"
+   },
+   {
+    "id": "q9",
+    "item_id": "i3",
+    "text": "reading progress tracker"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "book tracker"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "study progress"
+   },
+   {
+    "id": "q12",
+    "item_id": "i4",
+    "text": "note taking"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "notes app"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "knowledge notes"
+   },
+   {
+    "id": "q15",
+    "item_id": "i5",
+    "text": "system design learning"
+   },
+   {
+    "id": "q16",
+    "item_id": "i5",
+    "text": "software engineering resources"
+   },
+   {
+    "id": "q17",
+    "item_id": "i5",
+    "text": "clean code guide"
+   }
+  ]
+ },
+ "t25": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a way to convert between currencies"
+   },
+   {
+    "id": "i1",
+    "text": "a way to log each expense in the currency I paid in"
+   },
+   {
+    "id": "i2",
+    "text": "a running trip total in US dollars"
+   },
+   {
+    "id": "i3",
+    "text": "a way to split costs between people"
+   },
+   {
+    "id": "i4",
+    "text": "a way to export everything to a spreadsheet"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "currency converter"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "exchange rates api"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "foreign exchange rates"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "currency exchange"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "expense tracker"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "track spending"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "travel expense log"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "budget tracker"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "spending totals"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "trip budget"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "split expenses"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "bill splitting"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "shared expenses"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "export to spreadsheet"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "csv export"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "excel export"
+   },
+   {
+    "id": "q16",
+    "item_id": "i4",
+    "text": "google sheets export"
+   }
+  ]
+ },
+ "t26": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a random motivational quote each morning"
+   },
+   {
+    "id": "i1",
+    "text": "current prices of Bitcoin and Ethereum"
+   },
+   {
+    "id": "i2",
+    "text": "a way to update through the day"
+   },
+   {
+    "id": "i3",
+    "text": "a list to save favorite quotes"
+   },
+   {
+    "id": "i4",
+    "text": "a daily summary email"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "random quote generator"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "motivational quotes"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "daily quote api"
+   },
+   {
+    "id": "q3",
+    "item_id": "i1",
+    "text": "bitcoin price"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "crypto prices api"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "ethereum price"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "cryptocurrency market data"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "scheduled updates"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "periodic refresh"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "real time data updates"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "save favorites list"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "bookmarks storage"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "simple database"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "send email"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "email summary report"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "scheduled email"
+   }
+  ]
+ },
+ "t27": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a way to look up flight options and prices"
+   },
+   {
+    "id": "i1",
+    "text": "a way to check if a flight is on time or delayed"
+   },
+   {
+    "id": "i2",
+    "text": "a list of all our upcoming trips"
+   },
+   {
+    "id": "i3",
+    "text": "packing reminders"
+   },
+   {
+    "id": "i4",
+    "text": "a shared calendar"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "flight search"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "flight prices api"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "cheap flights search"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "airfare comparison"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "flight status"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "flight delay tracker"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "real time flight tracking"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "trip planner"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "itinerary manager"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "travel itinerary"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "packing list"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "travel checklist"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "reminders"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "shared calendar"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "calendar integration"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "family calendar"
+   }
+  ]
+ },
+ "t28": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a way to look up dinner ideas in French, English and Spanish"
+   },
+   {
+    "id": "i1",
+    "text": "ingredient amounts that adjust for how many people are eating"
+   },
+   {
+    "id": "i2",
+    "text": "a way to save favorite meals"
+   },
+   {
+    "id": "i3",
+    "text": "a weekly meal calendar"
+   },
+   {
+    "id": "i4",
+    "text": "a combined shopping list"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "recipe search"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "multilingual recipes"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "french recipes"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "spanish recipes"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "recipe scaling"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "adjust serving size"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "ingredient calculator"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "save recipes"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "favorite recipes"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "recipe collection"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "meal planner calendar"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "weekly meal plan"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "menu planning"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "shopping list generator"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "grocery list"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "shopping list app"
+   }
+  ]
+ },
+ "t29": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a timer I can start and stop for each project"
+   },
+   {
+    "id": "i1",
+    "text": "a way to add missed time by hand"
+   },
+   {
+    "id": "i2",
+    "text": "weekly totals of hours per client"
+   },
+   {
+    "id": "i3",
+    "text": "a way to work out prices and send invoices"
+   },
+   {
+    "id": "i4",
+    "text": "export to a spreadsheet"
+   },
+   {
+    "id": "i5",
+    "text": "keeping my data on my own computer"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "time tracker"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "project timer"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "start stop timer"
+   },
+   {
+    "id": "q3",
+    "item_id": "i1",
+    "text": "manual time entry"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "edit time entries"
+   },
+   {
+    "id": "q5",
+    "item_id": "i2",
+    "text": "weekly time report"
+   },
+   {
+    "id": "q6",
+    "item_id": "i2",
+    "text": "hours per client"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "time report"
+   },
+   {
+    "id": "q8",
+    "item_id": "i3",
+    "text": "invoice generator"
+   },
+   {
+    "id": "q9",
+    "item_id": "i3",
+    "text": "freelance invoicing"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "quote calculator"
+   },
+   {
+    "id": "q11",
+    "item_id": "i4",
+    "text": "export to spreadsheet"
+   },
+   {
+    "id": "q12",
+    "item_id": "i4",
+    "text": "csv export"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "excel export"
+   },
+   {
+    "id": "q14",
+    "item_id": "i5",
+    "text": "local first app"
+   },
+   {
+    "id": "q15",
+    "item_id": "i5",
+    "text": "offline data storage"
+   },
+   {
+    "id": "q16",
+    "item_id": "i5",
+    "text": "self hosted tracker"
+   },
+   {
+    "id": "q17",
+    "item_id": "i5",
+    "text": "local database"
+   }
+  ]
+ },
+ "t30": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "the weather forecast for my town"
+   },
+   {
+    "id": "i1",
+    "text": "what the weather was like over the past weeks"
+   },
+   {
+    "id": "i2",
+    "text": "advice on when to water, plant or cover vegetables"
+   },
+   {
+    "id": "i3",
+    "text": "a journal of what I planted and when"
+   },
+   {
+    "id": "i4",
+    "text": "alerts for frost or heat"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "weather forecast"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "weather api"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "local weather"
+   },
+   {
+    "id": "q3",
+    "item_id": "i1",
+    "text": "historical weather data"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "past weather"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "weather history"
+   },
+   {
+    "id": "q6",
+    "item_id": "i2",
+    "text": "gardening advice"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "planting calendar"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "frost alert"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "garden planner"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "garden journal"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "planting log"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "notes journal"
+   },
+   {
+    "id": "q13",
+    "item_id": "i3",
+    "text": "simple database"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "weather alerts"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "frost warning"
+   },
+   {
+    "id": "q16",
+    "item_id": "i4",
+    "text": "notification alerts"
+   }
+  ]
+ },
+ "t31": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "plain text notes I can search and link together"
+   },
+   {
+    "id": "i1",
+    "text": "an AI assistant that can add, find and tag notes"
+   },
+   {
+    "id": "i2",
+    "text": "backups to a private git repository"
+   },
+   {
+    "id": "i3",
+    "text": "a way to read everything on my phone"
+   },
+   {
+    "id": "i4",
+    "text": "a way to capture meeting notes and book highlights"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "markdown notes"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "note search"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "linked notes"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "obsidian"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "ai note assistant"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "notes chat assistant"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "automatic tagging"
+   },
+   {
+    "id": "q7",
+    "item_id": "i1",
+    "text": "knowledge base assistant"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "git backup"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "github sync"
+   },
+   {
+    "id": "q10",
+    "item_id": "i2",
+    "text": "private repo storage"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "mobile notes"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "read notes on phone"
+   },
+   {
+    "id": "q13",
+    "item_id": "i3",
+    "text": "markdown viewer"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "meeting notes"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "book highlights"
+   },
+   {
+    "id": "q16",
+    "item_id": "i4",
+    "text": "capture highlights"
+   }
+  ]
+ },
+ "t32": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a way to control lights and thermostat from one place"
+   },
+   {
+    "id": "i1",
+    "text": "door sensors that trigger automations"
+   },
+   {
+    "id": "i2",
+    "text": "an automation that turns everything off when I leave"
+   },
+   {
+    "id": "i3",
+    "text": "a dashboard for a wall tablet"
+   },
+   {
+    "id": "i4",
+    "text": "an easy way to manage config files and add-ons"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "smart home control"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "home assistant"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "lights and thermostat"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "iot device control"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "door sensor automation"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "home automation rules"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "sensor triggers"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "leaving home automation"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "presence detection"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "away mode"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "smart home dashboard"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "tablet dashboard"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "home control panel"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "config file editor"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "home assistant add ons"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "manage configuration"
+   },
+   {
+    "id": "q16",
+    "item_id": "i4",
+    "text": "yaml config"
+   }
+  ]
+ },
+ "t33": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a form where clients answer questions to get a quote"
+   },
+   {
+    "id": "i1",
+    "text": "a way to turn their answers into a formatted contract PDF"
+   },
+   {
+    "id": "i2",
+    "text": "a way for the client to sign online"
+   },
+   {
+    "id": "i3",
+    "text": "a place to save all signed contracts"
+   },
+   {
+    "id": "i4",
+    "text": "a way to find contracts later"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "quote form"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "client intake form"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "project quote calculator"
+   },
+   {
+    "id": "q3",
+    "item_id": "i1",
+    "text": "contract generator"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "generate pdf contract"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "document template pdf"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "pdf from template"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "electronic signature"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "esign contract"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "online document signing"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "contract storage"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "document storage"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "contract management"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "document search"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "contract search"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "file search"
+   }
+  ]
+ },
+ "t34": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a 3D character for my website"
+   },
+   {
+    "id": "i1",
+    "text": "a way to listen to what visitors say out loud"
+   },
+   {
+    "id": "i2",
+    "text": "a natural voice that answers back"
+   },
+   {
+    "id": "i3",
+    "text": "mouth movements in sync with the voice"
+   },
+   {
+    "id": "i4",
+    "text": "body animations like waving"
+   },
+   {
+    "id": "i5",
+    "text": "a chat brain that decides what to say"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "3d avatar"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "3d character web"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "avatar viewer"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "three js character"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "speech to text"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "voice input"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "speech recognition"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "text to speech"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "natural voice synthesis"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "voice generation"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "lip sync"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "talking avatar"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "viseme animation"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "character animation"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "avatar animations"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "mixamo animations"
+   },
+   {
+    "id": "q16",
+    "item_id": "i5",
+    "text": "chatbot"
+   },
+   {
+    "id": "q17",
+    "item_id": "i5",
+    "text": "conversational ai"
+   },
+   {
+    "id": "q18",
+    "item_id": "i5",
+    "text": "ai character chat"
+   }
+  ]
+ },
+ "t35": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a list of nearby hotels, restaurants and sights"
+   },
+   {
+    "id": "i1",
+    "text": "driving directions between stops"
+   },
+   {
+    "id": "i2",
+    "text": "a way to type in a city and find the place"
+   },
+   {
+    "id": "i3",
+    "text": "saving a day's itinerary"
+   },
+   {
+    "id": "i4",
+    "text": "sharing the plan over WhatsApp"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "nearby places search"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "hotel search"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "restaurants nearby"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "tourist attractions"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "driving directions"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "route planner"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "directions api"
+   },
+   {
+    "id": "q7",
+    "item_id": "i1",
+    "text": "multi stop route"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "geocoding"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "city search"
+   },
+   {
+    "id": "q10",
+    "item_id": "i2",
+    "text": "location lookup"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "itinerary planner"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "save trip plan"
+   },
+   {
+    "id": "q13",
+    "item_id": "i3",
+    "text": "travel itinerary"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "whatsapp share"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "send whatsapp message"
+   },
+   {
+    "id": "q16",
+    "item_id": "i4",
+    "text": "share link"
+   }
+  ]
+ },
+ "t36": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "suggestions for places to stay"
+   },
+   {
+    "id": "i1",
+    "text": "things to see and do"
+   },
+   {
+    "id": "i2",
+    "text": "a way to use dates, budget and interests"
+   },
+   {
+    "id": "i3",
+    "text": "a simple day-by-day plan"
+   },
+   {
+    "id": "i4",
+    "text": "a way to share it in a group chat"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "hotel search"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "accommodation search"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "vacation rentals"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "where to stay"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "tourist attractions"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "things to do"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "activity search"
+   },
+   {
+    "id": "q7",
+    "item_id": "i1",
+    "text": "local events"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "trip planner"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "travel planning ai"
+   },
+   {
+    "id": "q10",
+    "item_id": "i2",
+    "text": "personalized itinerary"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "itinerary generator"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "day by day itinerary"
+   },
+   {
+    "id": "q13",
+    "item_id": "i3",
+    "text": "travel plan builder"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "share itinerary"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "group trip sharing"
+   },
+   {
+    "id": "q16",
+    "item_id": "i4",
+    "text": "send message group"
+   }
+  ]
+ },
+ "t37": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a way for my AI chat app to look up my notes"
+   },
+   {
+    "id": "i1",
+    "text": "a way to check my calendar"
+   },
+   {
+    "id": "i2",
+    "text": "a way to search recipes kept in GitHub repositories"
+   },
+   {
+    "id": "i3",
+    "text": "a place to put the helper code online so it runs without my managing servers"
+   },
+   {
+    "id": "i4",
+    "text": "automatic updates whenever I change something"
+   },
+   {
+    "id": "i5",
+    "text": "connecting the AI chat app to my helpers"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "notes search"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "personal notes access"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "note taking integration"
+   },
+   {
+    "id": "q3",
+    "item_id": "i1",
+    "text": "calendar access"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "google calendar"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "calendar integration"
+   },
+   {
+    "id": "q6",
+    "item_id": "i2",
+    "text": "github repository search"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "recipe search"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "read github files"
+   },
+   {
+    "id": "q9",
+    "item_id": "i3",
+    "text": "deploy mcp server"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "serverless hosting"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "managed hosting"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "host app online"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "auto deploy from github"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "continuous deployment"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "git push deploy"
+   },
+   {
+    "id": "q16",
+    "item_id": "i5",
+    "text": "connect ai assistant"
+   },
+   {
+    "id": "q17",
+    "item_id": "i5",
+    "text": "mcp gateway"
+   },
+   {
+    "id": "q18",
+    "item_id": "i5",
+    "text": "tool connector"
+   }
+  ]
+ },
+ "t38": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "online storage for scanned photos and documents"
+   },
+   {
+    "id": "i1",
+    "text": "folders by family branch"
+   },
+   {
+    "id": "i2",
+    "text": "uploading scanned files"
+   },
+   {
+    "id": "i3",
+    "text": "listing and reading what is already stored"
+   },
+   {
+    "id": "i4",
+    "text": "a search page to find old records"
+   },
+   {
+    "id": "i5",
+    "text": "genealogy records and family tree help"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "cloud file storage"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "online storage"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "document archive"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "photo storage"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "folder organization"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "create folders"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "file organization"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "upload files"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "file upload"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "scan upload"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "list files"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "read files"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "file browser"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "search records"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "document search"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "full text search"
+   },
+   {
+    "id": "q16",
+    "item_id": "i5",
+    "text": "genealogy"
+   },
+   {
+    "id": "q17",
+    "item_id": "i5",
+    "text": "family tree"
+   },
+   {
+    "id": "q18",
+    "item_id": "i5",
+    "text": "ancestry records"
+   }
+  ]
+ },
+ "t39": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "connecting the assistant to calendar, docs and ticket system"
+   },
+   {
+    "id": "i1",
+    "text": "a check of each plugin for security problems"
+   },
+   {
+    "id": "i2",
+    "text": "detection of hidden malicious instructions"
+   },
+   {
+    "id": "i3",
+    "text": "a check for unsafe permissions"
+   },
+   {
+    "id": "i4",
+    "text": "a simple login setup"
+   },
+   {
+    "id": "i5",
+    "text": "a log of what the assistant does"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "calendar integration"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "document access"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "ticketing integration"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "jira tickets"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "mcp security scanner"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "plugin security audit"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "vulnerability scanning"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "prompt injection detection"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "malicious instructions scan"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "tool poisoning check"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "permission audit"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "least privilege check"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "access review"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "authentication"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "single sign on"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "oauth login"
+   },
+   {
+    "id": "q16",
+    "item_id": "i5",
+    "text": "audit log"
+   },
+   {
+    "id": "q17",
+    "item_id": "i5",
+    "text": "activity logging"
+   },
+   {
+    "id": "q18",
+    "item_id": "i5",
+    "text": "agent observability"
+   }
+  ]
+ },
+ "t40": {
+  "items": [
+   {
+    "id": "i0",
+    "text": "a workbook that updates totals, profit by product and a forecast"
+   },
+   {
+    "id": "i1",
+    "text": "a place to paste sales and expense numbers each week"
+   },
+   {
+    "id": "i2",
+    "text": "help checking that the formulas are right"
+   },
+   {
+    "id": "i3",
+    "text": "a way to make sure changes do not break anything"
+   },
+   {
+    "id": "i4",
+    "text": "a short summary email for my business partner"
+   }
+  ],
+  "queries": [
+   {
+    "id": "q0",
+    "item_id": "i0",
+    "text": "spreadsheet formulas"
+   },
+   {
+    "id": "q1",
+    "item_id": "i0",
+    "text": "excel workbook automation"
+   },
+   {
+    "id": "q2",
+    "item_id": "i0",
+    "text": "sales forecast"
+   },
+   {
+    "id": "q3",
+    "item_id": "i0",
+    "text": "profit calculator"
+   },
+   {
+    "id": "q4",
+    "item_id": "i1",
+    "text": "import data spreadsheet"
+   },
+   {
+    "id": "q5",
+    "item_id": "i1",
+    "text": "csv import"
+   },
+   {
+    "id": "q6",
+    "item_id": "i1",
+    "text": "expense tracking"
+   },
+   {
+    "id": "q7",
+    "item_id": "i2",
+    "text": "formula checker"
+   },
+   {
+    "id": "q8",
+    "item_id": "i2",
+    "text": "spreadsheet audit"
+   },
+   {
+    "id": "q9",
+    "item_id": "i2",
+    "text": "verify formulas"
+   },
+   {
+    "id": "q10",
+    "item_id": "i3",
+    "text": "workbook validation"
+   },
+   {
+    "id": "q11",
+    "item_id": "i3",
+    "text": "spreadsheet testing"
+   },
+   {
+    "id": "q12",
+    "item_id": "i3",
+    "text": "recalculate workbook"
+   },
+   {
+    "id": "q13",
+    "item_id": "i4",
+    "text": "send summary email"
+   },
+   {
+    "id": "q14",
+    "item_id": "i4",
+    "text": "email report"
+   },
+   {
+    "id": "q15",
+    "item_id": "i4",
+    "text": "send email"
+   }
+  ]
+ }
+}

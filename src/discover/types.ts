@@ -48,6 +48,19 @@ export interface ListingScore {
   per_item: Record<string, number>;
   /** P(the project would benefit from this server), the holistic question. */
   useful: number;
+  /** Jev-led loop only: P(this server does what someone searching for this query text wants), per query text. */
+  per_term?: Record<string, number>;
+}
+
+/** Jev-led loop only: how central one need is to the project, from Jev. */
+export interface ItemScore {
+  item_id: string;
+  /** P(the project cannot work without this need). */
+  core: number;
+  /** P(this need is an optional add-on the other needs do not call for). */
+  extra: number;
+  /** core x (1 - extra / 2): how much this need counts when ranking queries and results. */
+  weight: number;
 }
 
 export interface Ranked {
@@ -55,6 +68,8 @@ export interface Ranked {
   /** Query ids that retrieved it. */
   found_by: string[];
   p_query: number;
+  /** Jev-led loop only: mean chance this server beats the other shortlisted servers, both orders averaged. */
+  pair?: number;
   fit: number;
   trust: number;
   final: number;

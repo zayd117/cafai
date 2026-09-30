@@ -10,3 +10,4 @@ coverage/
 .screenshots/
 eval/reports/
 eval/discover/search-cache.json
+eval/discover/known-item-cache.json
