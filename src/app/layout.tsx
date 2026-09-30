@@ -41,6 +41,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </header>
         <ModeBanner />
         {children}
+        <footer className="footer">
+          {/* Disclaimers the plan requires (§14 self-audit: "the UI says so plainly"; §24 legal set; §5 principles 6 and 10). */}
+          <p>Picks and explanations are written with AI help and can be wrong. Check a tool before you add it.</p>
+          <p>We check the tools we suggest, but once you install a tool we cannot stop it from misbehaving. Caf.ai never installs anything and holds no keys to your other services.</p>
+          <p>Nobody can pay for a place in our picks.</p>
+          <nav aria-label="Legal" className="row small">
+            <a href="/terms">Terms</a>
+            <a href="/privacy">Privacy</a>
+            <a href="/security">Security contact</a>
+          </nav>
+        </footer>
       </body>
     </html>
   );

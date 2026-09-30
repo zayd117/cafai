@@ -125,3 +125,13 @@ Format: MD section → requirement → engineering task → files → test. Kind
 | §24 | Priced Pro waitlist | NOT BUILT: price is a range to test and needs an email provider (A-005) | — | — |
 | §24 | Automated weekly catalog checks | NOT BUILT: real catalog is empty (A-006) | — | — |
 | §13, §24 | Anonymous read-only `recommend` MCP tool | BLOCKED (A-037): SDK lacks spec 2026-07-28 | — | — |
+
+## L10 QA and production readiness
+
+| Plan § | Requirement | Kind | Files | Verification |
+|---|---|---|---|---|
+| §18 | WCAG 2.2 AA; keyboard use; visible focus; labelled controls | CONFIRMED | `scripts/a11y.mjs` | axe: 0 violations on counter, results (all levels open), setup, legal page; keyboard and focus-ring checks |
+| §14 | Our own supply chain: lockfile, dependency review | CONFIRMED (SBOM not generated yet) | `package-lock.json` | `npm audit --omit=dev`: 0 vulnerabilities |
+| §14 self-audit, §24 | Disclaimers for AI output and third-party tools; the UI says plainly Caf.ai cannot prevent harm after install | CONFIRMED | `layout.tsx` footer | screenshot 05 |
+| §24 | Terms, privacy, takedown and security contacts | BLOCKED on counsel (A-038) | `terms`, `privacy`, `security` placeholder pages | axe |
+| §17 | Deploy to a managed host | BLOCKED (A-039) | — | `npm run build` passes |

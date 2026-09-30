@@ -16,7 +16,8 @@
     "db:bootstrap": "./scripts/db-bootstrap.sh",
     "db:migrate": "tsx scripts/migrate.ts",
     "eval": "tsx scripts/eval.ts",
-    "flow": "node scripts/flow.mjs"
+    "flow": "node scripts/flow.mjs",
+    "a11y": "node scripts/a11y.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.129.0",
@@ -29,6 +30,7 @@
     "yaml": "^2.9.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@types/node": "^22.20.4",
     "@types/pg": "^8.23.1",
     "@types/react": "^19.3.0",

@@ -26,7 +26,8 @@ npm run flow -- http://localhost:3100 docs/figma-handoff/screens
 | `src/server/controls.db.test.ts` | 4 | Quota hashing and cap, budget breaker, app-role purge, flag audit and grants |
 | `src/setup/handoff.test.ts` | 6 | Danger detection, Cursor link decoding (incl. "+"), hostnames, route choice, paste message |
 | `npm run eval` | 4 fixture cases × 4 arms | Release gate: harmful picks 0, invalid ids 0, no regression vs baseline |
-| `npm run flow` (Chromium) | 41 checks | See below |
+| `npm run flow` (Chromium) | 45 checks | See below |
+| `scripts/a11y.mjs` (Chromium + axe) | 6 checks | WCAG 2.2 AA scans (counter, results with every level open, setup, legal page), keyboard reach, visible focus ring |
 | `scripts/controls-flow.mjs` (Chromium + DB) | 9 checks | Revoked pick annotated and setup hidden, AI off → degraded banner and read-back first, runs off → paused, quota cap, honeypot, flag audit |
 
 ### Browser checks (`scripts/flow.mjs`, desktop 1440 and mobile 390)
@@ -46,7 +47,7 @@ copy button works (client JS under CSP) · Cursor config decoded before link · 
 | T-09 | Low-confidence confirm | Input that the model reads with low confidence | Read-back open, "Is this right?", no picks until "Yes, that's right" | Shown in controls-flow (AI off); pressing "Yes, that's right" not yet automated |
 | T-10 | Clarifying question | Input with a model question | One question with options; answer reruns | Needs a fixture script with a question |
 | T-11 | Degraded banner | Explanation model fails | Banner shown; cards use template wording | Covered in unit tests; not in browser |
-| T-12 | Keyboard only | Tab through counter → results → setup | Every control reachable, visible focus ring, details toggle with Enter/Space | Not run |
+| T-12 | Keyboard only | Tab through counter → results → setup | Every control reachable, visible focus ring, details toggle with Enter/Space | Partly automated in a11y.mjs (counter tab order, keyboard submit); full traversal of results not yet |
 | T-13 | Screen reader labels | Check chips, meters, cards with a screen reader | Chips announce state; meters announced by their words; cards labelled by title | Not run |
 | T-14 | Real model | Set `CAFAI_MODEL_PROVIDER=anthropic` with a key | Same flow with live understanding and explanations | BLOCKED: no API key (REGISTER A-017) |
 | T-15 | Blind comparison | 60–100 real cases with assistant answers | Win rate from judges | BLOCKED: needs concierge data (A-008) |
