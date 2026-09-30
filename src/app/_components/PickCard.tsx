@@ -79,6 +79,10 @@ export function PickCard(props: {
         </label>
       </div>
       <p>{o.editorial.what_it_is}</p>
+      <div className="signals" aria-label="How well it fits and how sure we are">
+        <div className="part"><span className="part-label">Match</span><MatchMeter band={pick.match_band} /></div>
+        <div className="part"><span className="part-label">Confidence</span><ConfidenceDots band={pick.confidence_band} /></div>
+      </div>
       <div className="part">
         <span className="part-label">{awk ? "Why it is here" : "Why we showed it"}</span>
         {evidence && <p className="quote">“{evidence.quote}”</p>}
@@ -92,16 +96,14 @@ export function PickCard(props: {
         <span className="part-label">Do you need it?</span>
         <p><span className={`need${pick.do_you_need_it === "needed_now" ? "" : " later"}`}>{NEED_LABEL[pick.do_you_need_it]}</span> {ex.do_you_need_it}</p>
       </div>
-      <div className="signals" aria-label="How well it fits and how sure we are">
-        <MatchMeter band={pick.match_band} />
-        <ConfidenceDots band={pick.confidence_band} />
-      </div>
       {lowConfidence && <p className="small">This looks relevant, but we don’t have enough evidence to be confident.</p>}
       {pick.notes.includes("checked_trust") && <p className="small muted">Our checks on this one are automated only so far.</p>}
       {ex.skip_if && <p className="small">{ex.skip_if}</p>}
-      <p className="small muted">
-        Set up in {clientNames.length ? clientNames.join(", ") : "your AI tool"} · Effort {o.access.effort_plain} · Access {o.access.access_plain}
-      </p>
+      <dl className="meta">
+        <div><dt className="part-label">Set up in</dt><dd>{clientNames.length ? clientNames.join(", ") : "your AI tool"}</dd></div>
+        <div><dt className="part-label">Effort</dt><dd>{o.access.effort_plain}</dd></div>
+        <div><dt className="part-label">Access</dt><dd>{o.access.access_plain}</dd></div>
+      </dl>
 
       <form action={sendFeedback} className="feedback">
         <input type="hidden" name="run" value={runId} />

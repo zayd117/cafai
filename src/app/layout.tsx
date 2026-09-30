@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
-import { Courier_Prime, Figtree, Young_Serif } from "next/font/google";
+import { Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import { ModeBanner } from "./_components/ModeBanner";
+import "./tokens.css";
 import "./globals.css";
 
-// Faces from the v3.1 wireframes; self-hosted by next/font at build (no runtime font host, CSP font-src 'self').
-const display = Young_Serif({ weight: "400", subsets: ["latin"], variable: "--font-display" });
-const body = Figtree({ subsets: ["latin"], variable: "--font-body" });
-const mono = Courier_Prime({ weight: ["400", "700"], subsets: ["latin"], variable: "--font-mono" });
+// Faces from the design system (docs/design); self-hosted by next/font at build (no runtime font host, CSP font-src 'self').
+const sans = Instrument_Sans({ subsets: ["latin"], variable: "--font-instrument-sans" });
+const mono = JetBrains_Mono({ weight: ["400", "500", "700"], subsets: ["latin"], variable: "--font-jetbrains-mono" });
 
 export const metadata = {
   title: "Caf.ai",
@@ -28,7 +28,7 @@ function CupIcon() {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
+    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body>
         <header className="topbar">
           <a href="/" className="brand" aria-label="Caf.ai home">
