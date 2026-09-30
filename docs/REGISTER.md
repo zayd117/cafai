@@ -7,9 +7,9 @@ Status: **RESOLVED** (user-confirmed), **DEFERRED** (decision postponed to a nam
 |---|---|---|---|
 | A-001 | Plan gates MVP code behind Phase 0 evidence (G0). Build now? | §25, §29 | RESOLVED: gate-compatible work first (L0–L4 + UI on labeled mock data). Real catalog content and labeled set wait for user data. |
 | A-002 | Which three clients first? | §27 (ASSUMPTION) | RESOLVED: Claude Code, Cursor, Claude Desktop. |
-| A-003 | Identity provider for magic link + GitHub sign-in | §13 (unnamed) | DEFERRED to L7. Core loop needs no account (§8, §24). |
+| A-003 | Identity provider for magic link + GitHub sign-in | §13 (unnamed) | DEFERRED by the user (2026-09-30). L7 blocked; anonymous runs work. |
 | A-004 | Stack | §17 ("such as Next.js", "managed Postgres") | RESOLVED: Next.js + TypeScript + Postgres. Hosting, email, bot-check and other vendors remain undecided. |
-| A-005 | Email provider, bot-check provider | §14, §17 (unnamed) | OPEN, needed at L8. |
+| A-005 | Email provider, bot-check provider | §14, §17 (unnamed) | DEFERRED by the user (2026-09-30). Follow-up email and budget-cap queue blocked; honeypot in place of a bot check. |
 | A-006 | Catalog content (~100 offerings, curator-approved profiles) | §24 | BLOCKED on curation. Dev uses entries labeled `FIXTURE`, never shown as real. |
 | A-007 | Taxonomy v1 (40–60 capabilities) | §29 "from concierge needs, not from any catalog" | BLOCKED on concierge data. Dev uses a tiny `FIXTURE` taxonomy. |
 | A-008 | Labeled evaluation set (60–100 cases, eight input types) | §25 | BLOCKED on real concierge projects. Harness is built; data is not invented. |
@@ -40,9 +40,9 @@ Status: **RESOLVED** (user-confirmed), **DEFERRED** (decision postponed to a nam
 | A-034 | Client address for quotas | §14 | Uses the first `x-forwarded-for` value; only trustworthy behind a known proxy. Hosting is undecided (A-004), so revisit at deploy. |
 | A-035 | Bot check | §14, §24 name a bot check, no vendor | Honeypot field as an interim measure; real bot check waits for a vendor (A-005). |
 | A-036 | Manifest paste → stack signals | §12, §24 | Needs a curated mapping from dependency names to capabilities; no such field exists yet. Not built. |
-| A-037 | Caf.ai MCP server (`recommend` tool, §24 should-have) | §3, §13: build to MCP spec 2026-07-28 (stateless) | BLOCKED: the official TypeScript SDK (@modelcontextprotocol/sdk 1.31.0, checked 2026-09-30) supports protocol versions up to 2025-11-25 only. Options: wait for SDK support, accept 2025-11-25, or hand-implement the revision (spec details unverified here). Needs a decision. |
+| A-037 | Caf.ai MCP server (`recommend` tool, §24 should-have) | §3, §13: build to MCP spec 2026-07-28 (stateless) | DECIDED 2026-09-30 (user delegated): wait for SDK support. The official TypeScript SDK 1.31.0 supports protocol versions up to 2025-11-25 only. Revisit when `@modelcontextprotocol/sdk` lists 2026-07-28. |
 | A-038 | Legal texts (terms, privacy, disclaimers, takedown and security contacts) | §24 minimum legal set, counsel review | Not written: pages show "Not written yet". Footer carries only plan-stated facts (AI can be wrong; installed tools can misbehave; no installs, no keys; no paid ranking). Security contact address unknown. |
-| A-039 | Hosting and deployment | §17 "managed host", none named | Production build passes; no deploy target chosen, so no deploy config, HSTS or `upgrade-insecure-requests` yet. |
+| A-039 | Hosting and deployment | §17 "managed host", none named | DEFERRED by the user (2026-09-30). Production build passes; no deploy config, HSTS or `upgrade-insecure-requests` yet. |
 | A-020 | GitHub push access | environment | RESOLVED 2026-09-30: access fixed by the user; all commits pushed. |
 
 Wireframe canvas unknowns (21 items, exact answers needed) are listed on the canvas sticky note: https://claude.ai/artifact/Ws1hft8GALEGne1L616Y4Y
