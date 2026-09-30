@@ -137,4 +137,4 @@ Confidence always shown as two separate indicators with words; score numbers onl
 | 2026-09-30 08:55 | L6a | Counter, results page, card levels, outcomes, order and refine built and verified (27 checks) |
 | 2026-09-30 09:00 | L6b | Setup page: tabs, paste message, decoded Cursor config, warnings, copy, It worked / Stuck (41 checks). Fixed: order listed the unticked extra idea; refine chips stacked; duplicate "Needed now" wording; Cursor pseudo-host shown as a connection; internal plan wording shown to users; full-width install button |
 | 2026-09-30 09:07 | L8 | Quota, paused, AI-off and revoked states; honeypot field; error page. Fixed: warn banner double indent; degraded copy now says when AI understanding was unavailable |
-| 2026-09-30 09:13 | L9 | "Show alternatives" inside level 2; "How we understood this" panel |
+| 2026-09-30 09:09 | L9 | "Show alternatives" inside level 2; "How we understood this" panel |

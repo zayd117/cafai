@@ -40,6 +40,7 @@ Status: **RESOLVED** (user-confirmed), **DEFERRED** (decision postponed to a nam
 | A-034 | Client address for quotas | §14 | Uses the first `x-forwarded-for` value; only trustworthy behind a known proxy. Hosting is undecided (A-004), so revisit at deploy. |
 | A-035 | Bot check | §14, §24 name a bot check, no vendor | Honeypot field as an interim measure; real bot check waits for a vendor (A-005). |
 | A-036 | Manifest paste → stack signals | §12, §24 | Needs a curated mapping from dependency names to capabilities; no such field exists yet. Not built. |
+| A-037 | Caf.ai MCP server (`recommend` tool, §24 should-have) | §3, §13: build to MCP spec 2026-07-28 (stateless) | BLOCKED: the official TypeScript SDK (@modelcontextprotocol/sdk 1.31.0, checked 2026-09-30) supports protocol versions up to 2025-11-25 only. Options: wait for SDK support, accept 2025-11-25, or hand-implement the revision (spec details unverified here). Needs a decision. |
 | A-020 | GitHub push access | environment | RESOLVED 2026-09-30: access fixed by the user; all commits pushed. |
 
 Wireframe canvas unknowns (21 items, exact answers needed) are listed on the canvas sticky note: https://claude.ai/artifact/Ws1hft8GALEGne1L616Y4Y

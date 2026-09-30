@@ -124,3 +124,4 @@ Format: MD section → requirement → engineering task → files → test. Kind
 | §24 | Glossary tooltips | NOT BUILT: wording unspecified (A-029) | — | — |
 | §24 | Priced Pro waitlist | NOT BUILT: price is a range to test and needs an email provider (A-005) | — | — |
 | §24 | Automated weekly catalog checks | NOT BUILT: real catalog is empty (A-006) | — | — |
+| §13, §24 | Anonymous read-only `recommend` MCP tool | BLOCKED (A-037): SDK lacks spec 2026-07-28 | — | — |
