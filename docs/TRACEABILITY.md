@@ -30,3 +30,19 @@ Format: MD section → requirement → engineering task → files → test. Kind
 | A-006, A-007 | Real taxonomy and offerings | BLOCKED | `catalog/taxonomy.yaml` (empty), `catalog/offerings/` (empty) | check prints BLOCKED note |
 | — | Dev/test data | FIXTURE | `catalog/fixtures/**` (every record `fixture: true`) | "rejects fixture records in the real catalog" |
 | §11 | Referential integrity: capability ids, client ids, install method per client | NECESSARY | `load.ts` | two rejection tests |
+
+## L2 Data layer
+
+| Plan § | Requirement | Kind | Files | Test / verification |
+|---|---|---|---|---|
+| §17 | Managed Postgres (local Postgres 16 for dev/test) | CONFIRMED | `scripts/db-bootstrap.sh`, `scripts/migrate.ts`, `db/migrations/001_core.sql` | migrate applies once, then "up to date" |
+| §14, §19 | org_id on tenant rows; row-level security as a second wall; other tenants' ids behave as missing (404) | CONFIRMED | RLS policies in `001_core.sql`; `src/db/client.ts` `withAccess` (transaction-local settings) | "isolates tenants", "does not let the app role enumerate anonymous runs", child-row tenant checks |
+| §8, §18 | Anonymous first run; runs shareable and resumable by URL | CONFIRMED | `createAnonymousRun`, `getRun` (unguessable UUID is the read capability) | "creates an anonymous run readable by its id" |
+| §19 | Recommendation stores offering id, catalog version, score components; not rendered text | CONFIRMED | `recommendations` table, `saveRecommendations` | "stores recommendations as ids, bands and components" |
+| §2, §11 | Every run stores model, prompt, taxonomy and catalog versions | CONFIRMED | `recommendation_runs.catalog_version`, `pipeline_versions` | schema FK to `catalog_snapshots` |
+| §19 | Catalog readable by everyone, writable only by the catalog pipeline | CONFIRMED | grants; `publishSnapshot` via `cafai_catalog` | "keeps the catalog writable only by the catalog pipeline" |
+| §19 | Feedback with reason codes | CONFIRMED (reason list OPEN) | `feedback`, `addFeedback` | "records feedback and rejects a recommendation id from another run" |
+| §19 | Append-only usage and AI cost ledger | CONFIRMED | `usage_events`, `recordUsage` | "keeps the usage ledger append-only" |
+| §12, A-010 | Anonymous run content deleted after 30 days; raw text trimmed after its window | CONFIRMED (windows are ASSUMPTIONS) | `src/config/retention.ts`, `purgeExpired` | "purges expired anonymous runs" |
+| §17, §14 | Kill-switch flag rows | CONFIRMED (read path built in L8) | `flags` table | — |
+| §15 | Users, identities, memberships, sessions | DEFERRED to L7 (A-003) | — | — |
