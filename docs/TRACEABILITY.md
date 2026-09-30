@@ -62,5 +62,5 @@ Format: MD section → requirement → engineering task → files → test. Kind
 | §9 failure table | Low confidence → read-back first; out of scope; nothing needed; no good pick; invalid output → retry once then deterministic; injection flagged, no ranking effect | CONFIRMED | `pipeline.ts` | five outcome tests + "falls back to deterministic rules", "flags injection-like input" |
 | §2, §11 | Every run records catalog, config, prompt and model versions | CONFIRMED | `pipeline.ts` `versions` | "records versions for replay" |
 | §17 | LLM and Decision interfaces (Jev can take Decision only after a bake-off win) | CONFIRMED | `providers/types.ts` | — |
-| A-017 | Real model provider | BLOCKED on API key for live verification | `providers/mock.ts` (MOCK only) | — |
+| §9, §17, A-017 | Real model provider: schema-bound calls, fenced data-only inputs, refusal/cut-off treated as invalid | CONFIRMED; UNVERIFIED LIVE (no credential) | `providers/anthropic.ts`, `prompts.ts`, `providers/index.ts` | `anthropic.test.ts` (stub client) |
 | §25 | Ablation switches: no expansion (H2), forward-only (H3), evidence gates off (H4) | CONFIRMED | `pipeline.ts` `Ablations` | exercised in L4 harness |

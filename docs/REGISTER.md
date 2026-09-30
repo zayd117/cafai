@@ -28,6 +28,8 @@ Status: **RESOLVED** (user-confirmed), **DEFERRED** (decision postponed to a nam
 | A-022 | Five-pick cap when an "Also worth knowing" pick exists | §6, §8, §9 | Direct picks capped at 4 so the one AWK pick fits (follows A-013). |
 | A-023 | "Do you need it?" mapping | §8 part 6 names three answers, no mapping | stated/implied → needed now; latent → useful later; everything under Not needed now → probably not. |
 | A-024 | Match dimension formulas | §9 table gives one-line rules only | Literal minimal forms in `src/engine/match.ts`; backward direction folded into Capability match ("the core of the two-way match"). All PLACEHOLDER (A-009). |
+| A-025 | Which model per call | §9 cost section names Sonnet 5.5 and Haiku 4.5 splits; none chosen | Default `claude-sonnet-5-5` for all three calls ("Sonnet throughout ≈ $0.04"), each overridable by env. Adaptive thinking at default effort may exceed the plan's output-token estimate; measure in Phase 0. Server-side refusal fallback (`fallbacks: "default"`) enabled for Sonnet 5.5. |
+| A-026 | Per-call timeout | §17 latency target (15 s p95 for picks), no timeout given | PLACEHOLDER 30 s per call; SDK retries off, engine retries once. |
 | A-020 | GitHub push access | environment | `git push` to `zayd117/cafai` returns 403 (Claude GitHub App not installed / not linked). Commits are local until fixed. |
 
 Wireframe canvas unknowns (21 items, exact answers needed) are listed on the canvas sticky note: https://claude.ai/artifact/Ws1hft8GALEGne1L616Y4Y

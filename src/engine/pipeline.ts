@@ -9,8 +9,11 @@ import type { DecisionProvider, LlmProvider, Usage } from "./providers/types";
 import { looksLikeInjection, redact } from "./redact";
 import type { Pick, RunResult } from "./types";
 import { understand, type UserItem } from "./understand";
+import { PROMPTS_VERSION } from "./prompts";
 
-export const PROMPTS_VERSION = "prompts-v0";
+export { PROMPTS_VERSION };
+
+
 
 export interface Ablations {
   /** H2: drop needs the model inferred (implied/latent); keep what the user stated. */
