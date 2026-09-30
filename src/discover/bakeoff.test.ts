@@ -1,7 +1,7 @@
 // Bake-off metrics, cache, runner and the Claude rater (stub client: no network, no live model).
 import { describe, expect, it } from "vitest";
 import { agreement, cachedFetch, falsePositiveRate, jaccard, percentile, precisionAt, recallAt, runArm, summarize, type Arm, type ArmRun, type DiscoverCase } from "./bakeoff";
-import { ClaudeScorer } from "./claudeScorer";
+import { ClaudeScorer, recordedClaude } from "./claudeScorer";
 import type { FetchLike } from "./search";
 import type { Interpretation, Listing, Usage } from "./types";
 
@@ -149,5 +149,39 @@ describe("ClaudeScorer (stub client)", () => {
     const c = stub(() => ({}));
     c.usage.push({ model: "m", input_tokens: 1, output_tokens: 1 });
     expect(new ClaudeScorer(c).usage).toHaveLength(1);
+  });
+});
+
+describe("recorded ratings (subagent arm)", () => {
+  const items = [{ id: "i0", text: "Look up food facts" }];
+  const rec = {
+    queries: [{ query_id: "q0", faithful: 0.9, drift: 0.1 }],
+    listings: [{ slug: "s0", per_item: [{ item_id: "i0", p: 0.8 }], useful: 0.7 }],
+  };
+
+  it("replays ratings through the same scorer, with no usage recorded", async () => {
+    const scorer = new ClaudeScorer(recordedClaude(rec, "claude-agent"));
+    expect((await scorer.scoreQueries(items, [{ id: "q0", item_id: "i0", text: "food db" }]))[0]!.score).toBeCloseTo(0.81);
+    expect((await scorer.scoreListings(items, [listing("s0")]))[0]).toEqual({ slug: "s0", per_item: { i0: 0.8 }, useful: 0.7 });
+    expect(scorer.usage).toEqual([]);
+  });
+
+  it("throws on a query or listing that was never rated instead of scoring it zero", async () => {
+    const scorer = new ClaudeScorer(recordedClaude(rec, "claude-agent"));
+    await expect(scorer.scoreQueries(items, [{ id: "q9", item_id: "i0", text: "x y" }])).rejects.toThrow(/no recorded rating for query: q9/);
+    await expect(scorer.scoreListings(items, [listing("nope")])).rejects.toThrow(/no recorded rating for listing: nope/);
+  });
+
+  it("an unmetered arm shows time, tokens and cost as unknown, not zero, and a per-case scorer factory is used", async () => {
+    const interpretation: Interpretation = { items, queries: [{ id: "q0", item_id: "i0", text: "food db" }] };
+    const fetch: FetchLike = async () => new Response(JSON.stringify({ results: [{ slug: "s0", description: "d" }] }), { status: 200 });
+    const arm: Arm = { name: "agent", measured: false, usage: () => [], scorer: () => new ClaudeScorer(recordedClaude(rec, "claude-agent")) };
+    const r = await runArm({ arm, c: { id: "c", text: "t" }, interpretation, repeat: 0, fetch });
+    expect(r.error).toBeUndefined();
+    expect(r.ranked).toEqual(["s0"]);
+    const s = summarize("agent", [r], [{ id: "c", text: "t" }]);
+    expect([s.latency_p50_ms, s.latency_p95_ms, s.input_tokens_per_run, s.output_tokens_per_run, s.cost_per_run_usd]).toEqual([null, null, null, null, null]);
+    const missing = await runArm({ arm: { ...arm, scorer: () => { throw new Error("no saved ratings for case c"); } }, c: { id: "c", text: "t" }, interpretation, repeat: 0, fetch });
+    expect(missing.error).toMatch(/no saved ratings/);
   });
 });

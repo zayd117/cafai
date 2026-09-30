@@ -9,6 +9,7 @@ Exploratory, like the loop itself: it says nothing about quality until the cases
 |---|---|---|
 | `claude` | Claude, asked the same questions Jev gets, one JSON reply per batch (`src/discover/claudeScorer.ts`) | Interpretation, mcp.market results (cached), ranking code |
 | `claude+jev` | Jev (`src/discover/scorer.ts`) | same |
+| `claude-agent` | A Claude Code subagent's saved ratings, replayed (`eval/discover/ratings/claude-agent/<case>.json`). For when there is no API key. | same |
 
 Because everything else is identical, any difference comes from the rater. Time and tokens cover the rating stage only.
 Interpretation is reported once ("shared"). Search runs once in an untimed warm-up and is served from a cache, so neither
@@ -24,6 +25,20 @@ npm run discover:bakeoff -- --arms claude+jev              # Jev only; needs no 
 ```
 
 Needs `ANTHROPIC_API_KEY` for the `claude` arm and for any case without a fixed `interpretation`; a TypeSafe key for `claude+jev`.
+**Without an Anthropic API key**, run the Claude-alone arm through a subagent:
+
+```
+npm run discover:bakeoff -- --export-tasks <dir> --cache eval/discover/search-cache.json   # one <case>.task.md per case
+# give each task file to a cold Claude Code subagent (it reads only that file); save its JSON as eval/discover/ratings/claude-agent/<case>.json
+npm run discover:bakeoff -- --arms claude-agent,claude+jev --repeats 3 --cache eval/discover/search-cache.json
+```
+
+The task holds the same rating prompts as the API arm, no labels, and every listing any query retrieves (29 per shipped case,
+rated in one pass instead of batches of five). Add `"meta": {"ms", "total_tokens", "tool_uses"}` to the JSON if you want them
+reported. A query or listing the subagent skipped is an error run, never a zero. This arm's accuracy is comparable; its time,
+tokens and cost are not metered like the API arms, so they print `—`. Its token total includes the subagent's fixed overhead, and
+it is one run per case, so `consistency` for it is only 1 because the same ratings are replayed.
+
 An arm without its key prints `NOT RUN` and the other still runs. `--cache` reuses saved mcp.market responses, so a later
 run compares against the same listings even if the directory changes (the cache file is git-ignored: it holds third-party text).
 

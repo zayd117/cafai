@@ -1,0 +1,443 @@
+{
+ "queries": [
+  {
+   "query_id": "q0",
+   "faithful": 0.97,
+   "drift": 0.03
+  },
+  {
+   "query_id": "q1",
+   "faithful": 0.9,
+   "drift": 0.08
+  },
+  {
+   "query_id": "q2",
+   "faithful": 0.01,
+   "drift": 0.98
+  },
+  {
+   "query_id": "q3",
+   "faithful": 0.85,
+   "drift": 0.1
+  },
+  {
+   "query_id": "q4",
+   "faithful": 0.72,
+   "drift": 0.2
+  }
+ ],
+ "listings": [
+  {
+   "slug": "myplate-nutrition",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.7
+    },
+    {
+     "item_id": "i1",
+     "p": 0.05
+    }
+   ],
+   "useful": 0.55
+  },
+  {
+   "slug": "memoryapi-food",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.9
+    },
+    {
+     "item_id": "i1",
+     "p": 0.05
+    }
+   ],
+   "useful": 0.8
+  },
+  {
+   "slug": "foodose-glp1-nutrition",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.5
+    },
+    {
+     "item_id": "i1",
+     "p": 0.05
+    }
+   ],
+   "useful": 0.3
+  },
+  {
+   "slug": "krishnabhat-indian-food-nutrition-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.75
+    },
+    {
+     "item_id": "i1",
+     "p": 0.3
+    }
+   ],
+   "useful": 0.6
+  },
+  {
+   "slug": "andrewvg23-nutrition-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.95
+    },
+    {
+     "item_id": "i1",
+     "p": 0.1
+    }
+   ],
+   "useful": 0.85
+  },
+  {
+   "slug": "pipeworx-io-nutrition",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.85
+    },
+    {
+     "item_id": "i1",
+     "p": 0.03
+    }
+   ],
+   "useful": 0.7
+  },
+  {
+   "slug": "mrfentmen-nutritionix-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.9
+    },
+    {
+     "item_id": "i1",
+     "p": 0.03
+    }
+   ],
+   "useful": 0.75
+  },
+  {
+   "slug": "january-nutrition",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.8
+    },
+    {
+     "item_id": "i1",
+     "p": 0.45
+    }
+   ],
+   "useful": 0.6
+  },
+  {
+   "slug": "kcaldata",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.92
+    },
+    {
+     "item_id": "i1",
+     "p": 0.03
+    }
+   ],
+   "useful": 0.8
+  },
+  {
+   "slug": "gino-stocks-us",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.01
+    },
+    {
+     "item_id": "i1",
+     "p": 0.01
+    }
+   ],
+   "useful": 0.01
+  },
+  {
+   "slug": "dontsovcmc-yandex-market-seller",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.01
+    },
+    {
+     "item_id": "i1",
+     "p": 0.01
+    }
+   ],
+   "useful": 0.01
+  },
+  {
+   "slug": "yjhann33-design-korea-stock-insight-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.01
+    },
+    {
+     "item_id": "i1",
+     "p": 0.01
+    }
+   ],
+   "useful": 0.01
+  },
+  {
+   "slug": "vladimir-human-ru-marketplace-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.01
+    },
+    {
+     "item_id": "i1",
+     "p": 0.01
+    }
+   ],
+   "useful": 0.01
+  },
+  {
+   "slug": "botinfo-robot-market-data",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.01
+    },
+    {
+     "item_id": "i1",
+     "p": 0.01
+    }
+   ],
+   "useful": 0.01
+  },
+  {
+   "slug": "cybeleri-finance",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.01
+    },
+    {
+     "item_id": "i1",
+     "p": 0.01
+    }
+   ],
+   "useful": 0.01
+  },
+  {
+   "slug": "heyzod-mansa-african-markets",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.01
+    },
+    {
+     "item_id": "i1",
+     "p": 0.01
+    }
+   ],
+   "useful": 0.01
+  },
+  {
+   "slug": "algolab-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.01
+    },
+    {
+     "item_id": "i1",
+     "p": 0.01
+    }
+   ],
+   "useful": 0.01
+  },
+  {
+   "slug": "appwrite-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.6
+    }
+   ],
+   "useful": 0.5
+  },
+  {
+   "slug": "justdeploy-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.35
+    }
+   ],
+   "useful": 0.3
+  },
+  {
+   "slug": "nexusrun-nexus-ai",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.35
+    }
+   ],
+   "useful": 0.3
+  },
+  {
+   "slug": "sirarchiemccarthy-oss-agentbuilders",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.45
+    }
+   ],
+   "useful": 0.35
+  },
+  {
+   "slug": "surajkgoyal-amnesic",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.2
+    }
+   ],
+   "useful": 0.15
+  },
+  {
+   "slug": "seayniclabs-berth",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.6
+    }
+   ],
+   "useful": 0.5
+  },
+  {
+   "slug": "rzlco666-mcp-sql-rust",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.5
+    }
+   ],
+   "useful": 0.4
+  },
+  {
+   "slug": "rzlco666-strut-stack-sql",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.5
+    }
+   ],
+   "useful": 0.4
+  },
+  {
+   "slug": "pilat-mcp-datalink",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.5
+    }
+   ],
+   "useful": 0.4
+  },
+  {
+   "slug": "nicholasglazer-gnosis",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.03
+    },
+    {
+     "item_id": "i1",
+     "p": 0.1
+    }
+   ],
+   "useful": 0.08
+  },
+  {
+   "slug": "cocaxcode-database-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.55
+    }
+   ],
+   "useful": 0.45
+  },
+  {
+   "slug": "haymon-dbmcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.4
+    }
+   ],
+   "useful": 0.3
+  }
+ ],
+ "meta": {
+  "ms": 23480,
+  "total_tokens": 53683,
+  "tool_uses": 3,
+  "rater": "Claude Code subagent (general-purpose), one cold run per case"
+ }
+}
