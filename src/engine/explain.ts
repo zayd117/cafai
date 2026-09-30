@@ -49,10 +49,10 @@ export function templateExplanation(pick: Placed, snapshot: CatalogSnapshot, ite
     how_it_helps: o.editorial.could_help_with,
     do_you_need_it:
       pick.do_you_need_it === "needed_now"
-        ? "Needed now: it serves something you described."
+        ? "It serves something you described."
         : pick.do_you_need_it === "useful_later"
-          ? "Useful later: you did not ask for this, but it fits your project."
-          : "Probably not.",
+          ? "You did not ask for this, but it fits your project."
+          : "",
     skip_if: skip ? `Skip it if: ${skip}` : "",
     summary: o.editorial.what_it_is,
   };
