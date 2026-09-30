@@ -12,6 +12,7 @@ import { fileURLToPath } from "node:url";
 import { loadCatalog } from "../src/catalog/load";
 import { runPipeline } from "../src/engine/pipeline";
 import { getProviders } from "../src/engine/providers";
+import { JevDecisionProvider, jevKeyFrom } from "../src/engine/providers/jev";
 import type { DecisionProvider, LlmProvider } from "../src/engine/providers/types";
 import { ARMS, armReport, DEFAULT_ARMS, evaluateCheck, type ArmReport, type Check } from "../src/eval/bakeoff";
 import { makePair, neutralText, scorePairs, type BlindPair, type PairKey } from "../src/eval/blind";
@@ -61,9 +62,10 @@ const repeats = Math.max(1, Number(arg("repeats") ?? 1));
 const armNames = (arg("arms") ?? DEFAULT_ARMS.join(",")).split(",").map((s) => s.trim()).filter(Boolean);
 for (const a of armNames) if (!ARMS[a]) { console.error(`unknown arm "${a}"; known: ${Object.keys(ARMS).join(", ")}`); process.exit(2); }
 
-/** Jev sits behind the Decision interface (§17). Not built yet: the TypeSafe API docs are unreachable here (A-040). */
+/** Jev sits behind the Decision interface (§17), stage 8 only; runs live whenever a TypeSafe key is set (A-040). */
 function jevDecision(): DecisionProvider | null {
-  return null;
+  const apiKey = jevKeyFrom();
+  return apiKey ? new JevDecisionProvider({ apiKey, model: process.env.CAFAI_JEV_MODEL }) : null;
 }
 
 const reports: Record<string, ArmReport> = {};
@@ -72,7 +74,7 @@ for (const name of armNames) {
   const arm = ARMS[name]!;
   const jev = arm.decision === "jev" ? jevDecision() : null;
   if (arm.decision === "jev" && !jev) {
-    skipped[name] = "Jev provider not built yet (needs TypeSafe API docs, key and network access; REGISTER A-040)";
+    skipped[name] = "no TypeSafe key: add TYPESAFE_API_KEY (or JEV_API_KEY) to the environment settings (REGISTER A-040)";
     continue;
   }
   const runs: CaseResult[][] = [];
@@ -98,6 +100,7 @@ console.log(`mode: ${fixtures ? "FIXTURE catalog and cases (proves wiring only, 
 console.log(["metric", ...shown.map((a) => ARMS[a]!.label)].join(" | "));
 for (const k of keys) console.log([k, ...shown.map((a) => fmt(reports[a]![k]))].join(" | "));
 for (const [a, why] of Object.entries(skipped)) console.log(`NOT RUN ${ARMS[a]!.label}: ${why}`);
+if (reports["llm+jev"]) console.log(`decisions for ${ARMS["llm+jev"]!.label}: live ${jevDecision()!.id}${fixtures ? " over FIXTURE cases (smoke only)" : ""}`);
 
 // Pass lines (plan §25), written before the run.
 const rulesFile = join(root, arg("rules") ?? "eval/bakeoff.json");

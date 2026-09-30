@@ -23,6 +23,7 @@ npm run flow -- http://localhost:3100 docs/figma-handoff/screens
 | `src/engine/pipeline.test.ts` | 17 | Lanes and caps, flagged never shown, closed world, evidence checks, latent-signal rule, explanation validator and fallback, outcomes, deterministic fallback, Checked held back, client filter, staleness, secret canary, injection has no ranking effect |
 | `src/engine/providers/anthropic.test.ts` | 5 | Request shape (fenced data, schema, fallback), refusal/cut-off handling, served-model recording (stub client, not live) |
 | `src/eval/bakeoff.test.ts` | 5 | False-positive rate, calibration error, repeat consistency, Jev win rule, H4 guard |
+| `src/engine/providers/jev.test.ts` | 6 | Jev request shape (read-back state only, no raw text, pinned model, question set), answer mapping and thresholds, intent without an item → none, engine quote check end to end, API error → degrade, key env names |
 | `src/eval/metrics.test.ts` | 5 | Metrics, release gate, pricing, blind pairs |
 | `src/server/controls.db.test.ts` | 4 | Quota hashing and cap, budget breaker, app-role purge, flag audit and grants |
 | `src/setup/handoff.test.ts` | 6 | Danger detection, Cursor link decoding (incl. "+"), hostnames, route choice, paste message |
@@ -51,4 +52,5 @@ copy button works (client JS under CSP) · Cursor config decoded before link · 
 | T-12 | Keyboard only | Tab through counter → results → setup | Every control reachable, visible focus ring, details toggle with Enter/Space | Partly automated in a11y.mjs (counter tab order, keyboard submit); full traversal of results not yet |
 | T-13 | Screen reader labels | Check chips, meters, cards with a screen reader | Chips announce state; meters announced by their words; cards labelled by title | Not run |
 | T-14 | Real model | Set `CAFAI_MODEL_PROVIDER=anthropic` with a key | Same flow with live understanding and explanations | BLOCKED: no API key (REGISTER A-017) |
+| T-16 | Jev live smoke | Set `TYPESAFE_API_KEY`, new session, `npm run jev:smoke`, then `npm run eval -- --arms llm,llm+jev --repeats 3` | One OK call with model `jev-1.13.0`, tokens and cost printed; A2 column filled (fixture = smoke only) | BLOCKED: key not set in this session (A-040) |
 | T-15 | Blind comparison | 60–100 real cases with assistant answers | Win rate from judges | BLOCKED: needs concierge data (A-008) |

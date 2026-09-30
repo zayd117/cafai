@@ -105,7 +105,7 @@ export async function judge(args: {
   if (args.candidates.length === 0) return { judgments: new Map(), usage, failed: false };
   const req = {
     text: args.text,
-    items: args.items.map((i) => ({ id: i.id, kind: i.kind, text: i.text })),
+    items: args.items.map((i) => ({ id: i.id, kind: i.kind, text: i.text, quote: i.quote, edited: i.edited })),
     candidates: args.candidates.map(candidateForModel),
   };
   for (let attempt = 0; attempt < 2; attempt++) {

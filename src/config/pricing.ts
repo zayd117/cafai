@@ -2,6 +2,8 @@
 export const PRICES: Record<string, { input: number; output: number }> = {
   "claude-sonnet-5-5": { input: 2, output: 10 },
   "claude-haiku-4-5": { input: 1, output: 5 },
+  // Jev 1.13: $0.042 per million input tokens, output free (docs.typesafe.ai/models, read 30 Sep 2026).
+  "jev-1.13.0": { input: 0.042, output: 0 },
   MOCK: { input: 0, output: 0 },
 };
 

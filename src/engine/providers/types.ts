@@ -45,7 +45,8 @@ export interface CandidateForModel {
 
 export interface JudgmentRequest {
   text: string;
-  items: { id: string; kind: string; text: string }[];
+  /** quote: the item's verified words from the input; edited: user edit (ground truth). Code-side only for Jev. */
+  items: { id: string; kind: string; text: string; quote?: string; edited?: boolean }[];
   candidates: CandidateForModel[];
 }
 
