@@ -15,6 +15,7 @@ import { getProviders } from "../src/engine/providers";
 import type { DecisionProvider, LlmProvider } from "../src/engine/providers/types";
 import { ARMS, armReport, DEFAULT_ARMS, evaluateCheck, type ArmReport, type Check } from "../src/eval/bakeoff";
 import { makePair, neutralText, scorePairs, type BlindPair, type PairKey } from "../src/eval/blind";
+import { JevProvider } from "../src/engine/providers/jev";
 import { gate, type Report } from "../src/eval/metrics";
 import { runCase, scriptedFor } from "../src/eval/run";
 import type { CaseResult, EvalCase } from "../src/eval/types";
@@ -61,9 +62,9 @@ const repeats = Math.max(1, Number(arg("repeats") ?? 1));
 const armNames = (arg("arms") ?? DEFAULT_ARMS.join(",")).split(",").map((s) => s.trim()).filter(Boolean);
 for (const a of armNames) if (!ARMS[a]) { console.error(`unknown arm "${a}"; known: ${Object.keys(ARMS).join(", ")}`); process.exit(2); }
 
-/** Jev sits behind the Decision interface (§17). Not built yet: the TypeSafe API docs are unreachable here (A-040). */
+/** Jev sits behind the Decision interface (§17); needs JEV_API_KEY (A-040). */
 function jevDecision(): DecisionProvider | null {
-  return null;
+  return process.env.JEV_API_KEY ? new JevProvider() : null;
 }
 
 const reports: Record<string, ArmReport> = {};
@@ -72,7 +73,7 @@ for (const name of armNames) {
   const arm = ARMS[name]!;
   const jev = arm.decision === "jev" ? jevDecision() : null;
   if (arm.decision === "jev" && !jev) {
-    skipped[name] = "Jev provider not built yet (needs TypeSafe API docs, key and network access; REGISTER A-040)";
+    skipped[name] = "JEV_API_KEY not set (REGISTER A-040)";
     continue;
   }
   const runs: CaseResult[][] = [];
