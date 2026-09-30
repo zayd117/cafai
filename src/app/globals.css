@@ -140,3 +140,13 @@ summary::-webkit-details-marker { display: none; }
 .footer nav { justify-content: flex-start; gap: 16px; }
 .footer a { min-height: 44px; display: inline-flex; align-items: center; }
 .state .btn { align-self: flex-start; }
+
+/* Card signals and meta (design proposal: fit visible before the reasoning; labelled setup facts) */
+.signals { gap: 32px; padding: 12px 16px; background: var(--color-bg-sunken); border-radius: var(--radius-md); }
+.meta { display: flex; flex-wrap: wrap; gap: 12px 32px; margin: 0; padding-top: 12px; border-top: 1px dashed var(--line); }
+.meta div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.meta dd { margin: 0; font-size: 14px; color: var(--muted); overflow-wrap: anywhere; }
+/* Order panel as a receipt */
+.order { box-shadow: var(--shadow-md); }
+.order h2 { padding-bottom: 12px; border-bottom: 1px dashed var(--line-strong); }
+.order form + form { border-top: 1px dashed var(--line-strong); padding-top: 14px; }
