@@ -135,3 +135,11 @@ Format: MD section → requirement → engineering task → files → test. Kind
 | §14 self-audit, §24 | Disclaimers for AI output and third-party tools; the UI says plainly Caf.ai cannot prevent harm after install | CONFIRMED | `layout.tsx` footer | screenshot 05 |
 | §24 | Terms, privacy, takedown and security contacts | BLOCKED on counsel (A-038) | `terms`, `privacy`, `security` placeholder pages | axe |
 | §17 | Deploy to a managed host | BLOCKED (A-039) | — | `npm run build` passes |
+
+## Phase 0 bake-off harness
+
+| Plan § | Requirement | Kind | Files | Verification |
+|---|---|---|---|---|
+| §25 | Arms on the same cases: A1 LLM only, A2 LLM + Jev on structured decisions, four ablations; A0 general-assistant baseline via blind pairs (GPT/ChatGPT baseline only, A-041) | CONFIRMED (A2 NOT RUN until Jev provider, A-040) | `src/eval/bakeoff.ts`, `scripts/eval.ts --arms --repeats` | `bakeoff.test.ts`; `npm run eval -- --arms ... --repeats 3` |
+| §25 | Jev judged on false positives, calibration, consistency; win = margin on ≥2, no rise in harmful picks, cost inside cap | CONFIRMED (margin 0.10 and cap $0.05 are ASSUMPTIONS) | `evaluateCheck` jev_win, `eval/bakeoff.json` | "Jev wins only on enough measures…" |
+| §25 | Pass lines written before the run for H2, H3, H4 | CONFIRMED (starting proposals, ASSUMPTION) | `eval/bakeoff.json` | eval output "pass lines" |

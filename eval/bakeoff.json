@@ -1,0 +1,40 @@
+{
+  "status": "ASSUMPTION: starting pass lines from plan §25; fix the final numbers BEFORE the real run and do not edit them after",
+  "written_on": "2026-09-30",
+  "checks": [
+    {
+      "id": "H2 expansion helps",
+      "type": "higher",
+      "candidate": "llm",
+      "reference": "no_expansion",
+      "metric": "capability_recall_at_5",
+      "margin": 0.1
+    },
+    {
+      "id": "H3 two-way matching helps",
+      "type": "higher",
+      "candidate": "llm",
+      "reference": "forward_only",
+      "metric": "precision_at_3",
+      "margin": 0.1
+    },
+    {
+      "id": "H4 evidence gates cut false positives",
+      "type": "relative_reduction",
+      "candidate": "llm",
+      "reference": "evidence_gates_off",
+      "metric": "false_positive_rate",
+      "margin": 0.2,
+      "guard": { "metric": "capability_recall_at_5", "max_drop": 0.05 }
+    },
+    {
+      "id": "Jev wins (A2 vs A1)",
+      "type": "jev_win",
+      "candidate": "llm+jev",
+      "reference": "llm",
+      "margin": 0.1,
+      "min_wins": 2,
+      "max_cost_per_run_usd": 0.05
+    }
+  ]
+}

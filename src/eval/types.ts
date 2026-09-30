@@ -19,8 +19,17 @@ export interface EvalCase {
   };
   /** Scripted model outputs for deterministic MOCK runs (fixture cases only). */
   mock?: { understand: unknown; judge?: "all_direct" | unknown; explain?: "template" | unknown };
-  /** General-assistant answer to the same input, collected by a person for the blind comparison (§25). */
-  assistant_answer?: string;
+  /**
+   * A0 baseline (plan §9 Baseline, §25): a general assistant's answer to the same input, saved by a person for the
+   * blind comparison. GPT/ChatGPT and Claude chat are baselines only, never pipeline arms (REGISTER A-041).
+   */
+  baseline?: {
+    assistant: string; // e.g. "ChatGPT" or "Claude", as the person used it
+    model_or_plan?: string; // what the app showed, if anything
+    collected_on: string; // YYYY-MM-DD
+    prompt: string; // exactly what was asked, e.g. the description + "What tools should I add?"
+    answer: string; // pasted as-is
+  };
 }
 
 export interface CaseResult {
@@ -29,7 +38,7 @@ export interface CaseResult {
   outcome: string;
   picked_capabilities: string[];
   picked_offerings: string[];
-  picks: { offering_id: string; capability_id: string; lane: string; match_band: string; confidence_band: string; need_type: string; evidence_ok: boolean }[];
+  picks: { offering_id: string; capability_id: string; lane: string; match_band: string; confidence_band: string; confidence_score: number; need_type: string; evidence_ok: boolean }[];
   not_needed_capabilities: string[];
   concepts_total: number;
   concepts_mapped: number;
