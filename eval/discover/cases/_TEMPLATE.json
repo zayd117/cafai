@@ -1,0 +1,13 @@
+{
+  "id": "short-kebab-id",
+  "text": "The person's own words, secrets and personal details removed.",
+  "notes": "Optional. Delete 'interpretation' to let Claude interpret live (needs ANTHROPIC_API_KEY); keep it to compare only the raters.",
+  "interpretation": {
+    "items": [{ "id": "i0", "text": "A need in plain words" }],
+    "queries": [{ "id": "q0", "item_id": "i0", "text": "directory search words" }]
+  },
+  "good_queries": [],
+  "bad_queries": [],
+  "relevant": ["listing-slug-a good answer contains"],
+  "irrelevant": ["listing-slug that must not rank in the top 5"]
+}

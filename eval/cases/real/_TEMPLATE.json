@@ -1,0 +1,29 @@
+{
+  "id": "c-001-short-slug",
+  "fixture": false,
+  "input_type": "C",
+  "source": "concierge",
+  "text": "Paste the person's own description here. Remove secrets, emails, phone numbers and names.",
+  "declared_clients": ["claude_code"],
+  "labels": {
+    "must_recommend": [],
+    "acceptable_offerings": [],
+    "must_not_recommend": [],
+    "potentially_missed": [],
+    "probably_not_needed": [],
+    "labeled_by": "your initials",
+    "labeled_on": "2026-10-01"
+  },
+  "baseline": {
+    "assistant": "ChatGPT",
+    "model_or_plan": "what the app showed, if anything",
+    "collected_on": "2026-10-01",
+    "prompt": "The same description, then: What tools should I add?",
+    "answer": "Paste the assistant's full answer here, unedited."
+  },
+  "concierge": {
+    "minutes_spent": 0,
+    "picks_returned": [],
+    "day7": { "tried": [], "helped": [], "knew_before": [] }
+  }
+}

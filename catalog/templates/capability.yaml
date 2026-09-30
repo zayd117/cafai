@@ -1,0 +1,16 @@
+# Template for one entry in catalog/taxonomy.yaml (plan §9: 40–60 plain-language capabilities, drafted from concierge
+# needs, not from any catalog). Copy into the list in catalog/taxonomy.yaml; do not set fixture.
+- id: short-kebab-id
+  plain_name: What it lets someone do, in plain words
+  job_phrases:
+    - words people actually used for this job
+  need_signals:
+    - text: when this need is implied by the project (e.g. "stack includes a hosted database")
+      need_type: implied
+    - text: a common gap for this kind of project with no sign of coverage
+      need_type: latent
+  skip_conditions:
+    - when someone does not need it
+  native_coverage:
+    - client: claude_code
+      note: what the client already does for this, if anything

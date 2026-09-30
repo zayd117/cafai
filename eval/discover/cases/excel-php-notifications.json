@@ -1,0 +1,22 @@
+{
+  "id": "excel-php-notifications",
+  "text": "i am developing a excele php sheet mutation observer real time notifcatons to desktop",
+  "notes": "Interpretation is fixed (the scripted one from npm run discover -- --mock) so both arms rate identical queries. Only query labels are set: 'weather forecast api' is off topic by construction. Add relevant / irrelevant slugs from eval/reports/discover-pool.json to score the ranking.",
+  "interpretation": {
+    "items": [
+      { "id": "i0", "text": "Read an Excel spreadsheet from PHP and detect when its cells change" },
+      { "id": "i1", "text": "Send real-time desktop notifications when something changes" }
+    ],
+    "queries": [
+      { "id": "q0", "item_id": "i0", "text": "excel spreadsheet reader" },
+      { "id": "q1", "item_id": "i0", "text": "xlsx file change watcher" },
+      { "id": "q2", "item_id": "i0", "text": "weather forecast api" },
+      { "id": "q3", "item_id": "i1", "text": "desktop notifications" },
+      { "id": "q4", "item_id": "i1", "text": "real-time push notification" }
+    ]
+  },
+  "good_queries": ["excel spreadsheet reader", "xlsx file change watcher", "desktop notifications"],
+  "bad_queries": ["weather forecast api"],
+  "relevant": [],
+  "irrelevant": []
+}

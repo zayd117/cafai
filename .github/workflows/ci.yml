@@ -30,6 +30,7 @@ jobs:
       - run: ./scripts/db-bootstrap.sh
       - run: npm run typecheck
       - run: npm run catalog:check
+      - run: npm run cases:check
       - run: npm test
       - run: npm run eval
       - run: npm run build

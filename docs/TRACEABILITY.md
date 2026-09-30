@@ -61,7 +61,7 @@ Format: MD section → requirement → engineering task → files → test. Kind
 | §9 st.12, §8, §29 | Explanation cites evidence ids; rejects URLs, commands, prices, safety claims, level-1 jargon; length limit; template fallback | CONFIRMED (length PLACEHOLDER) | `explain.ts` | "rejects explanations with URLs…" |
 | §9 failure table | Low confidence → read-back first; out of scope; nothing needed; no good pick; invalid output → retry once then deterministic; injection flagged, no ranking effect | CONFIRMED | `pipeline.ts` | five outcome tests + "falls back to deterministic rules", "flags injection-like input" |
 | §2, §11 | Every run records catalog, config, prompt and model versions | CONFIRMED | `pipeline.ts` `versions` | "records versions for replay" |
-| §17 | LLM and Decision interfaces (Jev can take Decision only after a bake-off win) | CONFIRMED | `providers/types.ts` | — |
+| §17 | LLM and Decision interfaces (Jev can take Decision only after a bake-off win) | CONFIRMED (Jev provider UNVERIFIED LIVE, A-040) | `providers/types.ts`, `providers/jev.ts` | `jev.test.ts` (stub fetch); `npm run jev:smoke` (live, needs key) |
 | §9, §17, A-017 | Real model provider: schema-bound calls, fenced data-only inputs, refusal/cut-off treated as invalid | CONFIRMED; UNVERIFIED LIVE (no credential) | `providers/anthropic.ts`, `prompts.ts`, `providers/index.ts` | `anthropic.test.ts` (stub client) |
 | §25 | Ablation switches: no expansion (H2), forward-only (H3), evidence gates off (H4) | CONFIRMED | `pipeline.ts` `Ablations` | exercised in L4 harness |
 
@@ -140,6 +140,6 @@ Format: MD section → requirement → engineering task → files → test. Kind
 
 | Plan § | Requirement | Kind | Files | Verification |
 |---|---|---|---|---|
-| §25 | Arms on the same cases: A1 LLM only, A2 LLM + Jev on structured decisions, four ablations; A0 general-assistant baseline via blind pairs (GPT/ChatGPT baseline only, A-041) | CONFIRMED (A2 NOT RUN until Jev provider, A-040) | `src/eval/bakeoff.ts`, `scripts/eval.ts --arms --repeats` | `bakeoff.test.ts`; `npm run eval -- --arms ... --repeats 3` |
+| §25 | Arms on the same cases: A1 LLM only, A2 LLM + Jev on structured decisions, four ablations; A0 general-assistant baseline via blind pairs (GPT/ChatGPT baseline only, A-041) | CONFIRMED (A2 runs when a TypeSafe key is set; NOT RUN otherwise, A-040) | `src/eval/bakeoff.ts`, `scripts/eval.ts --arms --repeats` | `bakeoff.test.ts`; `npm run eval -- --arms ... --repeats 3` |
 | §25 | Jev judged on false positives, calibration, consistency; win = margin on ≥2, no rise in harmful picks, cost inside cap | CONFIRMED (margin 0.10 and cap $0.05 are ASSUMPTIONS) | `evaluateCheck` jev_win, `eval/bakeoff.json` | "Jev wins only on enough measures…" |
 | §25 | Pass lines written before the run for H2, H3, H4 | CONFIRMED (starting proposals, ASSUMPTION) | `eval/bakeoff.json` | eval output "pass lines" |

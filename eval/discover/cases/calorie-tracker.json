@@ -1,0 +1,22 @@
+{
+  "id": "calorie-tracker",
+  "text": "I'm making a calorie and macro tracker app for phones. I use Claude Code. I don't really know what I need.",
+  "notes": "Fixed interpretation (the scripted one from npm run discover -- --mock). 'stock market prices' is off topic by construction; 'postgres sqlite' is left unlabeled because reasonable people disagree. Add relevant / irrelevant slugs from eval/reports/discover-pool.json.",
+  "interpretation": {
+    "items": [
+      { "id": "i0", "text": "A place to look up food and nutrition facts" },
+      { "id": "i1", "text": "A place to save each person's meals and totals" }
+    ],
+    "queries": [
+      { "id": "q0", "item_id": "i0", "text": "food nutrition database" },
+      { "id": "q1", "item_id": "i0", "text": "calorie lookup" },
+      { "id": "q2", "item_id": "i0", "text": "stock market prices" },
+      { "id": "q3", "item_id": "i1", "text": "app database storage" },
+      { "id": "q4", "item_id": "i1", "text": "postgres sqlite" }
+    ]
+  },
+  "good_queries": ["food nutrition database", "calorie lookup"],
+  "bad_queries": ["stock market prices"],
+  "relevant": [],
+  "irrelevant": []
+}

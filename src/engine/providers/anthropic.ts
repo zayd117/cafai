@@ -87,7 +87,8 @@ export class AnthropicProvider implements LlmProvider, DecisionProvider {
   }
 
   judge(req: JudgmentRequest) {
-    const user = [fence("candidates", req.candidates), fence("understood_items", req.items), fence("description", req.text)].join("\n\n");
+    const items = req.items.map(({ id, kind, text }) => ({ id, kind, text })); // prompt unchanged by the Jev-only fields
+    const user = [fence("candidates", req.candidates), fence("understood_items", items), fence("description", req.text)].join("\n\n");
     return this.call(this.models.judgment, JUDGMENT_SYSTEM, user, judgmentSchema);
   }
 

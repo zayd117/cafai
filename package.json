@@ -17,10 +17,15 @@
     "db:migrate": "tsx scripts/migrate.ts",
     "eval": "tsx scripts/eval.ts",
     "flow": "node scripts/flow.mjs",
-    "a11y": "node scripts/a11y.mjs"
+    "a11y": "node scripts/a11y.mjs",
+    "cases:check": "tsx scripts/check-cases.ts",
+    "jev:smoke": "tsx scripts/jev-smoke.ts",
+    "discover": "tsx scripts/discover.ts",
+    "discover:bakeoff": "tsx scripts/discover-bakeoff.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.129.0",
+    "@typesafe-ai/sdk": "^0.6.0",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "next": "^16.3.7",

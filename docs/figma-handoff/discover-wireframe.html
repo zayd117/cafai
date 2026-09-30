@@ -1,0 +1,301 @@
+<title>Caf.ai Discovery Result</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Figtree:wght@400;600;700&family=Young+Serif&display=swap">
+<style>
+/* Layout: the site's results page (/r/:runId) filled with the output of `npm run discover -- --mock` for the Excel/PHP text.
+   Tokens are the site's own (src/app/globals.css). One light theme, as the site is drawn. */
+:root {
+  --ground: #f6ede1; --paper: #fffaf3; --ink: #2e1e16; --muted: #6b5344; --line: #e4d2bc; --line-strong: #8a7262;
+  --tag: #f0e2cf; --clay: #9a4a24; --clay-dark: #7a3a1c; --moss: #4e5e3a; --moss-soft: #e6ebdd;
+  --canvas: #e6d8c5; --note: #fbf3e6;
+  --display: "Young Serif", Georgia, serif; --body: "Figtree", system-ui, sans-serif; --mono: "Courier Prime", "Courier New", monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--canvas); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.5; padding-inline: 16px; padding-block: 24px 48px; }
+p { margin: 0; }
+a { color: var(--clay); }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; margin: 0; line-height: 1.15; text-wrap: balance; }
+summary { list-style: none; cursor: pointer; }
+summary::-webkit-details-marker { display: none; }
+:focus-visible { outline: 3px solid var(--clay); outline-offset: 3px; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+
+/* Notes strip (outside the site frame) */
+.notes { max-width: 1440px; margin: 0 auto 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px 24px; padding: 14px 20px; border: 1.5px dashed var(--line-strong); border-radius: 12px; background: var(--note); font-size: 14px; }
+.notes b { display: block; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.notes code { font-family: var(--mono); }
+
+/* Browser frame around the mocked page */
+.frame { max-width: 1440px; margin: 0 auto; border: 1.5px solid var(--line-strong); border-radius: 14px; overflow: hidden; background: var(--ground); }
+.chrome { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: var(--tag); border-bottom: 1.5px solid var(--line-strong); }
+.chrome i { width: 11px; height: 11px; border-radius: 999px; border: 1.5px solid var(--line-strong); }
+.chrome span { flex: 1; min-width: 0; margin-left: 8px; padding: 2px 14px; border: 1.5px solid var(--line-strong); border-radius: 999px; background: var(--paper); font-family: var(--mono); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Site shell */
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px clamp(16px, 4vw, 72px); }
+.brand { display: flex; align-items: center; gap: 12px; font-family: var(--display); font-size: 24px; }
+.brand-mark { width: 40px; height: 40px; border-radius: 999px; background: var(--clay); display: grid; place-items: center; }
+.nav a { color: var(--ink); text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
+.banner { margin: 0 clamp(16px, 4vw, 72px) 16px; display: flex; gap: 12px; align-items: flex-start; padding: 10px 16px; border: 1.5px dashed var(--line-strong); border-radius: 12px; font-size: 14px; }
+.tag { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border: 1.5px dashed var(--line-strong); border-radius: 6px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+.page { padding: 0 clamp(16px, 4vw, 72px) 56px; }
+
+/* Buttons and chips */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 22px; border-radius: 999px; border: 1.5px solid var(--line-strong); background: transparent; color: var(--ink); font: inherit; font-weight: 600; cursor: pointer; text-decoration: none; }
+.btn.primary { background: var(--clay); border-color: var(--clay); color: var(--paper); }
+.btn.small { min-height: 44px; padding: 0 16px; font-size: 15px; }
+.btn.link { border: 0; padding: 0 8px; color: var(--clay); text-decoration: underline; min-height: 44px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border: 1.5px solid var(--line-strong); border-radius: 999px; font-weight: 600; font-size: 15px; background: transparent; color: var(--ink); font-family: inherit; }
+.chip.on { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.ph { display: inline-block; padding: 0 8px; border: 1px dashed var(--line-strong); border-radius: 6px; background: var(--tag); font-family: var(--mono); font-size: .92em; }
+
+/* Results */
+.results { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 48px; align-items: start; max-width: 1296px; margin: 0 auto; }
+@media (max-width: 960px) { .results { grid-template-columns: 1fr; gap: 24px; } }
+.stack { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+.section-title { font-size: 34px; }
+.card { background: var(--paper); border: 1.5px solid var(--line); border-radius: 20px; padding: 24px 28px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.card h3 { font-size: 26px; }
+.card-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+.maker { font-size: 14px; color: var(--muted); }
+.part { display: flex; flex-direction: column; gap: 4px; }
+.part-label { font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.quote { font-style: italic; color: var(--muted); }
+.signals { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+.signal { display: inline-flex; gap: 8px; align-items: center; font-weight: 700; font-size: 15px; }
+.meter { display: inline-flex; gap: 3px; }
+.meter i { width: 18px; height: 8px; border-radius: 3px; border: 1.5px solid var(--moss); }
+.meter i.on { background: var(--moss); }
+.dots i { width: 10px; height: 10px; border-radius: 999px; }
+.need { display: inline-flex; align-items: center; min-height: 28px; padding: 0 10px; border-radius: 999px; background: var(--moss-soft); color: var(--moss); font-weight: 700; font-size: 14px; }
+.need.later { background: var(--tag); color: var(--ink); }
+.need.gap { background: var(--tag); color: var(--clay-dark); border: 1.5px solid var(--clay); }
+.feedback { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.level { border-top: 1.5px dashed var(--line); padding-top: 12px; }
+.level > summary { display: flex; align-items: center; justify-content: space-between; min-height: 44px; font-weight: 700; }
+.level-body { display: flex; flex-direction: column; gap: 14px; padding: 8px 0 4px; }
+.kv { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 6px 16px; margin: 0; font-size: 15px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.ev { font-family: var(--mono); font-size: 13px; font-weight: 700; padding: 0 6px; border: 1px solid var(--line-strong); border-radius: 4px; }
+@media (max-width: 560px) { .kv { grid-template-columns: 1fr; } .card { padding: 20px; } }
+
+.readback { padding: 24px 28px; gap: 16px; }
+.readback .row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.needs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.needs li { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.needs li > span:first-child { flex: 1 1 260px; min-width: 0; }
+
+.state { background: var(--paper); border: 1.5px dashed var(--clay); border-radius: 20px; padding: 24px 28px; display: flex; flex-direction: column; gap: 12px; }
+.state h2 { font-size: 26px; }
+.state .btn { align-self: flex-start; }
+
+.order { position: sticky; top: 16px; background: var(--paper); border: 1.5px solid var(--line); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+.order h2 { font-family: var(--mono); font-size: 18px; letter-spacing: .06em; text-transform: uppercase; }
+.order ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+
+.panel { padding: 8px 28px; }
+.panel > summary { font-weight: 700; min-height: 52px; display: flex; align-items: center; justify-content: space-between; }
+.panel ul { margin: 4px 0 16px; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }
+.queries { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; margin: 4px 0 16px; padding: 0; list-style: none; }
+.queries li { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; padding: 8px 0; border-top: 1.5px dashed var(--line); }
+.queries li:first-child { border-top: 0; }
+.queries .q { flex: 1 1 200px; font-family: var(--mono); font-size: 14px; }
+.queries .st { font-size: 13px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.queries .st.drop { color: var(--clay-dark); }
+.queries .st.kept { color: var(--moss); }
+
+.footer { border-top: 1.5px dashed var(--line); padding: 24px clamp(16px, 4vw, 72px) 32px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--muted); }
+.footer nav { display: flex; gap: 16px; }
+</style>
+
+<div class="notes">
+  <div><b>What this is</b>Wireframe of the results page (<code>/r/:runId</code>) filled with the output of <code>npm run discover -- --mock</code> for your Excel/PHP text.</div>
+  <div><b>Real</b>Tool names, makers and grades from live mcp.market listings, and which searches Jev kept or dropped.</div>
+  <div><b>Scripted</b>The two needs and five searches (no Claude key). Card wording, bands and the gap message are drawn placeholders, not engine output.</div>
+</div>
+
+<div class="frame">
+  <div class="chrome" aria-hidden="true"><i></i><i></i><i></i><span>caf.ai/r/discover-sample</span></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFAF3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h12v4a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5Z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M3 21h15"/><path d="M8 3c-.8 1-.8 2 0 3"/><path d="M12 3c-.8 1-.8 2 0 3"/></svg>
+      </span>
+      Caf.ai
+    </div>
+    <nav class="nav" aria-label="Main"><a href="#">New order</a></nav>
+  </header>
+
+  <div class="banner"><span class="tag">Mock + live listings</span><span>Your text was read by a scripted stand-in, not an AI model. The tools below come from live mcp.market listings, not our checked catalog. Nothing here is a real recommendation.</span></div>
+
+  <main class="page">
+    <div class="results">
+      <div class="stack">
+
+        <section class="card readback" aria-label="What we understood and what we found for each need">
+          <div class="row">
+            <span><strong>We understood:</strong> You want to watch an Excel sheet from PHP and get desktop alerts when it changes</span>
+            <span class="btn link">Change this</span>
+          </div>
+          <div class="part">
+            <span class="part-label">You said</span>
+            <p class="quote">“i am developing a excele php sheet mutation observer real time notifcatons to desktop”</p>
+          </div>
+          <ul class="needs">
+            <li><span>Read an Excel sheet from PHP and notice when its cells change</span><span class="need gap">Partly covered</span></li>
+            <li><span>Send real-time notifications to your desktop</span><span class="need">Covered</span></li>
+          </ul>
+        </section>
+
+        <div>
+          <h2 class="section-title">Barista’s picks</h2>
+          <p class="muted">Best fit first. Each one is optional.</p>
+        </div>
+
+        <article class="card" aria-labelledby="t1">
+          <div class="card-head">
+            <div class="part"><h3 id="t1">Desktop notifications</h3><span class="maker">by topvisor</span></div>
+            <span class="chip on">In my order</span>
+          </div>
+          <p>Lets your AI tool pop up a notification on your desktop.</p>
+          <div class="part">
+            <span class="part-label">Why we showed it</span>
+            <p class="quote">“real time notifcatons to desktop”</p>
+            <p>It matches what you described.</p>
+          </div>
+          <div class="part"><span class="part-label">What it could help with</span><p>Telling you the moment something in your project needs attention.</p></div>
+          <div class="part"><span class="part-label">Do you need it?</span><p><span class="need">Needed now</span> Your project sends alerts to your desktop.</p></div>
+          <div class="signals" aria-label="How well it fits and how sure we are">
+            <span class="signal"><span class="meter" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>Strong match</span>
+            <span class="signal"><span class="meter dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i></span>Fairly sure</span>
+          </div>
+          <p class="small">Skip it if your PHP code already shows its own desktop alerts.</p>
+          <p class="small muted">Set up in your AI tool · Effort <span class="ph">[effort placeholder]</span> · Access <span class="ph">[access placeholder]</span></p>
+          <div class="feedback"><span class="small muted">Was this useful?</span><span class="btn small">Useful</span><span class="btn small">Not useful</span><span class="btn small">I knew this already</span></div>
+          <details class="level"><summary>How it fits and how to set it up <span aria-hidden="true">+</span></summary></details>
+          <details class="level" open>
+            <summary>Technical details <span aria-hidden="true">−</span></summary>
+            <div class="level-body">
+              <dl class="kv">
+                <dt>Type</dt><dd>MCP server (a way for your AI tool to use another service)</dd>
+                <dt>Listing says</dt><dd><span class="ev">CLAIMED</span> “MCP server for desktop notifications over stdio”</dd>
+                <dt>Found by</dt><dd>Search “desktop notifications”</dd>
+                <dt>Listing grade</dt><dd>B 77 (mcp.market)</dd>
+                <dt>Fit / search / trust</dt><dd>0.90 / 0.79 / 0.77, final 0.805</dd>
+                <dt>Source</dt><dd><a href="#">mcp.market/server/topvisor-mcp-notifications</a></dd>
+              </dl>
+              <p class="small muted">Listing text is written by the tool’s maker. We have not checked it.</p>
+            </div>
+          </details>
+        </article>
+
+        <article class="card" aria-labelledby="t2">
+          <div class="card-head">
+            <div class="part"><h3 id="t2">Spreadsheet reader and editor</h3><span class="maker">by marekrost</span></div>
+            <span class="chip on">In my order</span>
+          </div>
+          <p>Opens Excel and CSV files so your AI tool can read and change cells.</p>
+          <div class="part">
+            <span class="part-label">Why we showed it</span>
+            <p class="quote">“excele php sheet”</p>
+            <p>It matches the Excel part of what you described.</p>
+          </div>
+          <div class="part"><span class="part-label">What it could help with</span><p>Reading the sheet so your PHP code can compare it to the last version.</p></div>
+          <div class="part"><span class="part-label">Do you need it?</span><p><span class="need">Needed now</span> You work with an Excel sheet.</p></div>
+          <div class="signals" aria-label="How well it fits and how sure we are">
+            <span class="signal"><span class="meter" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>Good match</span>
+            <span class="signal"><span class="meter dots" aria-hidden="true"><i class="on"></i><i></i><i></i></span>Not sure yet</span>
+          </div>
+          <p class="small">This looks relevant, but we don’t have enough evidence to be confident. It reads sheets, but we found no sign that it reports changes.</p>
+          <p class="small">Skip it if your PHP library already reads the file.</p>
+          <p class="small muted">Set up in your AI tool · Effort <span class="ph">[effort placeholder]</span> · Access <span class="ph">[access placeholder]</span></p>
+          <div class="feedback"><span class="small muted">Was this useful?</span><span class="btn small">Useful</span><span class="btn small">Not useful</span><span class="btn small">I knew this already</span></div>
+          <details class="level"><summary>How it fits and how to set it up <span aria-hidden="true">+</span></summary></details>
+          <details class="level"><summary>Technical details <span aria-hidden="true">+</span></summary></details>
+        </article>
+
+        <article class="card" aria-labelledby="t3">
+          <div class="card-head">
+            <div class="part"><h3 id="t3">Excel file tools</h3><span class="maker">by ruriazz</span></div>
+            <span class="chip">Add to my order</span>
+          </div>
+          <p>Reads and writes .xlsx files and keeps their layout intact.</p>
+          <div class="part">
+            <span class="part-label">Why we showed it</span>
+            <p class="quote">“excele php sheet”</p>
+            <p>It also handles Excel files, with more care for formatting.</p>
+          </div>
+          <div class="part"><span class="part-label">What it could help with</span><p>Editing a sheet without breaking its formatting.</p></div>
+          <div class="part"><span class="part-label">Do you need it?</span><p><span class="need later">Useful later</span> Only if the first sheet tool mangles your file’s formatting.</p></div>
+          <div class="signals" aria-label="How well it fits and how sure we are">
+            <span class="signal"><span class="meter" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>Good match</span>
+            <span class="signal"><span class="meter dots" aria-hidden="true"><i class="on"></i><i></i><i></i></span>Not sure yet</span>
+          </div>
+          <p class="small muted">Set up in your AI tool · Effort <span class="ph">[effort placeholder]</span> · Access <span class="ph">[access placeholder]</span></p>
+          <div class="feedback"><span class="small muted">Was this useful?</span><span class="btn small">Useful</span><span class="btn small">Not useful</span><span class="btn small">I knew this already</span></div>
+          <details class="level"><summary>How it fits and how to set it up <span aria-hidden="true">+</span></summary></details>
+          <details class="level"><summary>Technical details <span aria-hidden="true">+</span></summary></details>
+        </article>
+
+        <section class="state" aria-labelledby="gap">
+          <h2 id="gap">Nothing found that watches a sheet for changes</h2>
+          <p>We found tools that read Excel files and tools that send alerts, but none that reports when a cell changes. That part would stay in your PHP code, which can then hand the alert to the notification pick above.</p>
+          <span class="btn">Describe it a different way</span>
+        </section>
+
+        <details class="card panel" open>
+          <summary>Not needed now · 5 left out <span aria-hidden="true">−</span></summary>
+          <ul>
+            <li><strong>Spreadsheet-kit</strong> and <strong>Agent Spreadsheet</strong>: do the same job as the spreadsheet pick, so one is enough.</li>
+            <li><strong>AILANG Parse</strong>: built for Word, PowerPoint and PDF files too. Lower fit for one Excel sheet.</li>
+            <li><strong>ntfy</strong> and <strong>kweenkl</strong>: send alerts to a phone. You asked for the desktop.</li>
+          </ul>
+        </details>
+
+        <details class="card panel" open>
+          <summary>How we chose these <span aria-hidden="true">−</span></summary>
+          <p class="small muted">We turned your words into two needs and five searches, kept the searches that stayed on topic, and ranked what they found.</p>
+          <ul class="queries">
+            <li><span class="q">excel spreadsheet reader</span><span class="st kept">Searched</span></li>
+            <li><span class="q">xlsx file change watcher</span><span class="st kept">Searched</span></li>
+            <li><span class="q">desktop notifications</span><span class="st kept">Searched</span></li>
+            <li><span class="q">real-time push notification</span><span class="st kept">Searched</span></li>
+            <li><span class="q">weather forecast api</span><span class="st drop">Set aside, off topic</span></li>
+          </ul>
+        </details>
+
+        <details class="card panel"><summary>How we understood this <span aria-hidden="true">+</span></summary></details>
+      </div>
+
+      <aside class="order" aria-labelledby="order-h">
+        <h2 id="order-h">Your order</h2>
+        <ol>
+          <li>Desktop notifications</li>
+          <li>Spreadsheet reader and editor</li>
+        </ol>
+        <p class="small muted">Tick or untick picks on the cards to change what goes into setup.</p>
+        <span class="btn primary">Set up in your AI tool</span>
+        <span class="small muted">Refine my picks</span>
+        <div class="chips">
+          <span class="chip">Remote only</span>
+          <span class="chip">Vendor-official only</span>
+          <span class="chip">Free only</span>
+        </div>
+        <span class="btn">Update picks</span>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Picks and explanations are written with AI help and can be wrong. Check a tool before you add it.</p>
+    <p>We check the tools we suggest, but once you install a tool we cannot stop it from misbehaving. Caf.ai never installs anything and holds no keys to your other services.</p>
+    <p>Nobody can pay for a place in our picks.</p>
+    <nav aria-label="Legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Security contact</a></nav>
+  </footer>
+</div>
