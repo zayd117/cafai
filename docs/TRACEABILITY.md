@@ -77,3 +77,23 @@ Format: MD section → requirement → engineering task → files → test. Kind
 | §9, §25 baseline | Blind pairs vs a general assistant, neutral format, random order, separate key; win rate | CONFIRMED | `src/eval/blind.ts`, `--export-pairs`, `--score-pairs` | "builds blind pairs…" |
 | §9 | Adversarial inputs (injection) in the suite | CONFIRMED (FIXTURE) | `fx-c-injection.json` | harmful_picks 0 |
 | A-008 | Real labeled set (60–100 cases) and assistant answers | BLOCKED on concierge data | `eval/cases/real/README.md` | — |
+
+## L5–L6 App shell and core UX (built from wireframe canvas Ws1hft8GALEGne1L616Y4Y)
+
+| Plan § | Requirement | Kind | Files | Browser check (`scripts/flow.mjs`) |
+|---|---|---|---|---|
+| §18 | Strict CSP, dynamic nonce; no inline styles; hostnames on external links | CONFIRMED | `src/proxy.ts`, `globals.css` | "strict CSP header"; copy button hydrates under CSP |
+| §8, §18 route `/` | Counter: one input, AI-tool chips, example prompts from §6/§7, "Don't paste secrets", no signup | CONFIRMED | `src/app/page.tsx`, `actions.ts#submitOrder` | counter heading, empty input error |
+| §8, §24 | State A "something specific" as optional extra signal | CONFIRMED | `submitOrder` (sent as a user item of kind interest) | — |
+| §8 | Project-type chips | NOT BUILT: values unspecified (REGISTER A-028) | — | — |
+| §6, §9, §18 route `/r/:runId` | Read-back as editable items; edits rerun (new run, parent linked); at most one question; confirm on low confidence | CONFIRMED | `r/[runId]/page.tsx`, `actions.ts#rerun` | — (manual check pending, TEST_CASES T-07) |
+| §8 card anatomy | 12 parts on 3 levels; no jargon at level 1; Match bar + Confidence dots; "Do you need it?"; evidence tags with dates; score numbers only at level 3 | CONFIRMED | `_components/PickCard.tsx`, `labels.ts` | 1–5 cards, no jargon at level 1, level 3 shows type |
+| §8, §9 | Directly relevant picks, then at most one "Also worth knowing"; "Not needed now" collapsed with reasons; "How we chose these" | CONFIRMED | `r/[runId]/page.tsx` | at most one AWK |
+| §6, §9 | Outcomes: nothing needed, no good pick yet, needs confirmation, needs clarification, out of scope | CONFIRMED (copy for out-of-scope and banner is placeholder, A-030) | `r/[runId]/page.tsx` | nothing-needed, out-of-scope |
+| §8, §9 Feedback | Per card: useful / not useful / already knew; setup: It worked / I'm stuck | CONFIRMED (reason codes open) | `actions.ts#sendFeedback` | feedback acknowledged ×2 |
+| §8 Advanced controls | Filters: remote only, vendor-official only, free only | CONFIRMED | order sidebar → `rerun` | — |
+| §19 | Old runs re-render from their own catalog snapshot | CONFIRMED | `runtime.ts#snapshotFor` | — |
+| §13, §14 route setup | Handoff per declared client; full commands; danger highlighting; Cursor config decoded before link; hostnames; headless warning; first prompt; no keys held | CONFIRMED | `src/setup/handoff.ts`, `r/[runId]/setup/page.tsx` | setup heading, decoded Cursor config, least-privilege warning |
+| §18 | Mobile: setup says it works best on a computer | CONFIRMED | `.setup-desktop-note` | mobile screenshots |
+| §18 | "Send these steps to myself" | NOT BUILT: channel unspecified (wireframe UNKNOWN) | — | — |
+| §18 | Streaming read-back then cards | NOT BUILT YET: page renders when the run completes | — | — |

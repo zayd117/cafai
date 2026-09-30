@@ -8,6 +8,7 @@ const [base = "http://localhost:3100", out = "docs/figma-handoff/screens"] = pro
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH ?? "/opt/pw-browsers/chromium", args: ["--no-sandbox"] });
 const problems = [];
+const notes = [];
 const checks = [];
 const expect = (name, ok) => checks.push(`${ok ? "PASS" : "FAIL"} ${name}`);
 
@@ -15,7 +16,12 @@ async function newPage(width, height) {
   const page = await browser.newPage({ viewport: { width, height } });
   page.on("console", (m) => { if (m.type() === "error" || m.type() === "warning") problems.push(`console.${m.type()}: ${m.text()}`); });
   page.on("pageerror", (e) => problems.push(`pageerror: ${e.message}`));
-  page.on("requestfailed", (r) => problems.push(`requestfailed: ${r.url()} ${r.failure()?.errorText}`));
+  page.on("requestfailed", (r) => {
+    const line = `requestfailed: ${r.url()} ${r.failure()?.errorText} (${r.resourceType()}, navigation=${r.isNavigationRequest()})`;
+    // Next.js background fetches cancelled because the test navigated away are not app failures; keep them as notes.
+    if (r.failure()?.errorText === "net::ERR_ABORTED" && r.resourceType() === "fetch" && r.url().startsWith(base)) notes.push(line);
+    else problems.push(line);
+  });
   page.on("response", (r) => { if (r.status() >= 400) problems.push(`http ${r.status()}: ${r.url()}`); });
   return page;
 }
@@ -63,8 +69,30 @@ for (const [label, width, height] of [["desktop", 1440, 1000], ["mobile", 390, 8
   await page.waitForURL(/thanks=useful/);
   expect(`${label}: feedback acknowledged`, await page.getByRole("status").filter({ hasText: "Thanks, noted." }).isVisible());
 
+  // Setup handoff (board 7): order form → setup, client tabs, decoded Cursor config, warnings, feedback.
+  const resultsUrl = page.url().replace(/[?#].*$/, "");
+  await page.getByRole("button", { name: /^Set up in/ }).click();
+  await page.waitForURL(/\/setup\?/);
+  await page.waitForLoadState("networkidle");
+  expect(`${label}: setup heading`, await page.getByRole("heading", { name: "Your order is ready" }).isVisible());
+  expect(`${label}: setup has only ticked picks (3 direct)`, (await page.locator("section.card[id^=pick-]").count()) === 3);
+  const msg = await page.locator("#paste-message").textContent();
+  expect(`${label}: paste message asks before each step`, !!msg?.includes("Ask me before each step"));
+  expect(`${label}: least-privilege warning shown`, await page.getByText("Use a development project and read-only access.").first().isVisible());
+  await page.getByRole("button", { name: "Copy message" }).click();
+  expect(`${label}: copy button responds (client JS runs under CSP)`, await page.getByRole("button", { name: /Copied|Selected/ }).waitFor({ timeout: 5000 }).then(() => true, () => false));
+  await page.screenshot({ path: `${out}/07-setup-claude-code-${label}.png`, fullPage: true });
+  await page.getByRole("link", { name: "Cursor" }).click();
+  await page.waitForURL(/client=cursor/);
+  expect(`${label}: Cursor config decoded before link`, await page.getByText('"url": "https://mcp.example.com/sample"').first().isVisible());
+  await page.screenshot({ path: `${out}/08-setup-cursor-${label}.png`, fullPage: true });
+  await page.getByRole("button", { name: "It worked" }).first().click();
+  await page.waitForURL(/thanks=it_worked/);
+  expect(`${label}: setup feedback acknowledged`, await page.getByRole("status").filter({ hasText: "Thanks for telling us" }).isVisible());
+
   // Not needed now and unknown run.
   if (label === "desktop") {
+    await page.goto(resultsUrl, { waitUntil: "networkidle" });
     await page.getByText(/Not needed now/).click();
     await page.screenshot({ path: `${out}/04-not-needed-${label}.png`, fullPage: false });
     const miss = await page.goto(`${base}/r/00000000-0000-4000-8000-000000000000`);
@@ -89,4 +117,5 @@ for (const [label, width, height] of [["desktop", 1440, 1000], ["mobile", 390, 8
 await browser.close();
 console.log(checks.join("\n"));
 console.log(problems.length ? "PROBLEMS:\n" + problems.join("\n") : "no console errors, failed requests or HTTP errors");
+if (notes.length) console.log(`notes: ${notes.length} background fetch(es) cancelled by test navigation`);
 process.exit(problems.length || checks.some((c) => c.startsWith("FAIL")) ? 1 : 0);

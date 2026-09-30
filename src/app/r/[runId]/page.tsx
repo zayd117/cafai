@@ -1,7 +1,7 @@
 // /r/:runId (plan §18): read-back, picks, "Not needed now" and the order. Runs are shareable and resumable by URL.
 import { notFound } from "next/navigation";
 import { isUuid } from "@/db/client";
-import { getRuntime } from "@/server/runtime";
+import { getRuntime, snapshotFor } from "@/server/runtime";
 import { loadRun, type StoredRun } from "@/server/runService";
 import { rerun } from "../../actions";
 import { MATCH_LABEL, NOT_NEEDED_REASON } from "../../_components/labels";
@@ -120,9 +120,11 @@ export default async function RunPage({ params, searchParams }: {
   const { runId } = await params;
   const sp = await searchParams;
   if (!isUuid(runId)) notFound();
-  const { pool, snapshot } = getRuntime();
+  const { pool } = getRuntime();
   const run = await loadRun(pool, runId);
   if (!run) notFound();
+  const snapshot = await snapshotFor(run.catalog_version);
+  if (!snapshot) notFound();
 
   const capName = (id: string) => snapshot.taxonomy.find((c) => c.id === id)?.plain_name ?? id;
   const clientNames = run.declared_clients.map((c) => snapshot.clients.find((k) => k.id === c)?.name).filter((n): n is string => !!n);

@@ -20,6 +20,24 @@ export function getSnapshot(): CatalogSnapshot {
   return snapshot;
 }
 
+const byVersion = new Map<string, CatalogSnapshot>();
+
+/** Old runs re-render from the snapshot they were made with (plan §19), read from catalog_snapshots. */
+export async function snapshotFor(version: string): Promise<CatalogSnapshot | null> {
+  const current = getSnapshot();
+  if (current.version === version) return current;
+  const hit = byVersion.get(version);
+  if (hit) return hit;
+  const r = await getPool().query<{ mode: "real" | "fixture"; content: Omit<CatalogSnapshot, "version" | "mode"> }>(
+    "SELECT mode, content FROM catalog_snapshots WHERE version = $1",
+    [version],
+  );
+  if (!r.rows[0]) return null;
+  const s: CatalogSnapshot = { version, mode: r.rows[0].mode, ...r.rows[0].content };
+  byVersion.set(version, s);
+  return s;
+}
+
 export function getRuntime() {
   const providers = getProviders();
   return { snapshot: getSnapshot(), pool: getPool(), ...providers };

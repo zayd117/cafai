@@ -30,6 +30,11 @@ Status: **RESOLVED** (user-confirmed), **DEFERRED** (decision postponed to a nam
 | A-024 | Match dimension formulas | §9 table gives one-line rules only | Literal minimal forms in `src/engine/match.ts`; backward direction folded into Capability match ("the core of the two-way match"). All PLACEHOLDER (A-009). |
 | A-025 | Which model per call | §9 cost section names Sonnet 5.5 and Haiku 4.5 splits; none chosen | Default `claude-sonnet-5-5` for all three calls ("Sonnet throughout ≈ $0.04"), each overridable by env. Adaptive thinking at default effort may exceed the plan's output-token estimate; measure in Phase 0. Server-side refusal fallback (`fallbacks: "default"`) enabled for Sonnet 5.5. |
 | A-026 | Per-call timeout | §17 latency target (15 s p95 for picks), no timeout given | PLACEHOLDER 30 s per call; SDK retries off, engine retries once. |
+| A-027 | Storing explanation text per pick | §19 "stores IDs, versions and score components, not rendered text" | Validated explanation fields are stored so shared runs re-render without a new model call; catalog facts still render from the snapshot. |
+| A-028 | Project-type chip values | §8 names the chips, no list | Not built. |
+| A-029 | Plain wording for offering types at level 3 | §8 requires plain words; glossary is a §24 should-have | Draft wording in `src/app/_components/labels.ts`; replace with the glossary. |
+| A-030 | UI copy the plan does not give (out of scope, degraded banner, run not found) | §9 failure table, wireframe board 6 [COPY TBC] | Short placeholder sentences in the pages, marked in code comments. |
+| A-031 | Setup tabs when no AI tool was declared | §8 "tabs for declared clients only" | Shows the three supported clients. |
 | A-020 | GitHub push access | environment | RESOLVED 2026-09-30: access fixed by the user; all commits pushed. |
 
 Wireframe canvas unknowns (21 items, exact answers needed) are listed on the canvas sticky note: https://claude.ai/artifact/Ws1hft8GALEGne1L616Y4Y

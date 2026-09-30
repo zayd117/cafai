@@ -34,7 +34,7 @@ distributions:
     source_url: https://example.com/docs
   - client: cursor
     method: deeplink
-    link: https://example.com/install
+    link: cursor://anysphere.cursor-deeplink/mcp/install?name=sample&config=eyJ1cmwiOiJodHRwczovL21jcC5leGFtcGxlLmNvbS9zYW1wbGUifQ==
     compatibility: declared
     verified_on: 2026-09-29
     source_url: https://example.com/docs

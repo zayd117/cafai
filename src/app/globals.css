@@ -125,3 +125,8 @@ summary::-webkit-details-marker { display: none; }
 .code { font-family: var(--mono); font-size: 14px; background: var(--ground); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; overflow-x: auto; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
 .danger { display: flex; gap: 8px; align-items: flex-start; padding: 8px 12px; border-left: 4px solid var(--clay); background: var(--tag); font-size: 14px; }
 .danger::before { content: "Check this:"; font-weight: 700; }
+.setup { max-width: 960px; }
+.setup h2 { font-size: 26px; }
+.setup-desktop-note { display: none; }
+@media (max-width: 700px) { .setup-desktop-note { display: block; } }
+.btn.fit { align-self: flex-start; }
