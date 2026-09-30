@@ -20,7 +20,8 @@
     "a11y": "node scripts/a11y.mjs",
     "cases:check": "tsx scripts/check-cases.ts",
     "jev:smoke": "tsx scripts/jev-smoke.ts",
-    "discover": "tsx scripts/discover.ts"
+    "discover": "tsx scripts/discover.ts",
+    "discover:bakeoff": "tsx scripts/discover-bakeoff.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.129.0",

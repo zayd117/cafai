@@ -15,6 +15,7 @@ model. The site says so on every page. Nothing in sample mode is a real recommen
 | `docs/TRACEABILITY.md` | Plan section → requirement → files → test, per build layer |
 | `docs/TEST_CASES.md` | Every automated suite and the manual cases still open |
 | `docs/FIGMA_HANDOFF.md` | Tokens, components, screens and steps to rebuild the UI in Figma |
+| `docs/DISCOVER_BAKEOFF.md` | Comparing Claude alone against Claude + Jev in the discovery loop: accuracy, time, tokens, cost |
 | `docs/PHASE0_INTAKE.md` | Turning interviews and concierge runs into test cases, capabilities and tools; running the bake-off |
 | `docs/figma-handoff/screens/` | Real Chromium screenshots, desktop and mobile |
 
