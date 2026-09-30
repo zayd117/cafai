@@ -22,10 +22,11 @@ npm run flow -- http://localhost:3100 docs/figma-handoff/screens
 | `src/engine/redact.test.ts` | 14 | 9 canary secrets, key assignments, URL credentials, private keys, length cap, injection flag |
 | `src/engine/pipeline.test.ts` | 17 | Lanes and caps, flagged never shown, closed world, evidence checks, latent-signal rule, explanation validator and fallback, outcomes, deterministic fallback, Checked held back, client filter, staleness, secret canary, injection has no ranking effect |
 | `src/engine/providers/anthropic.test.ts` | 5 | Request shape (fenced data, schema, fallback), refusal/cut-off handling, served-model recording (stub client, not live) |
+| `src/eval/bakeoff.test.ts` | 5 | False-positive rate, calibration error, repeat consistency, Jev win rule, H4 guard |
 | `src/eval/metrics.test.ts` | 5 | Metrics, release gate, pricing, blind pairs |
 | `src/server/controls.db.test.ts` | 4 | Quota hashing and cap, budget breaker, app-role purge, flag audit and grants |
 | `src/setup/handoff.test.ts` | 6 | Danger detection, Cursor link decoding (incl. "+"), hostnames, route choice, paste message |
-| `npm run eval` | 4 fixture cases × 4 arms | Release gate: harmful picks 0, invalid ids 0, no regression vs baseline |
+| `npm run eval` | 4 fixture cases × arms × repeats | Release gate: harmful picks 0, invalid ids 0, no regression vs baseline; bake-off pass lines from `eval/bakeoff.json` |
 | `npm run flow` (Chromium) | 47 checks | See below |
 | `scripts/a11y.mjs` (Chromium + axe) | 6 checks | WCAG 2.2 AA scans (counter, results with every level open, setup, legal page), keyboard reach, visible focus ring |
 | `scripts/controls-flow.mjs` (Chromium + DB) | 9 checks | Revoked pick annotated and setup hidden, AI off → degraded banner and read-back first, runs off → paused, quota cap, honeypot, flag audit |

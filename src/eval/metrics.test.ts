@@ -8,7 +8,7 @@ const c: EvalCase = {
   labels: { must_recommend: ["a", "b"], acceptable_offerings: ["o-c"], must_not_recommend: ["o-bad"], potentially_missed: ["m"], probably_not_needed: ["pay"] },
 };
 const pick = (offering_id: string, capability_id: string, match_band = "good", confidence_band = "high") =>
-  ({ offering_id, capability_id, lane: "direct", match_band, confidence_band, need_type: "implied", evidence_ok: true });
+  ({ offering_id, capability_id, lane: "direct", match_band, confidence_band, confidence_score: confidence_band === "high" ? 0.9 : confidence_band === "medium" ? 0.6 : 0.3, need_type: "implied", evidence_ok: true });
 const result = (picks: ReturnType<typeof pick>[]): CaseResult => ({
   case_id: "c1", input_type: "D", outcome: "picks", picked_capabilities: picks.map((p) => p.capability_id), picked_offerings: picks.map((p) => p.offering_id),
   picks, not_needed_capabilities: [], concepts_total: 2, concepts_mapped: 1, input_tokens: 0, output_tokens: 0, cost_usd: 0, latency_ms: 10, degraded: null, invalid_ids: [],

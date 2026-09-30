@@ -73,6 +73,7 @@ export async function runCase(args: {
       lane: x.lane,
       match_band: x.match.band,
       confidence_band: x.confidence.band,
+      confidence_score: x.confidence.score,
       need_type: x.need_type,
       evidence_ok: x.explanation.evidence_ids.length > 0 && x.explanation.evidence_ids.every((e) => itemIds.has(e)),
     })),
