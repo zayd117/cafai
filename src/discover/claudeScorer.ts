@@ -55,6 +55,46 @@ const listingsSchema = {
   },
 } as const;
 
+/** The exact user turns the rater receives, shared by the API arm and the subagent task export. */
+export const queriesUser = (items: Item[], queries: Query[]) =>
+  [fence("items", items.map((it) => ({ id: it.id, text: it.text }))), fence("queries", queries.map((q) => ({ query_id: q.id, target_item_id: q.item_id, text: q.text })))].join("\n");
+export const listingsUser = (items: Item[], batch: Listing[]) =>
+  [
+    fence("items", items.map((it) => ({ id: it.id, text: it.text }))),
+    fence("candidates", batch.map((l) => ({ slug: l.slug, name: l.title ?? l.name, description: l.description, category: l.category }))),
+  ].join("\n");
+
+type Recorded = {
+  queries: { query_id: string; faithful: number; drift: number }[];
+  listings: { slug: string; per_item: { item_id: string; p: number }[]; useful: number }[];
+};
+
+/**
+ * A stand-in for the Claude client that replays ratings a person or a subagent wrote down. It has no usage (nothing
+ * was metered), and it throws when asked about a query or listing that was never rated, so a gap is an error, not a zero.
+ */
+export function recordedClaude(rec: Recorded, id: string) {
+  return {
+    id,
+    usage: [],
+    call: async (system: string, user: string): Promise<unknown> => {
+      const need = (re: RegExp, have: Set<string>, what: string) => {
+        const missing = [...user.matchAll(re)].map((m) => m[1]!).filter((k) => !have.has(k));
+        if (missing.length) throw new Error(`no recorded rating for ${what}: ${missing.join(", ")}`);
+      };
+      if (system === RATE_QUERIES_SYSTEM) {
+        need(/"query_id": "([^"]+)"/g, new Set(rec.queries.map((q) => q.query_id)), "query");
+        return { scores: rec.queries };
+      }
+      if (system === RATE_LISTINGS_SYSTEM) {
+        need(/"slug": "([^"]+)"/g, new Set(rec.listings.map((l) => l.slug)), "listing");
+        return { scores: rec.listings };
+      }
+      throw new Error("recorded ratings: unknown prompt");
+    },
+  } as unknown as Pick<DiscoverClaude, "call" | "usage" | "id">;
+}
+
 /** Model numbers are checked in code: anything missing or out of range is clamped, and missing means "no signal". */
 const unit = (v: unknown, fallback: number) => (typeof v === "number" && Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : fallback);
 
@@ -71,8 +111,7 @@ export class ClaudeScorer {
 
   async scoreQueries(items: Item[], queries: Query[]): Promise<QueryScore[]> {
     if (!queries.length) return [];
-    const user = [fence("items", items.map((it) => ({ id: it.id, text: it.text }))), fence("queries", queries.map((q) => ({ query_id: q.id, target_item_id: q.item_id, text: q.text })))].join("\n");
-    const out = (await this.claude.call(RATE_QUERIES_SYSTEM, user, queriesSchema)) as { scores?: { query_id: string; faithful: number; drift: number }[] };
+    const out = (await this.claude.call(RATE_QUERIES_SYSTEM, queriesUser(items, queries), queriesSchema)) as { scores?: { query_id: string; faithful: number; drift: number }[] };
     const byId = new Map((out.scores ?? []).map((s) => [s?.query_id, s]));
     return queries.map((q) => {
       const s = byId.get(q.id);
@@ -87,11 +126,7 @@ export class ClaudeScorer {
     for (let i = 0; i < listings.length; i += LISTING_BATCH) batches.push(listings.slice(i, i + LISTING_BATCH));
     const scored = await Promise.all(
       batches.map(async (batch) => {
-        const user = [
-          fence("items", items.map((it) => ({ id: it.id, text: it.text }))),
-          fence("candidates", batch.map((l) => ({ slug: l.slug, name: l.title ?? l.name, description: l.description, category: l.category }))),
-        ].join("\n");
-        const out = (await this.claude.call(RATE_LISTINGS_SYSTEM, user, listingsSchema)) as {
+        const out = (await this.claude.call(RATE_LISTINGS_SYSTEM, listingsUser(items, batch), listingsSchema)) as {
           scores?: { slug: string; per_item?: { item_id: string; p: number }[]; useful: number }[];
         };
         const bySlug = new Map((out.scores ?? []).map((s) => [s?.slug, s]));

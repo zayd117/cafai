@@ -1,0 +1,443 @@
+{
+ "queries": [
+  {
+   "query_id": "q0",
+   "faithful": 0.85,
+   "drift": 0.08
+  },
+  {
+   "query_id": "q1",
+   "faithful": 0.92,
+   "drift": 0.05
+  },
+  {
+   "query_id": "q2",
+   "faithful": 0.02,
+   "drift": 0.97
+  },
+  {
+   "query_id": "q3",
+   "faithful": 0.93,
+   "drift": 0.05
+  },
+  {
+   "query_id": "q4",
+   "faithful": 0.6,
+   "drift": 0.3
+  }
+ ],
+ "listings": [
+  {
+   "slug": "theluckystrike-excel-spreadsheet-xlsx-csv",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.4
+    },
+    {
+     "item_id": "i1",
+     "p": 0.02
+    }
+   ],
+   "useful": 0.35
+  },
+  {
+   "slug": "psu3d0-agent-spreadsheet",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.35
+    },
+    {
+     "item_id": "i1",
+     "p": 0.02
+    }
+   ],
+   "useful": 0.3
+  },
+  {
+   "slug": "psu3d0-spreadsheet-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.35
+    },
+    {
+     "item_id": "i1",
+     "p": 0.02
+    }
+   ],
+   "useful": 0.3
+  },
+  {
+   "slug": "demos-ra-text-spreadsheet",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.4
+    },
+    {
+     "item_id": "i1",
+     "p": 0.02
+    }
+   ],
+   "useful": 0.35
+  },
+  {
+   "slug": "xt765-mcp-documents-reader",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.3
+    },
+    {
+     "item_id": "i1",
+     "p": 0.02
+    }
+   ],
+   "useful": 0.25
+  },
+  {
+   "slug": "theluckystrike-office-suite-time-invoice-expense-excel-price",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.2
+    },
+    {
+     "item_id": "i1",
+     "p": 0.05
+    }
+   ],
+   "useful": 0.15
+  },
+  {
+   "slug": "logisky-logisheets-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.25
+    },
+    {
+     "item_id": "i1",
+     "p": 0.02
+    }
+   ],
+   "useful": 0.2
+  },
+  {
+   "slug": "manddarinshop-spreadsheet-db-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.1
+    },
+    {
+     "item_id": "i1",
+     "p": 0.02
+    }
+   ],
+   "useful": 0.1
+  },
+  {
+   "slug": "pavel-tashev-website-change-watcher",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.1
+    },
+    {
+     "item_id": "i1",
+     "p": 0.15
+    }
+   ],
+   "useful": 0.15
+  },
+  {
+   "slug": "ruriazz-xlsx-tools-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.45
+    },
+    {
+     "item_id": "i1",
+     "p": 0.02
+    }
+   ],
+   "useful": 0.4
+  },
+  {
+   "slug": "file2markdown",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.2
+    },
+    {
+     "item_id": "i1",
+     "p": 0.02
+    }
+   ],
+   "useful": 0.15
+  },
+  {
+   "slug": "sunholo-data-parse",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.25
+    },
+    {
+     "item_id": "i1",
+     "p": 0.02
+    }
+   ],
+   "useful": 0.2
+  },
+  {
+   "slug": "filingtape-vigia-edgar",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.1
+    }
+   ],
+   "useful": 0.05
+  },
+  {
+   "slug": "marekrost-mcp-server-spreadsheet",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.45
+    },
+    {
+     "item_id": "i1",
+     "p": 0.02
+    }
+   ],
+   "useful": 0.4
+  },
+  {
+   "slug": "theluckystrike-spreadsheet-builder",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.4
+    },
+    {
+     "item_id": "i1",
+     "p": 0.02
+    }
+   ],
+   "useful": 0.35
+  },
+  {
+   "slug": "mrfentmen-weatherbit-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.01
+    },
+    {
+     "item_id": "i1",
+     "p": 0.02
+    }
+   ],
+   "useful": 0.01
+  },
+  {
+   "slug": "mcmurrym-virga-weather",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.01
+    },
+    {
+     "item_id": "i1",
+     "p": 0.02
+    }
+   ],
+   "useful": 0.01
+  },
+  {
+   "slug": "dgahagan-weather-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.01
+    },
+    {
+     "item_id": "i1",
+     "p": 0.03
+    }
+   ],
+   "useful": 0.02
+  },
+  {
+   "slug": "myai-2025-openmeteo-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.01
+    },
+    {
+     "item_id": "i1",
+     "p": 0.02
+    }
+   ],
+   "useful": 0.01
+  },
+  {
+   "slug": "pipeworx-io-open-meteo",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.01
+    },
+    {
+     "item_id": "i1",
+     "p": 0.02
+    }
+   ],
+   "useful": 0.01
+  },
+  {
+   "slug": "topvisor-mcp-notifications",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.85
+    }
+   ],
+   "useful": 0.6
+  },
+  {
+   "slug": "joshuawowk-pushover-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.45
+    }
+   ],
+   "useful": 0.35
+  },
+  {
+   "slug": "awesomemotive-pushengage-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.3
+    }
+   ],
+   "useful": 0.2
+  },
+  {
+   "slug": "pushtodisplay-cli",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.3
+    }
+   ],
+   "useful": 0.2
+  },
+  {
+   "slug": "justinbstrong-agent-push-kit",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.35
+    }
+   ],
+   "useful": 0.25
+  },
+  {
+   "slug": "nirholas-notifications-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.25
+    }
+   ],
+   "useful": 0.15
+  },
+  {
+   "slug": "antoinedelorme-kweenkl-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.4
+    }
+   ],
+   "useful": 0.3
+  },
+  {
+   "slug": "gege-mn-ray-mcp",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.4
+    }
+   ],
+   "useful": 0.3
+  },
+  {
+   "slug": "cyanheads-ntfy-mcp-server",
+   "per_item": [
+    {
+     "item_id": "i0",
+     "p": 0.02
+    },
+    {
+     "item_id": "i1",
+     "p": 0.5
+    }
+   ],
+   "useful": 0.4
+  }
+ ],
+ "meta": {
+  "ms": 23021,
+  "total_tokens": 53635,
+  "tool_uses": 3,
+  "rater": "Claude Code subagent (general-purpose), one cold run per case"
+ }
+}

@@ -5,7 +5,7 @@ import { costMicros } from "@/config/pricing";
 import { DISCOVER_CONFIG } from "./rank";
 import { discover, type Scorer } from "./run";
 import { searchMarket, type FetchLike } from "./search";
-import type { Interpretation, Usage } from "./types";
+import type { Interpretation, Listing, Usage } from "./types";
 
 export interface DiscoverCase {
   id: string;
@@ -25,7 +25,10 @@ export interface DiscoverCase {
 
 export interface Arm {
   name: string;
-  scorer: Scorer;
+  /** One scorer for every case, or a factory when ratings differ per case (recorded ratings). */
+  scorer: Scorer | ((c: DiscoverCase) => Scorer);
+  /** False when time and tokens were not metered (recorded subagent ratings): they print as "—", never as zero. */
+  measured?: boolean;
   /** The scorer's running usage list; the runner slices it per run. */
   usage: () => Usage[];
 }
@@ -35,6 +38,8 @@ export interface ArmRun {
   arm: string;
   repeat: number;
   ms: number;
+  /** False when the arm's time and usage were not metered. */
+  timed?: boolean;
   usage: Usage[];
   /** Ranked listing slugs, best first. */
   ranked: string[];
@@ -127,9 +132,10 @@ export function summarize(arm: string, runs: ArmRun[], cases: DiscoverCase[]): A
   const sets = new Map<string, string[][]>();
   for (const r of ok) sets.set(r.case_id, [...(sets.get(r.case_id) ?? []), r.ranked.slice(0, 5)]);
   const pairs = [...sets.values()].flatMap((s) => s.flatMap((a, i) => s.slice(i + 1).map((b) => jaccard(a, b))));
-  const costs = ok.map((r) => r.usage.map((u) => costMicros(u)));
+  const metered = ok.filter((r) => r.usage.length > 0);
+  const costs = metered.map((r) => r.usage.map((u) => costMicros(u)));
   const known = costs.every((row) => row.every((c) => c !== null));
-  const ms = ok.map((r) => r.ms);
+  const ms = ok.filter((r) => r.timed !== false).map((r) => r.ms);
   return {
     arm,
     runs: runs.length,
@@ -142,9 +148,9 @@ export function summarize(arm: string, runs: ArmRun[], cases: DiscoverCase[]): A
     consistency: mean(pairs),
     latency_p50_ms: percentile(ms, 50),
     latency_p95_ms: percentile(ms, 95),
-    input_tokens_per_run: mean(ok.map((r) => r.usage.reduce((s, u) => s + u.input_tokens, 0))),
-    output_tokens_per_run: mean(ok.map((r) => r.usage.reduce((s, u) => s + u.output_tokens, 0))),
-    cost_per_run_usd: ok.length && known ? (mean(costs.map((row) => row.reduce<number>((s, c) => s + (c ?? 0), 0))) ?? 0) / 1e6 : null,
+    input_tokens_per_run: mean(metered.map((r) => r.usage.reduce((s, u) => s + u.input_tokens, 0))),
+    output_tokens_per_run: mean(metered.map((r) => r.usage.reduce((s, u) => s + u.output_tokens, 0))),
+    cost_per_run_usd: metered.length && known ? (mean(costs.map((row) => row.reduce<number>((s, c) => s + (c ?? 0), 0))) ?? 0) / 1e6 : null,
     labelled: { ranking: labelled.ranking.size, false_positives: labelled.false_positives.size, queries: labelled.queries.size },
   };
 }
@@ -177,12 +183,19 @@ export async function warmCache(interps: Interpretation[], fetch: FetchLike) {
   await Promise.all([...texts].map((t) => searchMarket(t, { limit: DISCOVER_CONFIG.resultsPerQuery, fetch }).catch(() => undefined)));
 }
 
+/** Every distinct listing any query of this interpretation retrieves (served from the warmed cache). */
+export async function listingsFor(interp: Interpretation, fetch: FetchLike): Promise<Listing[]> {
+  const found = await Promise.all(interp.queries.map((q) => searchMarket(q.text, { limit: DISCOVER_CONFIG.resultsPerQuery, fetch }).catch(() => [] as Listing[])));
+  return [...new Map(found.flat().map((l) => [l.slug, l])).values()];
+}
+
 export async function runArm(args: { arm: Arm; c: DiscoverCase; interpretation: Interpretation; repeat: number; fetch: FetchLike }): Promise<ArmRun> {
   const { arm, c, interpretation, repeat } = args;
   const before = arm.usage().length;
   const t0 = performance.now();
   try {
-    const r = await discover({ text: c.text, claude: { interpret: async () => interpretation }, jev: arm.scorer, fetch: args.fetch });
+    const scorer = typeof arm.scorer === "function" ? arm.scorer(c) : arm.scorer;
+    const r = await discover({ text: c.text, claude: { interpret: async () => interpretation }, jev: scorer, fetch: args.fetch });
     const ms = performance.now() - t0;
     const kept = r.searched.map((s) => s.text);
     return {
@@ -190,6 +203,7 @@ export async function runArm(args: { arm: Arm; c: DiscoverCase; interpretation: 
       arm: arm.name,
       repeat,
       ms,
+      timed: arm.measured !== false,
       usage: arm.usage().slice(before),
       ranked: r.ranked.map((x) => x.listing.slug),
       kept,
