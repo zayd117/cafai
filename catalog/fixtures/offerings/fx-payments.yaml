@@ -1,0 +1,56 @@
+# FIXTURE (register A-006): fictional sample for development and tests. Not a real offering; never present as real.
+id: fx-payments
+fixture: true
+kind: mcp_server
+identity:
+  display_name: Sample payments tooling
+  vendor: Example Co
+capabilities:
+  - payments
+need_signals: []
+skip_if:
+  - SAMPLE skip condition for Sample payments tooling
+resource_profile:
+  provides:
+    - text: "SAMPLE: Sample payments tooling provides its stated function"
+      evidence: claimed
+      source_url: https://example.com/docs
+      as_of: 2026-09-29
+  requires: []
+  supports: []
+  limits:
+    - text: "SAMPLE: limit stated by the vendor"
+      evidence: observed
+      source_url: https://example.com/docs
+      as_of: 2026-09-29
+distributions:
+  - client: claude_code
+    method: cli_command
+    command: example-cli add sample
+    compatibility: declared
+    verified_on: 2026-09-29
+    source_url: https://example.com/docs
+access:
+  auth: api_key
+  credential_needed: a restricted key from the vendor
+  read_write: read_write
+  access_plain: "SAMPLE: can create test charges"
+  effort_plain: "[effort placeholder]"
+runtime:
+  location: remote
+cost:
+  model: free
+  source_url: https://example.com/docs
+  as_of: 2026-09-29
+trust:
+  state: reviewed
+  vendor_official: true
+  namespace_verified: true
+editorial:
+  what_it_is: "SAMPLE: Sample payments tooling, a fictional offering used to
+    exercise the pipeline."
+  could_help_with: "SAMPLE: a stated job."
+  first_prompt: "SAMPLE: ask your assistant to try it once."
+  reviewer: fixture
+  reviewed_on: 2026-09-29
+last_verified_on: 2026-09-29

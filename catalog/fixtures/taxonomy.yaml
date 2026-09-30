@@ -1,0 +1,75 @@
+# FIXTURE (register A-006): fictional sample for development and tests. Not a real offering; never present as real.
+- id: food-data-lookup
+  fixture: true
+  plain_name: Look up nutrition facts
+  job_phrases:
+    - look up food nutrition
+    - calories for a food
+  need_signals:
+    - text: app tracks meals or calories
+      need_type: implied
+  skip_conditions:
+    - You already have a nutrition data source
+  native_coverage: []
+- id: app-data-storage
+  fixture: true
+  plain_name: Store user accounts and logs
+  job_phrases:
+    - save user data
+    - user accounts
+  need_signals:
+    - text: app has user accounts or stored logs
+      need_type: implied
+  skip_conditions:
+    - The app stores nothing per user
+  native_coverage: []
+- id: click-through-testing
+  fixture: true
+  plain_name: Check the app works by clicking through it
+  job_phrases:
+    - test signup flow
+    - click through the app
+  need_signals:
+    - text: no automated tests mentioned before launch
+      need_type: latent
+  skip_conditions:
+    - End-to-end tests already run in CI
+  native_coverage: []
+- id: project-notes-file
+  fixture: true
+  plain_name: Tell your AI what the project is for
+  job_phrases:
+    - project notes
+    - stop re-explaining the project
+  need_signals:
+    - text: uses an AI coding client
+      need_type: implied
+  skip_conditions:
+    - A project notes file already exists
+  native_coverage:
+    - client: claude_code
+      note: "SAMPLE: Claude Code can read a project notes file."
+- id: error-alerts
+  fixture: true
+  plain_name: Get alerts when something breaks
+  job_phrases:
+    - error monitoring
+    - know when it crashes
+  need_signals:
+    - text: no error tracking mentioned before launch
+      need_type: latent
+  skip_conditions:
+    - You already use an error tracker
+  native_coverage: []
+- id: payments
+  fixture: true
+  plain_name: Take payments
+  job_phrases:
+    - accept payments
+    - checkout
+  need_signals:
+    - text: app sells something
+      need_type: implied
+  skip_conditions:
+    - The app is free
+  native_coverage: []

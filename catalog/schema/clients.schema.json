@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cafai.local/schema/clients.schema.json",
+  "title": "Client records (plan §10 'Client', §13 handoff mechanics)",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "name", "install_methods", "handoff", "source", "verified_on"],
+    "properties": {
+      "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_]*$" },
+      "name": { "type": "string", "minLength": 1 },
+      "install_methods": {
+        "type": "array",
+        "minItems": 1,
+        "items": { "enum": ["cli_command", "deeplink", "connector", "plugin_marketplace", "config_file", "package_manager", "manual_steps", "signup"] }
+      },
+      "handoff": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+      "plan_limits": { "type": "array", "items": { "type": "string" } },
+      "native_capabilities": { "type": "array", "items": { "type": "string" } },
+      "source": { "type": "string", "minLength": 1 },
+      "verified_on": { "type": "string", "format": "date" }
+    }
+  }
+}

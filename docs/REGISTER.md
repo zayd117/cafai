@@ -23,6 +23,8 @@ Status: **RESOLVED** (user-confirmed), **DEFERRED** (decision postponed to a nam
 | A-016 | Brand icon / favicon | not in plan or wireframes | Placeholder (empty data URI) to avoid a `/favicon.ico` 404. |
 | A-017 | Real model calls | §9, §17 | `ANTHROPIC_API_KEY` is not set in this environment. Engine runs against a `MOCK` provider until it is provided; mock results are never presented as real. |
 | A-018 | Postgres for dev/test | §17 | Server binaries exist (`/usr/lib/postgresql/16`); Docker daemon is down. Decide start method at L2. |
+| A-019 | Structure of a "need signal" | §9, §11 name it but give no shape | Stored as `{text, need_type: implied\|latent}` until the engine design needs more; change is a schema migration of YAML only. |
+| A-020 | GitHub push access | environment | `git push` to `zayd117/cafai` returns 403 (Claude GitHub App not installed / not linked). Commits are local until fixed. |
 
 Wireframe canvas unknowns (21 items, exact answers needed) are listed on the canvas sticky note: https://claude.ai/artifact/Ws1hft8GALEGne1L616Y4Y
 

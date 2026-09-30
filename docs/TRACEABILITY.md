@@ -13,3 +13,20 @@ Format: MD section → requirement → engineering task → files → test. Kind
 | §14 Build pipeline | Lockfile committed | CONFIRMED | `package-lock.json` | review |
 | §13 Sessions/cookies, §18 CSP | Security headers, strict CSP | CONFIRMED, **not yet built** | — | scheduled: L5 (shell) |
 | §29 | Verify in real browser | process | `scripts/shot.mjs` | prints status, console errors, failed requests |
+
+## L1 Catalog-as-code
+
+| Plan § | Requirement | Kind | Files | Test / verification |
+|---|---|---|---|---|
+| §11, §17 | Catalog is YAML in Git, checked against JSON Schema in CI | CONFIRMED | `catalog/schema/*.json`, `scripts/check-catalog.ts`, `.github/workflows/ci.yml` | `npm run catalog:check` |
+| §11 field groups | Identity, capability mapping, resource profile, distributions, auth/access, runtime, cost, trust, compatibility evidence, provenance, editorial | CONFIRMED | `offering.schema.json`, `src/catalog/types.ts` | schema tests |
+| §9, §19 | Every profile fact tagged claimed / observed / inferred, with source and date | CONFIRMED | `offering.schema.json#/$defs/fact` | "rejects facts without an evidence tag" |
+| §10, §24 | MVP kinds: mcp_server, skill, plugin, api, library, play | CONFIRMED | `offering.schema.json` `kind` | "unknown offering kinds" |
+| §11 trust states | reviewed / checked / unmatched / flagged / revoked; Reviewed needs vendor-official or namespace-verified | CONFIRMED | schema + `load.ts` rule | "rejects Reviewed trust without…" |
+| §11 compatibility | Tested / Reported / Derived / Declared per client, dated | CONFIRMED | `distributions[].compatibility` | schema |
+| §9 taxonomy | Capability: job phrases, need signals, skip conditions, native-client coverage | CONFIRMED | `taxonomy.schema.json` | schema |
+| §13, A-002 | Three first clients with handoff mechanics | CONFIRMED | `catalog/clients.yaml` | "loads the real catalog" |
+| §11 | Every run stores the catalog snapshot version | CONFIRMED (version produced here; stored from L2/L3) | `load.ts` `snapshotVersion` | "stable content-addressed version" |
+| A-006, A-007 | Real taxonomy and offerings | BLOCKED | `catalog/taxonomy.yaml` (empty), `catalog/offerings/` (empty) | check prints BLOCKED note |
+| — | Dev/test data | FIXTURE | `catalog/fixtures/**` (every record `fixture: true`) | "rejects fixture records in the real catalog" |
+| §11 | Referential integrity: capability ids, client ids, install method per client | NECESSARY | `load.ts` | two rejection tests |

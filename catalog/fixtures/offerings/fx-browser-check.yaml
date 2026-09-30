@@ -1,0 +1,66 @@
+# FIXTURE (register A-006): fictional sample for development and tests. Not a real offering; never present as real.
+id: fx-browser-check
+fixture: true
+kind: mcp_server
+identity:
+  display_name: Sample browser click-through checks
+  vendor: Example Co
+capabilities:
+  - click-through-testing
+need_signals:
+  - text: user tests the signup flow by hand
+    need_type: implied
+skip_if:
+  - SAMPLE skip condition for Sample browser click-through checks
+resource_profile:
+  provides:
+    - text: "SAMPLE: Sample browser click-through checks provides its stated function"
+      evidence: claimed
+      source_url: https://example.com/docs
+      as_of: 2026-09-29
+  requires: []
+  supports: []
+  limits:
+    - text: "SAMPLE: limit stated by the vendor"
+      evidence: observed
+      source_url: https://example.com/docs
+      as_of: 2026-09-29
+distributions:
+  - client: claude_code
+    method: cli_command
+    command: example-cli add sample
+    compatibility: declared
+    verified_on: 2026-09-29
+    source_url: https://example.com/docs
+  - client: cursor
+    method: deeplink
+    link: https://example.com/install
+    compatibility: declared
+    verified_on: 2026-09-29
+    source_url: https://example.com/docs
+access:
+  auth: none
+  read_write: read_only
+  data_touched: []
+  access_plain: "SAMPLE: reads sample data; cannot change anything"
+  effort_plain: "[effort placeholder]"
+runtime:
+  location: local
+  requires:
+    - Node
+cost:
+  model: free
+  source_url: https://example.com/docs
+  as_of: 2026-09-29
+trust:
+  state: reviewed
+  vendor_official: true
+  namespace_verified: true
+editorial:
+  what_it_is: "SAMPLE: Sample browser click-through checks, a fictional offering
+    used to exercise the pipeline."
+  could_help_with: "SAMPLE: a stated job."
+  first_prompt: "SAMPLE: ask your assistant to try it once."
+  reviewer: fixture
+  reviewed_on: 2026-09-29
+last_verified_on: 2026-09-29
