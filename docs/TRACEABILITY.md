@@ -46,3 +46,21 @@ Format: MD section → requirement → engineering task → files → test. Kind
 | §12, A-010 | Anonymous run content deleted after 30 days; raw text trimmed after its window | CONFIRMED (windows are ASSUMPTIONS) | `src/config/retention.ts`, `purgeExpired` | "purges expired anonymous runs" |
 | §17, §14 | Kill-switch flag rows | CONFIRMED (read path built in L8) | `flags` table | — |
 | §15 | Users, identities, memberships, sessions | DEFERRED to L7 (A-003) | — | — |
+
+## L3 Recommendation engine (stages 1-12)
+
+| Plan § | Requirement | Kind | Files | Test |
+|---|---|---|---|---|
+| §9 st.1, §12 | Normalize, redact keys/tokens/emails/phones, cap length before storing or any model call | CONFIRMED (cap number PLACEHOLDER) | `src/engine/redact.ts` | `redact.test.ts` (9 canaries), "never sends secrets to any model" |
+| §9 st.2-3 | One schema-bound call: profile items with quoted evidence; concepts mapped to taxonomy ids; unmatched terms logged as gaps | CONFIRMED | `understand.ts`, `schemas.ts` | "drops read-back items whose quote is not…", "logs unmatched expansion terms" |
+| §9 st.4 | Need types present/stated/implied/latent/not relevant; rules first, model fills gaps; latent only from curated signals, max one | CONFIRMED | `understand.ts` | "accepts latent needs only through curated signals" |
+| §9 st.5-7 | Catalog-only discovery; filter by declared clients, constraints, trust eligibility, staleness; INFERRED-only cannot justify a pick | CONFIRMED | `match.ts` `discoverAndFilter` | "filters by declared clients", "removes offerings unverified…", "never recommends flagged" |
+| §9 st.8 | Two-way match: one call over ≤12 candidates; closed world; quotes must be the user's words; forward and backward | CONFIRMED | `match.ts` `judge` | "ignores invented candidate ids" |
+| §9 st.9-10 | Match and Confidence separate, bands; evidence check | CONFIRMED (weights/cut-points PLACEHOLDER, A-009) | `match.ts` `score`, `evidenceCheck`, `config.ts` | "keeps Match and Confidence separate" |
+| §9 st.11, §6, §8 | Order by Match; one per capability; cap 5; ≤1 Also worth knowing (Good+, Medium+); Low confidence and Checked never top 3; Possible/Weak/Skip under Not needed now | CONFIRMED (A-013, A-021 interpretations) | `assemble.ts` | "direct picks first and one AWK…", "keeps Checked-trust picks out of the top three" |
+| §9 st.12, §8, §29 | Explanation cites evidence ids; rejects URLs, commands, prices, safety claims, level-1 jargon; length limit; template fallback | CONFIRMED (length PLACEHOLDER) | `explain.ts` | "rejects explanations with URLs…" |
+| §9 failure table | Low confidence → read-back first; out of scope; nothing needed; no good pick; invalid output → retry once then deterministic; injection flagged, no ranking effect | CONFIRMED | `pipeline.ts` | five outcome tests + "falls back to deterministic rules", "flags injection-like input" |
+| §2, §11 | Every run records catalog, config, prompt and model versions | CONFIRMED | `pipeline.ts` `versions` | "records versions for replay" |
+| §17 | LLM and Decision interfaces (Jev can take Decision only after a bake-off win) | CONFIRMED | `providers/types.ts` | — |
+| A-017 | Real model provider | BLOCKED on API key for live verification | `providers/mock.ts` (MOCK only) | — |
+| §25 | Ablation switches: no expansion (H2), forward-only (H3), evidence gates off (H4) | CONFIRMED | `pipeline.ts` `Ablations` | exercised in L4 harness |

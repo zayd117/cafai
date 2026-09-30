@@ -2,14 +2,9 @@ import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "yaml";
-import Ajv2020 from "ajv/dist/2020.js";
-import addFormats from "ajv-formats";
 import type { ErrorObject, ValidateFunction } from "ajv";
+import { createAjv } from "../lib/ajv";
 import type { Capability, CatalogIssue, CatalogSnapshot, ClientRecord, LoadResult, Offering } from "./types";
-
-// ajv and ajv-formats are CommonJS; normalise default-export interop across Node ESM, vitest and Next bundling.
-const AjvCtor = ((Ajv2020 as unknown as { default?: typeof Ajv2020 }).default ?? Ajv2020) as typeof Ajv2020;
-const addFormatsFn = ((addFormats as unknown as { default?: typeof addFormats }).default ?? addFormats) as typeof addFormats;
 
 export interface LoadOptions {
   /** Catalog root: contains schema/, clients.yaml, taxonomy.yaml, offerings/, fixtures/. */
@@ -54,9 +49,7 @@ export function loadCatalog(opts: LoadOptions): LoadResult {
   const mode = opts.fixtures ? "fixture" : "real";
   const dataDir = opts.fixtures ? join(opts.root, "fixtures") : opts.root;
 
-  // strictRequired off: the distributions anyOf lists "at least one of command/link/url/steps", declared once under properties.
-  const ajv = new AjvCtor({ allErrors: true, strict: true, strictRequired: false });
-  addFormatsFn(ajv);
+  const ajv = createAjv();
   const compile = (name: string): ValidateFunction =>
     ajv.compile(JSON.parse(readFileSync(join(opts.root, "schema", name), "utf8")));
   const vClients = compile("clients.schema.json");

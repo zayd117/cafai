@@ -24,6 +24,10 @@ Status: **RESOLVED** (user-confirmed), **DEFERRED** (decision postponed to a nam
 | A-017 | Real model calls | §9, §17 | `ANTHROPIC_API_KEY` is not set in this environment. Engine runs against a `MOCK` provider until it is provided; mock results are never presented as real. |
 | A-018 | Postgres for dev/test | §17 | Server binaries exist (`/usr/lib/postgresql/16`); Docker daemon is down. Decide start method at L2. |
 | A-019 | Structure of a "need signal" | §9, §11 name it but give no shape | Stored as `{text, need_type: implied\|latent}` until the engine design needs more; change is a schema migration of YAML only. |
+| A-021 | A low-confidence or Checked-trust pick when fewer than three other picks exist | §9 "never in the top three" | Interpreted literally: it is not shown as a pick and appears under Not needed now as "held back" with the plan's wording ("looks relevant, but not enough evidence to be confident"). Confirm. |
+| A-022 | Five-pick cap when an "Also worth knowing" pick exists | §6, §8, §9 | Direct picks capped at 4 so the one AWK pick fits (follows A-013). |
+| A-023 | "Do you need it?" mapping | §8 part 6 names three answers, no mapping | stated/implied → needed now; latent → useful later; everything under Not needed now → probably not. |
+| A-024 | Match dimension formulas | §9 table gives one-line rules only | Literal minimal forms in `src/engine/match.ts`; backward direction folded into Capability match ("the core of the two-way match"). All PLACEHOLDER (A-009). |
 | A-020 | GitHub push access | environment | `git push` to `zayd117/cafai` returns 403 (Claude GitHub App not installed / not linked). Commits are local until fixed. |
 
 Wireframe canvas unknowns (21 items, exact answers needed) are listed on the canvas sticky note: https://claude.ai/artifact/Ws1hft8GALEGne1L616Y4Y
