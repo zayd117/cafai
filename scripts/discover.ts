@@ -1,11 +1,12 @@
 // Discovery loop, live: Claude interprets -> Jev scores queries -> mcp.market search -> Jev scores results -> rank -> Claude explains.
 //   npm run discover -- --text "I'm making a calorie tracker app for phones"
-//   npm run discover -- --mock                 # no Claude key: scripted interpretation, live Jev and live mcp.market
+//   npm run discover -- --mock                 # no Claude key: scripted interpretation (calorie/excel texts only), live Jev and live mcp.market
 // Exploratory: not part of the closed-world engine (listing text is third-party). Says nothing about quality until tuned on real cases.
 import { jevKeyFrom } from "../src/engine/providers/jev";
 import { DiscoverClaude } from "../src/discover/claude";
 import { costMicros } from "../src/config/pricing";
 import { discover, type Interpreter } from "../src/discover/run";
+import type { Interpretation } from "../src/discover/types";
 import { JevScorer } from "../src/discover/scorer";
 
 const arg = (name: string) => {
@@ -25,22 +26,48 @@ if (!mock && !process.env.ANTHROPIC_API_KEY) {
   process.exit(2);
 }
 
-// Scripted stand-in for Claude, calorie-tracker text only. Deliberately includes one drifting query for Jev to catch.
-const scripted: Interpreter = {
-  interpret: async () => ({
-    items: [
-      { id: "i0", text: "A place to look up food and nutrition facts" },
-      { id: "i1", text: "A place to save each person's meals and totals" },
-    ],
-    queries: [
-      { id: "q0", item_id: "i0", text: "food nutrition database" },
-      { id: "q1", item_id: "i0", text: "calorie lookup" },
-      { id: "q2", item_id: "i0", text: "stock market prices" },
-      { id: "q3", item_id: "i1", text: "app database storage" },
-      { id: "q4", item_id: "i1", text: "postgres sqlite" },
-    ],
-  }),
-};
+// Scripted stand-ins for Claude, picked by keyword so --mock never answers a different question than the one asked.
+// Each deliberately includes one drifting query for Jev to catch.
+const scripts: { match: RegExp; out: Interpretation }[] = [
+  {
+    match: /calorie|macro|nutrition/i,
+    out: {
+      items: [
+        { id: "i0", text: "A place to look up food and nutrition facts" },
+        { id: "i1", text: "A place to save each person's meals and totals" },
+      ],
+      queries: [
+        { id: "q0", item_id: "i0", text: "food nutrition database" },
+        { id: "q1", item_id: "i0", text: "calorie lookup" },
+        { id: "q2", item_id: "i0", text: "stock market prices" },
+        { id: "q3", item_id: "i1", text: "app database storage" },
+        { id: "q4", item_id: "i1", text: "postgres sqlite" },
+      ],
+    },
+  },
+  {
+    match: /excel|excele|spreadsheet|sheet/i,
+    out: {
+      items: [
+        { id: "i0", text: "Read an Excel spreadsheet from PHP and detect when its cells change" },
+        { id: "i1", text: "Send real-time desktop notifications when something changes" },
+      ],
+      queries: [
+        { id: "q0", item_id: "i0", text: "excel spreadsheet reader" },
+        { id: "q1", item_id: "i0", text: "xlsx file change watcher" },
+        { id: "q2", item_id: "i0", text: "weather forecast api" },
+        { id: "q3", item_id: "i1", text: "desktop notifications" },
+        { id: "q4", item_id: "i1", text: "real-time push notification" },
+      ],
+    },
+  },
+];
+const script = scripts.find((s) => s.match.test(text));
+if (mock && !script) {
+  console.error("--mock has no scripted interpretation for this text (it knows calorie/nutrition and excel/spreadsheet). Set ANTHROPIC_API_KEY and drop --mock.");
+  process.exit(2);
+}
+const scripted: Interpreter = { interpret: async () => script!.out };
 
 const claude = mock ? null : new DiscoverClaude();
 const jev = new JevScorer({ apiKey: jevKey, model: process.env.CAFAI_JEV_MODEL });
