@@ -1,7 +1,7 @@
 // Stub transport tests for the Jev-led loop: no network, no live model.
 import { describe, expect, it } from "vitest";
 import { cachedPostFetch } from "./bakeoff";
-import { dedupe, discoverLed, finalize, LED_CONFIG, pairScores, pickQueriesLed, rankBase, scaleToTop } from "./led";
+import { dedupe, discoverLed, finalize, handshake, interleave, LED_CONFIG, needPools, pairScores, pickQueriesLed, rankBase, scaleToTop } from "./led";
 import { JevScorer } from "./scorer";
 import type { FetchLike } from "./search";
 import type { ItemScore, Listing, ListingScore, Ranked, QueryScore } from "./types";
@@ -274,9 +274,35 @@ describe("discoverLed when an optional Jev step fails", () => {
       return ok.fetch(url, init);
     };
     const jev = new JevScorer({ apiKey: "k", fetch: failing as never });
-    const r = await discoverLed({ text: "t", claude: { interpret: async () => interp }, jev, fetch: market, cfg: { ...LED_CONFIG, screen: 2 } });
+    const r = await discoverLed({ text: "t", claude: { interpret: async () => interp }, jev, fetch: market, cfg: { ...LED_CONFIG, screen: 2, verifyShown: false } });
     expect(r.degraded).toEqual(["screen", "order"]);
     expect(r.ranked.length).toBeGreaterThan(0);
+  });
+});
+
+describe("final handshake on what is shown", () => {
+  it("checks shown results against the searches that found them and moves a failing one below the passes", async () => {
+    const interp = { items: [{ id: "i0", text: "look up food data" }], queries: [{ id: "q0", item_id: "i0", text: "food database" }] };
+    const market: FetchLike = async () => new Response(JSON.stringify({ results: ["aa", "bb"].map((slug) => ({ slug, description: `${slug} tool` })) }), { status: 200 });
+    const stub = typedStub((k, q) => {
+      if (q.type === "choice") return Object.fromEntries(Object.keys(q.criteria).map((label, i) => [label, i === 0 ? 0.9 : 0.1]));
+      return k.endsWith("_drift") ? 0.1 : 0.9;
+    });
+    // "aa" is the favourite, but the check says it does not do what "food database" looked for.
+    const fetch = async (u: string | URL | Request, init?: RequestInit) => {
+      const body = JSON.parse(String(init!.body));
+      if (Object.keys(body.questions).some((k) => /_t\d+$/.test(k))) {
+        const answers = Object.fromEntries(Object.entries(body.questions as Record<string, any>).map(([k, q]) => [k, { type: "noul", noul: body.state.candidates[q.instructions.candidate_id].name === "aa" ? 0.1 : 0.9 }]));
+        return new Response(JSON.stringify({ model: "jev-1.13.0", answers, usage: { input_tokens: 10, output_tokens: 1 } }), { status: 200 });
+      }
+      return stub.fetch(u, init);
+    };
+    const jev = new JevScorer({ apiKey: "k", fetch: fetch as never });
+    const r = await discoverLed({ text: "t", claude: { interpret: async () => interp }, jev, fetch: market, cfg: { ...LED_CONFIG, verifyShown: true } });
+    expect(r.ranked.map((x) => x.listing.slug)).toEqual(["bb", "aa"]);
+    expect(r.ranked[1]!.weak).toBe(true);
+    expect(r.ranked[0]!.path).toMatchObject({ query: "food database", result_fits_query: 0.9 });
+    expect(jev.usage.map((u) => u.step)).toContain("verify");
   });
 });
 
@@ -290,5 +316,123 @@ describe("cachedPostFetch", () => {
     await f("https://x/v1", { method: "POST", body: "other" });
     expect(a).toEqual(b);
     expect(calls).toBe(2);
+  });
+});
+
+describe("handshake between searches and results", () => {
+  const info = new Map([
+    ["q0", { text: "food database", need: "a", score: 0.9 }],
+    ["q1", { text: "stock prices", need: "b", score: 0.4 }],
+  ]);
+  const s = (per_item: Record<string, number>, per_term: Record<string, number>): ListingScore => ({ slug: "x", per_item, useful: 0.5, per_term });
+
+  it("counts a result as verified for a need only as far as 'fits the search' and 'fits the need' agree", () => {
+    const h = handshake(s({ a: 0.95 }, { "food database": 0.3 }), ["q0"], info);
+    expect(h.match.a).toBeCloseTo(0.3); // Jev says it fits the need, but not what the search asked for: the weaker check wins
+    expect(h.path).toMatchObject({ need: "a", query: "food database", result_fits_query: 0.3, result_fits_need: 0.95 });
+  });
+
+  it("discounts a need the result does but no search for that need found", () => {
+    const h = handshake(s({ a: 0.9, b: 0.8 }, { "food database": 0.9 }), ["q0"], info);
+    expect(h.match.a).toBeCloseTo(0.9);
+    expect(h.match.b).toBeCloseTo(0.8 * LED_CONFIG.unverified);
+    expect(h.path!.need).toBe("a");
+  });
+
+  it("uses the need check alone for a search it was not asked about", () => {
+    expect(handshake(s({ a: 0.7 }, {}), ["q0"], info).match.a).toBeCloseTo(0.7);
+  });
+});
+
+describe("by-need pools and turn-taking", () => {
+  const r = (slug: string, match: Record<string, number>, trust = 0.7): Ranked => ({ listing: listing(slug), found_by: [], p_query: 0, fit: 0.9, trust, final: 0.9, covers: [], weak: false, match });
+
+  it("keeps results verified for each need, strongest first, capped", () => {
+    const pools = needPools([r("x", { a: 0.9, b: 0.2 }), r("y", { a: 0.6, b: 0.8 }), r("z", { a: 0.4 })], ["a", "b"], { ...LED_CONFIG, perNeedPool: 5 });
+    expect(pools.get("a")!.map((x) => x.listing.slug)).toEqual(["x", "y"]); // z is below needVerify for a
+    expect(pools.get("b")!.map((x) => x.listing.slug)).toEqual(["y"]);
+  });
+
+  it("takes turns across needs, most promising need first, and shows a result once", () => {
+    const out = interleave([
+      { need: "a", priority: 0.5, picks: [r("a1", {}), r("a2", {}), r("a3", {})] },
+      { need: "b", priority: 0.9, picks: [r("b1", {}), r("a1", {})] },
+    ], 4);
+    expect(out.map((x) => x.listing.slug)).toEqual(["b1", "a1", "a2", "a3"]);
+  });
+});
+
+describe("discoverLed by need, hybrid, and the second search", () => {
+  const interp = {
+    items: [{ id: "i0", text: "weather" }, { id: "i1", text: "garden journal" }],
+    queries: [
+      { id: "q0", item_id: "i0", text: "weather api" },
+      { id: "q1", item_id: "i1", text: "notes app" },
+      { id: "q2", item_id: "i1", text: "garden journal" },
+    ],
+  };
+  const results: Record<string, string[]> = { "weather api": ["w1", "w2", "w3"], "notes app": ["w4"], "garden journal": ["g1"] };
+  const market: FetchLike = async (url) => {
+    const q = decodeURIComponent(url.split("q=")[1]!);
+    return new Response(JSON.stringify({ results: (results[q] ?? []).map((slug) => ({ slug, description: `${slug} tool` })) }), { status: 200 });
+  };
+  // Every w* does weather only; g1 does the journal. q2 scores lower than q1, so the first search for i1 is the weak "notes app".
+  const script = (k: string, q: { type: string; criteria: any; instructions: any }, state?: any) => {
+    if (q.type === "choice") return Object.fromEntries(Object.entries(q.criteria).map(([label, c]: [string, any]) => [label, c.name === "w3" ? 0.7 : 0.3 / (Object.keys(q.criteria).length - 1)]));
+    if (k === "q0_faithful" || k === "q1_faithful") return 0.9;
+    if (k === "q2_faithful") return 0.6;
+    if (k.endsWith("_drift")) return 0.1;
+    return undefined;
+  };
+  function stub() {
+    const calls: any[] = [];
+    const fetch = async (_u: string | URL | Request, init?: RequestInit) => {
+      const body = JSON.parse(String(init!.body));
+      calls.push(body);
+      const nameOf = (qi: any) => (qi.candidate_id ? body.state.candidates[qi.candidate_id].name : undefined);
+      const answers = Object.fromEntries(Object.entries(body.questions as Record<string, any>).map(([k, q]) => {
+        const v = script(k, q);
+        if (q.type === "choice") return [k, { type: "choice", choice: "c0", confidence: 1, probabilities: v }];
+        if (v !== undefined) return [k, { type: "noul", noul: v }];
+        const name = nameOf(q.instructions) ?? "";
+        const need = /_i(\d+)$/.exec(k)?.[1];
+        const fit = need === "0" ? (name.startsWith("w") ? 0.9 : 0.05) : need === "1" ? (name === "g1" ? 0.9 : 0.05) : 0.8;
+        return [k, { type: "noul", noul: fit }];
+      }));
+      return new Response(JSON.stringify({ model: "jev-1.13.0", answers, usage: { input_tokens: 10, output_tokens: 1 } }), { status: 200 });
+    };
+    return { fetch, calls };
+  }
+
+  it("by need: each need gets its own picks, Jev's per-need pick leads, and an unmatched need says so", async () => {
+    const s = stub();
+    const jev = new JevScorer({ apiKey: "k", fetch: s.fetch as never });
+    const cfg = { ...LED_CONFIG, layout: "by-need" as const, queryBudget: 2, minPerItem: 1, maxPerItem: 1, screen: 0 };
+    const r = await discoverLed({ text: "t", claude: { interpret: async () => interp }, jev, fetch: market, cfg });
+    const g0 = r.groups.find((g) => g.need === "i0")!;
+    expect(g0.picks[0]!.listing.slug).toBe("w3"); // Jev's per-need pick-the-best
+    expect(r.groups.find((g) => g.need === "i1")!.status).toBe("none"); // "notes app" found only weather tools
+    expect(r.gaps).toEqual(["i1"]);
+    expect(jev.usage.map((u) => u.step)).toContain("per-need");
+  });
+
+  it("second search: a need nothing matched gets its unused search, and the new result fills it", async () => {
+    const s = stub();
+    const jev = new JevScorer({ apiKey: "k", fetch: s.fetch as never });
+    const cfg = { ...LED_CONFIG, layout: "by-need" as const, queryBudget: 2, minPerItem: 1, maxPerItem: 1, screen: 0, gapQueries: 1 };
+    const r = await discoverLed({ text: "t", claude: { interpret: async () => interp }, jev, fetch: market, cfg });
+    expect(r.gap_searched).toEqual(["garden journal"]);
+    expect(r.groups.find((g) => g.need === "i1")!.picks.map((p) => p.listing.slug)).toEqual(["g1"]);
+    expect(r.gaps).toEqual([]);
+  });
+
+  it("hybrid: the overall winner first, then turns across needs", async () => {
+    const s = stub();
+    const jev = new JevScorer({ apiKey: "k", fetch: s.fetch as never });
+    const cfg = { ...LED_CONFIG, layout: "hybrid" as const, queryBudget: 3, minPerItem: 1, maxPerItem: 2, screen: 0 };
+    const r = await discoverLed({ text: "t", claude: { interpret: async () => interp }, jev, fetch: market, cfg });
+    expect(r.ranked[0]!.listing.slug).toBe("w3");
+    expect(r.ranked.slice(0, 3).map((x) => x.listing.slug)).toContain("g1"); // the journal need gets a turn early
+    expect(new Set(r.ranked.map((x) => x.listing.slug)).size).toBe(r.ranked.length);
   });
 });

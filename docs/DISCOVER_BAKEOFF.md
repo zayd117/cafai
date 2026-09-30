@@ -113,6 +113,11 @@ a smaller query budget (lost accuracy), a shortlist of 12 (no gain). Earlier (3 
 Not measured: Claude alone (no credit on the Anthropic account; run `--arms claude,jev-classic,jev-led` once there is), the real API
 interpretations, and human-labelled accuracy.
 
+Later the same day: the harness also reports where the right listing was lost (never searched, merged, screened out, not shortlisted,
+ranked below 5), what a person would see, how many needs have a match in the top 5, how many top-5 slots go to one need, and a junk test
+(`--decoys 4 --decoy-kind lookalike|random` slips off-topic listings from the other projects into the directory replies). The handshake,
+by-need and hybrid layouts, and their results are in `docs/JEV_USAGE.md`.
+
 ## First live run (30 Sep 2026): no accuracy number yet
 
 4 cases, 3 repeats, `claude` (claude-sonnet-5-5) vs `claude+jev` (jev-1.13.0), live mcp.market cached, 0 errors. Unlabelled, so precision,

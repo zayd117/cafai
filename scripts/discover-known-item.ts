@@ -33,10 +33,15 @@ const outPath = join(root, arg("out") ?? "eval/reports/known-item-latest.json");
 // Jev answers are replayed from here for identical requests (git-ignored). --fresh-jev skips it, for honest timings.
 const jevCachePath = join(root, arg("jev-cache") ?? "eval/discover/known-item-jev-cache.json");
 const freshJev = process.argv.includes("--fresh-jev");
+// Junk test: slip this many off-topic listings (real listings from the other test projects) into the directory's replies for each project.
+// "random" picks any; "lookalike" picks ones sharing a word with the searches they are slipped into (harder, and now and then not junk).
+const decoyCount = Number(arg("decoys") ?? 0);
+const decoyKind = (arg("decoy-kind") ?? "lookalike") as "random" | "lookalike";
 const ARMS = (arg("arms") ?? "jev-classic,jev-led").split(",").map((s) => s.trim()).filter(Boolean);
 // Jev-led variants switch one Jev step off at a time, to show which step earns its keep.
 const LED_VARIANTS: Record<string, Partial<typeof LED_CONFIG>> = {
   "jev-led": {},
+  "jev-led-noverify": { verifyShown: false },
   // the first Jev-led version (30 Sep 2026): head to head, text in every question, term questions on, no screen
   "jev-led-v1": { order: "pairs", compact: false, screen: 0, termsPerListing: 2, termFloor: 0.7, termWeight: 0.3 },
   "jev-led-nopair": { order: "none" },
@@ -55,6 +60,16 @@ const LED_VARIANTS: Record<string, Partial<typeof LED_CONFIG>> = {
   "jev-led-c-screen30": { order: "choice", screen: 30 },
   "jev-led-lean": { order: "choice", compact: true, termsPerListing: 0, termFloor: 1, termWeight: 0, screen: 20 },
   "jev-led-c-compact-screen20": { order: "choice", compact: true, screen: 20 },
+  // handshake and by-need layout (search -> result checks; best picks per need, taking turns across needs)
+  "jev-led-hs": { handshake: true, termsPerListing: 3 },
+  "jev-led-byneed": { layout: "by-need" },
+  "jev-led-byneed-hs": { layout: "by-need", handshake: true, termsPerListing: 3 },
+  "jev-led-byneed-gap": { layout: "by-need", gapQueries: 2 },
+  "jev-led-byneed-hs-gap": { layout: "by-need", handshake: true, termsPerListing: 3, gapQueries: 2 },
+  "jev-led-hybrid": { layout: "hybrid" },
+  "jev-led-hybrid-hs": { layout: "hybrid", handshake: true, termsPerListing: 3 },
+  "jev-led-verify": { verifyShown: true },
+  "jev-led-hybrid-verify": { layout: "hybrid", verifyShown: true },
 };
 const KNOWN_ARMS = ["claude", "jev-classic", ...Object.keys(LED_VARIANTS)];
 for (const a of ARMS) if (!KNOWN_ARMS.includes(a)) { console.error(`unknown arm "${a}"; known: ${KNOWN_ARMS.join(", ")}`); process.exit(2); }
@@ -87,11 +102,61 @@ const active = ARMS.filter((a) => a !== "claude" || hasClaude);
 const isLed = (a: string) => a in LED_VARIANTS;
 const skipped = ARMS.filter((a) => !active.includes(a));
 
-interface ArmResult { rank: number | null; retrieved: boolean; queries: number; ranked: string[]; input: number; output: number; cost: number; ms: number; requests?: number; steps?: Record<string, number>; missing?: number; error?: string }
+interface ArmResult { rank: number | null; retrieved: boolean; stage?: string; shown?: boolean; shownCount?: number; coverage5?: number; repeats5?: number; decoys5?: number; decoysShown?: number; queries: number; ranked: string[]; input: number; output: number; cost: number; ms: number; requests?: number; steps?: Record<string, number>; missing?: number; error?: string }
 const results: { id: string; text: string; known: string; reachable: boolean; arms: Record<string, ArmResult> }[] = [];
+
+// Every project's directory replies, so junk for one project can be drawn from the others' results.
+const rawBySlug = new Map<string, unknown>();
+const poolOf = new Map<string, Set<string>>();
+if (decoyCount > 0) {
+  for (const t of tasks.filter((x) => interps[x.id])) {
+    const slugs = new Set<string>();
+    for (const q of interps[t.id]!.queries) for (const l of await searchMarket(q.text, { limit: 8, fetch: cf }).catch(() => [] as Listing[])) slugs.add(l.slug);
+    poolOf.set(t.id, slugs);
+  }
+  for (const { body } of store.values()) {
+    try { for (const r of (JSON.parse(body) as { results?: { slug?: string }[] }).results ?? []) if (r?.slug) rawBySlug.set(r.slug, r); } catch { /* not a search reply */ }
+  }
+  saveCache();
+}
+const seeded = (s: string) => { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return () => ((h = Math.imul(h ^ (h >>> 15), 2246822507) ^ Math.imul(h ^ (h >>> 13), 3266489909)) >>> 0) / 4294967296; };
+const STOP = new Set(["with", "from", "that", "this", "your", "free", "tool", "tools", "data", "simple", "online", "search", "manager", "service"]);
+function decoysFor(t: Task): Map<string, unknown[]> {
+  const injections = new Map<string, unknown[]>();
+  if (decoyCount <= 0) return injections;
+  const rnd = seeded(t.id);
+  const own = poolOf.get(t.id) ?? new Set();
+  const others = [...new Set([...poolOf].filter(([id]) => id !== t.id).flatMap(([, s]) => [...s]))].filter((s) => !own.has(s) && s !== t.known.slug && rawBySlug.has(s)).sort();
+  const needs = interps[t.id]!.items;
+  const taken = new Set<string>();
+  for (let i = 0; i < decoyCount; i++) {
+    const need = needs[i % needs.length]!;
+    const qs = interps[t.id]!.queries.filter((q) => q.item_id === need.id);
+    const words = [...new Set(qs.flatMap((q) => q.text.toLowerCase().split(/[^a-z0-9]+/)).filter((w) => w.length >= 4 && !STOP.has(w)))];
+    const text = (s: string) => { const r = rawBySlug.get(s) as { name?: string; title?: string; description?: string }; return `${r.name ?? ""} ${r.title ?? ""} ${r.description ?? ""}`.toLowerCase(); };
+    const lookalike = decoyKind === "lookalike" ? others.filter((s) => !taken.has(s) && words.some((w) => text(s).includes(w))) : [];
+    const pool = lookalike.length ? lookalike : others.filter((s) => !taken.has(s));
+    const pick = pool[Math.floor(rnd() * pool.length)];
+    if (!pick) continue;
+    taken.add(pick);
+    for (const q of qs) injections.set(q.text, [...(injections.get(q.text) ?? []), rawBySlug.get(pick)]);
+  }
+  return injections;
+}
 
 for (const t of selected) {
   const interp = interps[t.id]!;
+  const injections = decoysFor(t);
+  const decoySlugs = new Set([...injections.values()].flat().map((r) => (r as { slug: string }).slug));
+  // The directory as the arms see it: real replies, with the junk slipped in at position 3.
+  const armFetch: FetchLike = !injections.size ? cf : async (url, init) => {
+    const res = await cf(url, init);
+    const inj = injections.get(decodeURIComponent(url.split("?q=")[1] ?? ""));
+    if (!inj || !res.ok) return res;
+    const body = (await res.json()) as { results: unknown[] };
+    body.results = [...body.results.slice(0, 2), ...inj, ...body.results.slice(2)];
+    return new Response(JSON.stringify(body), { status: 200, headers: { "content-type": "application/json" } });
+  };
   const qmap: Record<string, Listing[]> = {};
   await Promise.all(interp.queries.map(async (q) => { qmap[q.text] = await searchMarket(q.text, { limit: 8, fetch: cf }).catch(() => []); }));
   saveCache();
@@ -105,12 +170,39 @@ for (const t of selected) {
     try {
       const scorer = arm === "claude" ? new ClaudeScorer(new DiscoverClaude()) : new JevScorer({ fetch: jevFetch as never });
       const r = isLed(arm)
-        ? await discoverLed({ text: t.text, claude: { interpret: async () => interp }, jev: scorer as JevScorer, fetch: cf, cfg: { ...LED_CONFIG, ...LED_VARIANTS[arm] } })
-        : await discover({ text: t.text, claude: { interpret: async () => interp }, jev: scorer, fetch: cf });
+        ? await discoverLed({ text: t.text, claude: { interpret: async () => interp }, jev: scorer as JevScorer, fetch: armFetch, cfg: { ...LED_CONFIG, ...LED_VARIANTS[arm] } })
+        : await discover({ text: t.text, claude: { interpret: async () => interp }, jev: scorer, fetch: armFetch });
       const ranked = r.ranked.map((x) => x.listing.slug);
       const idx = ranked.findIndex((x) => twins.has(x));
       const u = scorer.usage;
+      const retrieved = r.searched.some((q) => (qmap[q.text] ?? []).some((l) => twins.has(l.slug)));
+      const tr = "trace" in r ? (r as { trace: { candidates: string[]; rated: string[]; shortlist: string[] } }).trace : null;
+      const has = (xs: string[]) => xs.some((x) => twins.has(x));
+      // Where the known listing was lost (or where it ended up).
+      const stage = !retrieved ? "never searched"
+        : idx === 0 ? "ranked first"
+        : idx >= 0 && idx < 5 ? "top 5"
+        : !tr ? "found, ranked below 5"
+        : !has(tr.candidates) ? "merged as duplicate"
+        : !has(tr.rated) ? "screened out"
+        : !has(tr.shortlist) ? "rated, not shortlisted"
+        : "shortlisted, ranked below 5";
+      // What a person would see: the by-need groups' picks, or the flat list.
+      const led = "listingScores" in r ? (r as unknown as { listingScores: { slug: string; per_item: Record<string, number> }[]; groups: { picks: { listing: { slug: string } }[] }[] }) : null;
+      const shownSlugs = led && led.groups.length ? [...new Set(led.groups.flatMap((g) => g.picks.map((p) => p.listing.slug)))] : ranked;
+      const fits = new Map((led?.listingScores ?? []).map((s) => [s.slug, s.per_item]));
+      const top5 = ranked.slice(0, 5);
+      const needIds = interp.items.map((it) => it.id);
+      const bestNeed = (slug: string) => Object.entries(fits.get(slug) ?? {}).sort((a, b) => b[1] - a[1])[0]?.[0];
+      const repeatCounts = top5.reduce<Record<string, number>>((acc, s) => { const n = bestNeed(s); if (n) acc[n] = (acc[n] ?? 0) + 1; return acc; }, {});
       arms[arm] = {
+        stage,
+        shown: shownSlugs.some((s) => twins.has(s)),
+        shownCount: shownSlugs.length,
+        coverage5: led ? needIds.filter((n) => top5.some((s) => (fits.get(s)?.[n] ?? 0) >= 0.5)).length / needIds.length : undefined,
+        repeats5: led ? Math.max(0, ...Object.values(repeatCounts)) : undefined,
+        decoys5: top5.filter((s) => decoySlugs.has(s)).length,
+        decoysShown: shownSlugs.filter((s) => decoySlugs.has(s)).length,
         rank: idx < 0 ? null : idx + 1,
         retrieved: r.searched.some((q) => (qmap[q.text] ?? []).some((l) => twins.has(l.slug))),
         queries: r.searched.length,
@@ -155,8 +247,19 @@ for (const a of active) {
   for (const r of valid) for (const [k, v] of Object.entries(r.arms[a]!.steps ?? {})) steps[k] = (steps[k] ?? 0) + v / valid.length;
   const missing = valid.reduce((s, r) => s + (r.arms[a]!.missing ?? 0), 0);
   const requests = mean(valid.map((r) => r.arms[a]!.requests ?? 0));
-  summary[a] = { ...row, steps, missing, requests };
+  const stages: Record<string, number> = {};
+  for (const r of valid) stages[r.arms[a]!.stage ?? "?"] = (stages[r.arms[a]!.stage ?? "?"] ?? 0) + 1;
+  const shown = valid.filter((r) => r.arms[a]!.shown).length;
+  const shownCount = mean(valid.map((r) => r.arms[a]!.shownCount ?? 0));
+  const cov = valid.map((r) => r.arms[a]!.coverage5).filter((x): x is number => x !== undefined);
+  const rep5 = valid.map((r) => r.arms[a]!.repeats5).filter((x): x is number => x !== undefined);
+  const decoys5 = mean(valid.map((r) => r.arms[a]!.decoys5 ?? 0));
+  const decoyTasks = valid.filter((r) => (r.arms[a]!.decoys5 ?? 0) > 0).length;
+  const decoysShown = mean(valid.map((r) => r.arms[a]!.decoysShown ?? 0));
+  summary[a] = { ...row, steps, missing, requests, stages, shown, shownCount, coverage5: cov.length ? mean(cov) : null, repeats5: rep5.length ? mean(rep5) : null, decoys5, decoyTasks, decoysShown };
   console.log(`${a.padEnd(18)} hit@1 ${pct(row.hit1 / row.n)} hit@3 ${pct(row.hit3 / row.n)} hit@5 ${pct(row.hit5 / row.n)} (${pct(row.hit5_ci[0])}-${pct(row.hit5_ci[1])})  MRR ${row.mrr.toFixed(2)}  never searched ${never}  queries ${row.queries.toFixed(1)}  tokens ${Math.round(row.input)}/${Math.round(row.output)}  $${row.cost.toFixed(4)}  ${Math.round(row.ms_median)} ms${freshJev ? "" : " (replayed Jev answers: time not comparable)"}`);
+  console.log(`${"".padEnd(18)} where the known listing ended up: ${Object.entries(stages).sort((x, y) => y[1] - x[1]).map(([k, v]) => `${k} ${v}`).join(", ")}`);
+  console.log(`${"".padEnd(18)} shown to the person: ${shownCount.toFixed(1)} results, known listing among them in ${shown} of ${valid.length}${cov.length ? `; needs with a match in the top 5 ${Math.round(mean(cov) * 100)}%; most top-5 slots for one need ${mean(rep5).toFixed(1)}` : ""}${decoyCount ? `; junk in top 5 ${decoys5.toFixed(2)} per project (${decoyTasks} projects), junk shown ${decoysShown.toFixed(2)}` : ""}`);
   console.log(`${"".padEnd(18)} input tokens by step: ${Object.entries(steps).map(([k, v]) => `${k} ${Math.round(v)}`).join(", ")}; ${requests.toFixed(1)} model requests per search; missing answers ${missing}`);
 }
 const paired: Record<string, unknown> = {};

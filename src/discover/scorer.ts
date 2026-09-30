@@ -216,6 +216,23 @@ export class JevScorer {
     return new Map(out.flat());
   }
 
+  /** Final handshake: only "does it do what this search looked for?", for the results about to be shown. Returns slug -> term -> P. */
+  async scoreTerms(items: Item[], cands: { listing: Listing; terms: string[] }[], opts: Pick<ListingAskOptions, "compact"> = {}): Promise<Map<string, Record<string, number>>> {
+    const asked = cands.filter((c) => c.terms.length);
+    if (!asked.length) return new Map();
+    const q: Record<string, Questions[string]> = {};
+    asked.forEach((c, j) => {
+      const ref: Record<string, JsonValue> = opts.compact ? { candidate_id: `c${j}` } : { candidate: candidateOf(c.listing) };
+      const server = opts.compact ? "the server `candidates[candidate_id]`" : "the server in `candidate`";
+      c.terms.forEach((term, m) => {
+        q[`l${j}_t${m}`] = noul({ ...ref, term, question: `Does ${server} do what a person searching for \`term\` is looking for?` });
+      });
+    });
+    const state = opts.compact ? { candidates: Object.fromEntries(asked.map((c, j) => [`c${j}`, candidateOf(c.listing)])) } : {};
+    const a = await this.ask(items, q as Questions, "verify", state);
+    return new Map(asked.map((c, j) => [c.listing.slug, Object.fromEntries(c.terms.map((term, m) => [term, this.p(a, `l${j}_t${m}`, 0)]))]));
+  }
+
   /** Step 5a: is `a` a better choice than `b` for this project? Asked in both orders and averaged, so a lean toward whichever is named first cancels out. */
   static pairQuestions(pairs: [Listing, Listing][]): Questions {
     const q: Record<string, Questions[string]> = {};
@@ -241,6 +258,39 @@ export class JevScorer {
       }),
     );
     return out.flat();
+  }
+
+  /**
+   * Step 5c (by-need layout): for each need, one "which of these best does what this need asks" question over that need's verified
+   * candidates, asked twice with the list reversed. All needs go in one request (answers are independent). Returns need id -> slug -> share.
+   */
+  static perNeedQuestions(groups: { item: Item; listings: Listing[] }[]): Questions {
+    const q: Record<string, Questions[string]> = {};
+    const options = (order: Listing[]) => Object.fromEntries(order.map((l, j) => [`c${j}`, candidateOf(l)]));
+    groups.forEach((g, k) => {
+      const ask = { item: g.item.text, question: "Which server best does what `item` needs?" };
+      q[`n${k}_fwd`] = choice(ask, options(g.listings));
+      q[`n${k}_rev`] = choice(ask, options([...g.listings].reverse()));
+    });
+    return q as Questions;
+  }
+
+  async rankPerNeed(items: Item[], groups: { item: Item; listings: Listing[] }[]): Promise<Map<string, Map<string, number>>> {
+    const asked = groups.filter((g) => g.listings.length > 1);
+    const out = new Map<string, Map<string, number>>(groups.filter((g) => g.listings.length === 1).map((g) => [g.item.id, new Map([[g.listings[0]!.slug, 1]])]));
+    if (!asked.length) return out;
+    const a = await this.ask(items, JevScorer.perNeedQuestions(asked), "per-need");
+    asked.forEach((g, k) => {
+      const n = g.listings.length;
+      const prob = (key: string, label: string) => {
+        const v = a[key]?.probabilities?.[label];
+        if (typeof v === "number") return v;
+        this.missing++;
+        return 1 / n;
+      };
+      out.set(g.item.id, new Map(g.listings.map((l, j) => [l.slug, (prob(`n${k}_fwd`, `c${j}`) + prob(`n${k}_rev`, `c${n - 1 - j}`)) / 2])));
+    });
+    return out;
   }
 
   /**

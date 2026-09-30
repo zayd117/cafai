@@ -52,6 +52,21 @@ export interface ListingScore {
   per_term?: Record<string, number>;
 }
 
+/** One need -> search -> result path and Jev's three checks on it. */
+export interface HandshakePath {
+  need: string;
+  /** The search text, or null when no search for this need found the result. */
+  query: string | null;
+  /** P(the search fits the need): Jev's query score. */
+  query_fits_need: number;
+  /** P(the result does what the search looked for), or null when not asked. */
+  result_fits_query: number | null;
+  /** P(the result does what the need asks). */
+  result_fits_need: number;
+  /** How well the result is verified for the need through this path. */
+  strength: number;
+}
+
 /** Jev-led loop only: how central one need is to the project, from Jev. */
 export interface ItemScore {
   item_id: string;
@@ -70,6 +85,10 @@ export interface Ranked {
   p_query: number;
   /** Jev-led loop only: Jev's 0-1 standing on the shortlist (head-to-head wins, a pick-the-best share, or both averaged). */
   pair?: number;
+  /** Jev-led loop only: how well this result is verified for each need (see `handshake` in src/discover/led.ts). */
+  match?: Record<string, number>;
+  /** Jev-led loop only: the strongest need -> search -> result path behind `match`. */
+  path?: HandshakePath;
   fit: number;
   trust: number;
   final: number;
