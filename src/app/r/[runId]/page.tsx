@@ -1,6 +1,7 @@
 // /r/:runId (plan §18): read-back, picks, "Not needed now" and the order. Runs are shareable and resumable by URL.
 import { notFound } from "next/navigation";
 import { isUuid } from "@/db/client";
+import { readFlags } from "@/server/controls";
 import { getRuntime, snapshotFor } from "@/server/runtime";
 import { loadRun, type StoredRun } from "@/server/runService";
 import { rerun } from "../../actions";
@@ -8,6 +9,13 @@ import { MATCH_LABEL, NOT_NEEDED_REASON } from "../../_components/labels";
 import { PickCard } from "../../_components/PickCard";
 
 export const dynamic = "force-dynamic";
+
+// Placeholder wording (REGISTER A-030).
+const RUN_ERRORS: Record<string, string> = {
+  quota: "You have made a lot of orders in the last hour. Please try again later.",
+  paused: "New orders are paused for a moment. Please try again later.",
+  expired: "Your original wording for this order has expired, so it cannot be run again. Start a new order instead.",
+};
 
 function ReadBack({ run }: { run: StoredRun }) {
   const items = run.details.readback;
@@ -133,15 +141,22 @@ export default async function RunPage({ params, searchParams }: {
   const notNeeded = run.details.not_needed;
   const offeringName = (id?: string) => (id ? snapshot.offerings.find((o) => o.id === id)?.identity.display_name : undefined);
   const card = (p: (typeof run.picks)[number]) => (
-    <PickCard key={p.id} runId={run.id} pick={p} snapshot={snapshot} readback={run.details.readback} clientNames={clientNames} thanks={sp.rec === p.id} />
+    <PickCard key={p.id} runId={run.id} pick={p} snapshot={snapshot} readback={run.details.readback} clientNames={clientNames} thanks={sp.rec === p.id} revoked={flags.revoked.has(p.offering_id)} />
   );
 
+  const flags = await readFlags(pool);
+  const notice = sp.error ? RUN_ERRORS[sp.error] : undefined;
   return (
     <main className="page" id="top">
+      {notice && <div className="banner warn" role="alert"><span>{notice}</span></div>}
       {run.details.degraded && (
         <div className="banner warn" role="status">
           {/* Banner copy is not in the plan (board 6 [BANNER COPY TBC]); placeholder wording, REGISTER A-030. */}
-          <span>Explanations are shorter than usual right now. Every fact on these cards still comes from our checked list.</span>
+          <span>
+            {run.details.degraded === "deterministic_only"
+              ? "Our AI helper was unavailable for this order, so we used simpler rules. Every fact shown still comes from our checked list."
+              : "Explanations are shorter than usual right now. Every fact on these cards still comes from our checked list."}
+          </span>
         </div>
       )}
       <div className="results">

@@ -2,6 +2,7 @@
 // Caf.ai installs nothing and holds no keys: it hands the user to their own client's official path.
 import { notFound } from "next/navigation";
 import { isUuid } from "@/db/client";
+import { readFlags } from "@/server/controls";
 import { getRuntime, snapshotFor } from "@/server/runtime";
 import { loadRun } from "@/server/runService";
 import { handoffsFor, pasteMessage } from "@/setup/handoff";
@@ -24,7 +25,11 @@ export default async function SetupPage({ params, searchParams }: {
 
   // Only picks from this run; the order form sends the ticked ones (default: the direct picks).
   const requested = new Set([sp.pick ?? []].flat());
-  const picks = run.picks.filter((p) => (requested.size ? requested.has(p.offering_id) : p.lane === "direct"));
+  const flags = await readFlags(getRuntime().pool);
+  // Revoked offerings never get setup steps (§11 "Setup hidden").
+  const picks = run.picks
+    .filter((p) => (requested.size ? requested.has(p.offering_id) : p.lane === "direct"))
+    .filter((p) => !flags.revoked.has(p.offering_id));
   // Tabs for declared clients only (§8); with none declared, the three supported clients (REGISTER A-031).
   const declared = run.declared_clients.filter((c) => snapshot.clients.some((k) => k.id === c));
   const clients = (declared.length ? declared : snapshot.clients.map((c) => c.id)).map((id) => snapshot.clients.find((c) => c.id === id)!);

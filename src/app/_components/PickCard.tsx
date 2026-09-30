@@ -44,6 +44,8 @@ export function PickCard(props: {
   readback: ProfileItem[];
   clientNames: string[];
   thanks: boolean;
+  /** Revoked after this run was made (§11, §19): annotate, and hide setup. */
+  revoked?: boolean;
 }) {
   const { runId, pick, snapshot, readback, clientNames } = props;
   const o = snapshot.offerings.find((x) => x.id === pick.offering_id);
@@ -54,6 +56,15 @@ export function PickCard(props: {
   const facts = [...o.resource_profile.provides, ...o.resource_profile.requires, ...o.resource_profile.limits];
   const lowConfidence = pick.confidence_band === "low";
 
+  if (props.revoked) {
+    return (
+      <article className="card" id={`pick-${pick.id}`} aria-labelledby={`t-${pick.id}`}>
+        <h3 id={`t-${pick.id}`}>{o.identity.display_name}</h3>
+        {/* Revoked notice copy is not in the plan (board 5 [COPY TBC]); placeholder, REGISTER A-030. */}
+        <p className="danger">We no longer recommend this, so its setup is hidden. If you added it, remove it where you added it.</p>
+      </article>
+    );
+  }
   return (
     <article className={`card${awk ? " awk" : ""}`} id={`pick-${pick.id}`} aria-labelledby={`t-${pick.id}`}>
       {/* Level 1: parts 1, 2, 3, 5, 6, 7, 8, 10, 11 */}

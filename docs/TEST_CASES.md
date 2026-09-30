@@ -23,9 +23,11 @@ npm run flow -- http://localhost:3100 docs/figma-handoff/screens
 | `src/engine/pipeline.test.ts` | 17 | Lanes and caps, flagged never shown, closed world, evidence checks, latent-signal rule, explanation validator and fallback, outcomes, deterministic fallback, Checked held back, client filter, staleness, secret canary, injection has no ranking effect |
 | `src/engine/providers/anthropic.test.ts` | 5 | Request shape (fenced data, schema, fallback), refusal/cut-off handling, served-model recording (stub client, not live) |
 | `src/eval/metrics.test.ts` | 5 | Metrics, release gate, pricing, blind pairs |
+| `src/server/controls.db.test.ts` | 4 | Quota hashing and cap, budget breaker, app-role purge, flag audit and grants |
 | `src/setup/handoff.test.ts` | 6 | Danger detection, Cursor link decoding (incl. "+"), hostnames, route choice, paste message |
 | `npm run eval` | 4 fixture cases × 4 arms | Release gate: harmful picks 0, invalid ids 0, no regression vs baseline |
 | `npm run flow` (Chromium) | 41 checks | See below |
+| `scripts/controls-flow.mjs` (Chromium + DB) | 9 checks | Revoked pick annotated and setup hidden, AI off → degraded banner and read-back first, runs off → paused, quota cap, honeypot, flag audit |
 
 ### Browser checks (`scripts/flow.mjs`, desktop 1440 and mobile 390)
 
@@ -41,7 +43,7 @@ copy button works (client JS under CSP) · Cursor config decoded before link · 
 |---|---|---|---|---|
 | T-07 | Read-back edit reruns | On a results page open "Change this", edit an item, add one, press "Update my picks" | New run URL; picks recomputed; old run unchanged | To automate in next UI chunk |
 | T-08 | Refine filters | Tick "Free only", "Update picks" | Paid offerings leave the picks; filter stays ticked | To automate |
-| T-09 | Low-confidence confirm | Input that the model reads with low confidence | Read-back open, "Is this right?", no picks until "Yes, that's right" | Needs a fixture script with confidence low |
+| T-09 | Low-confidence confirm | Input that the model reads with low confidence | Read-back open, "Is this right?", no picks until "Yes, that's right" | Shown in controls-flow (AI off); pressing "Yes, that's right" not yet automated |
 | T-10 | Clarifying question | Input with a model question | One question with options; answer reruns | Needs a fixture script with a question |
 | T-11 | Degraded banner | Explanation model fails | Banner shown; cards use template wording | Covered in unit tests; not in browser |
 | T-12 | Keyboard only | Tab through counter → results → setup | Every control reachable, visible focus ring, details toggle with Enter/Space | Not run |

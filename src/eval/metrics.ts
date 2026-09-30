@@ -1,12 +1,9 @@
 // Offline metrics (plan §9 Evaluation). Harmful picks and invalid IDs must both be zero.
 import type { CaseResult, EvalCase } from "./types";
 
-// Prices per million tokens, VERIFIED in plan §3 (29 Sep 2026). Unknown models cost NaN so reports never under-count.
-export const PRICES: Record<string, { input: number; output: number }> = {
-  "claude-sonnet-5-5": { input: 2, output: 10 },
-  "claude-haiku-4-5": { input: 1, output: 5 },
-  MOCK: { input: 0, output: 0 },
-};
+import { PRICES } from "@/config/pricing";
+
+export { PRICES };
 
 export function costUsd(usage: { model: string; input_tokens: number; output_tokens: number }[]): number {
   return usage.reduce((sum, u) => {

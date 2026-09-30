@@ -84,3 +84,18 @@ export class HeuristicMockProvider implements LlmProvider, DecisionProvider {
     throw new Error("MOCK: no explanation model; engine uses template explanations");
   }
 }
+
+/** Used when the "ai_off" kill switch is on or the daily AI budget is spent: every call fails, so the engine runs
+ * its deterministic rules and template explanations (plan §9 degraded modes, §14 kill switches). */
+export class DisabledProvider implements LlmProvider, DecisionProvider {
+  constructor(readonly id: string) {}
+  async understand(): Promise<ModelResponse> {
+    throw new Error(`${this.id}: model calls are switched off`);
+  }
+  async judge(): Promise<ModelResponse> {
+    throw new Error(`${this.id}: model calls are switched off`);
+  }
+  async explain(): Promise<ModelResponse> {
+    throw new Error(`${this.id}: model calls are switched off`);
+  }
+}

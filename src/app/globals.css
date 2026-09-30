@@ -130,3 +130,5 @@ summary::-webkit-details-marker { display: none; }
 .setup-desktop-note { display: none; }
 @media (max-width: 700px) { .setup-desktop-note { display: block; } }
 .btn.fit { align-self: flex-start; }
+.hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.page .banner { margin-left: 0; margin-right: 0; }

@@ -9,6 +9,12 @@ const EXAMPLES = [
   "I'm writing a Tampermonkey script that reads visible Excel cells and notifies me when something changes.",
   "Every Monday I export Shopify orders to Google Sheets and build a sales summary. I use Claude Desktop, and ChatGPT at work.",
 ];
+// Copy for these states is not in the plan (wireframe board 6 lists them as unspecified); placeholder wording, REGISTER A-030.
+const ERRORS: Record<string, string> = {
+  empty: "Describe what you are working on, or pick an example below.",
+  quota: "You have made a lot of orders in the last hour. Please try again later.",
+  paused: "New orders are paused for a moment. Please try again later.",
+};
 const CLIENTS = [
   ["claude_code", "Claude Code"],
   ["cursor", "Cursor"],
@@ -35,7 +41,7 @@ export default async function Counter({ searchParams }: { searchParams: Promise<
               placeholder="e.g. I'm creating a calorie and macro tracker app for mobile"
               aria-describedby="text-help" {...(error === "empty" ? { "aria-invalid": true } : {})}
             />
-            {error === "empty" && <p className="small" role="alert">Describe what you are working on, or pick an example below.</p>}
+            {error && ERRORS[error] && <p className="small" role="alert">{ERRORS[error]}</p>}
             <div className="row small muted" id="text-help">
               <span>Don&apos;t paste secrets; we redact them.</span>
               <span>Up to {ENGINE_CONFIG.input.maxChars.toLocaleString("en-US")} characters</span>
@@ -60,6 +66,10 @@ export default async function Counter({ searchParams }: { searchParams: Promise<
             </div>
           </div>
 
+          <div className="hp" aria-hidden="true">
+            <label htmlFor="website">Leave this empty</label>
+            <input id="website" name="website" tabIndex={-1} autoComplete="off" />
+          </div>
           <div className="box-section row">
             <span className="muted">No sign-up needed to try it.</span>
             <button type="submit" className="btn primary">What do you recommend?</button>

@@ -97,3 +97,19 @@ Format: MD section → requirement → engineering task → files → test. Kind
 | §18 | Mobile: setup says it works best on a computer | CONFIRMED | `.setup-desktop-note` | mobile screenshots |
 | §18 | "Send these steps to myself" | NOT BUILT: channel unspecified (wireframe UNKNOWN) | — | — |
 | §18 | Streaming read-back then cards | NOT BUILT YET: page renders when the run completes | — | — |
+
+## L8 Abuse, cost and operational controls
+
+| Plan § | Requirement | Kind | Files | Verification |
+|---|---|---|---|---|
+| §14 risk 5, §24 | Per-client quotas; 429-style refusal with retry window | CONFIRMED (cap PLACEHOLDER, A-032) | `003_controls.sql` `quota_hit`, `server/controls.ts`, `actions.ts#guarded` | `controls.db.test.ts`; controls-flow "quota exceeded" |
+| §12 | No raw client address stored (salted hash) | CONFIRMED | `clientKey` | "hashes client addresses" |
+| §14, §24 | Global daily AI budget with circuit breaker | CONFIRMED (cap PLACEHOLDER; interim behaviour A-033) | `spend_today_micros()`, `budgetSpent`, `costMicros` per call | "trips the budget breaker" |
+| §14, §17 | Kill switches read on each request: AI off, runs off, revoke one tool | CONFIRMED | `flags`, `readFlags`, `DisabledProvider` | controls-flow: revoked, ai_off, runs_off |
+| §11, §19 | Revoked offering: never recommended, old runs annotated, setup hidden | CONFIRMED (notice copy placeholder, A-030) | `PickCard` revoked, setup filter, `run()` snapshot filter | controls-flow ×2 |
+| §14, §15 | Append-only audit of admin actions (flag changes) | CONFIRMED | `audit_events`, `flags_audit` trigger | "audits every flag change"; controls-flow |
+| §12, §17 | Retention purge job (anonymous runs, raw text, quota windows) | CONFIRMED | `purge_expired()`, `scripts/worker.ts` | "lets the app role run the purge" |
+| §14 | No error details leak to users | CONFIRMED | `src/app/error.tsx` | — |
+| §17 | Redacted structured logs (no description text) | CONFIRMED | `runService.ts` `run_completed` log | — |
+| §24 | Bot check on anonymous runs | PARTIAL: honeypot field only; vendor open (A-005) | `page.tsx` `.hp` | controls-flow "honeypot" |
+| §24 | Day 3–7 follow-up email | BLOCKED: email provider (A-005) and where the address is asked (A-012) | — | — |

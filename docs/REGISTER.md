@@ -35,6 +35,10 @@ Status: **RESOLVED** (user-confirmed), **DEFERRED** (decision postponed to a nam
 | A-029 | Plain wording for offering types at level 3 | §8 requires plain words; glossary is a §24 should-have | Draft wording in `src/app/_components/labels.ts`; replace with the glossary. |
 | A-030 | UI copy the plan does not give (out of scope, degraded banner, run not found) | §9 failure table, wireframe board 6 [COPY TBC] | Short placeholder sentences in the pages, marked in code comments. |
 | A-031 | Setup tabs when no AI tool was declared | §8 "tabs for declared clients only" | Shows the three supported clients. |
+| A-032 | Run cap and daily AI budget | §22, §24; wireframe [RUN CAP] | PLACEHOLDER defaults 10 runs/hour/client and $5/day, env-overridable (`CAFAI_RUNS_PER_HOUR`, `CAFAI_DAILY_AI_BUDGET_USD`). |
+| A-033 | Budget cap behaviour | §9: "queue the run and email when ready, if the user opts in" | Queueing needs email (A-005). Interim: runs continue with no model calls (deterministic rules, degraded banner). |
+| A-034 | Client address for quotas | §14 | Uses the first `x-forwarded-for` value; only trustworthy behind a known proxy. Hosting is undecided (A-004), so revisit at deploy. |
+| A-035 | Bot check | §14, §24 name a bot check, no vendor | Honeypot field as an interim measure; real bot check waits for a vendor (A-005). |
 | A-020 | GitHub push access | environment | RESOLVED 2026-09-30: access fixed by the user; all commits pushed. |
 
 Wireframe canvas unknowns (21 items, exact answers needed) are listed on the canvas sticky note: https://claude.ai/artifact/Ws1hft8GALEGne1L616Y4Y

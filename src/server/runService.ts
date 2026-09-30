@@ -2,6 +2,7 @@
 import { randomUUID } from "node:crypto";
 import type pg from "pg";
 import type { CatalogSnapshot } from "@/catalog/types";
+import { costMicros } from "@/config/pricing";
 import { ANONYMOUS_RUN_DAYS } from "@/config/retention";
 import { withAccess } from "@/db/client";
 import { ENGINE_CONFIG } from "@/engine/config";
@@ -117,11 +118,17 @@ export async function startRun(
     }
     for (const u of result.usage) {
       await c.query(
-        "INSERT INTO usage_events (run_id, kind, stage, model, input_tokens, output_tokens) VALUES ($1, 'model_call', $2, $3, $4, $5)",
-        [id, u.stage, u.model, u.input_tokens, u.output_tokens],
+        "INSERT INTO usage_events (run_id, kind, stage, model, input_tokens, output_tokens, cost_usd_micros) VALUES ($1, 'model_call', $2, $3, $4, $5, $6)",
+        [id, u.stage, u.model, u.input_tokens, u.output_tokens, costMicros(u)],
       );
     }
   });
+  // Redacted structured log: ids, outcome and counts only, never description text (§14, §17).
+  console.log(JSON.stringify({
+    event: "run_completed", run_id: id, outcome: result.outcome, degraded: result.degraded, picks: result.picks.length,
+    input_tokens: result.usage.reduce((a, u) => a + u.input_tokens, 0), output_tokens: result.usage.reduce((a, u) => a + u.output_tokens, 0),
+    injection_suspected: result.flags.injection_suspected, redactions: result.flags.redactions,
+  }));
   return id;
 }
 

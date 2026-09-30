@@ -21,6 +21,9 @@ Desktop frames are 1440 wide, mobile frames 390 wide, full page height. All samp
 | 06 | `/r/:runId` | 6 States | `06-out-of-scope-desktop.png` | — | Out of scope |
 | 07 | `/r/:runId/setup?client=claude_code` | 7 Setup, M5 | `07-setup-claude-code-desktop.png` | `07-setup-claude-code-mobile.png` | Message copied, command, warnings |
 | 08 | `/r/:runId/setup?client=cursor` | 7 Setup | `08-setup-cursor-desktop.png` | `08-setup-cursor-mobile.png` | Decoded install-link config |
+| 09 | `/r/:runId` | 5 (trust states) | `09-revoked-pick-desktop.png` | — | Pick revoked after the run (withdrawn notice) |
+| 10 | `/r/:runId` | 6 States | `10-ai-off-desktop.png` | — | AI off: degraded banner + low-confidence read-back |
+| 11 | `/` | 6 States (quota, unspecified) | `11-quota-desktop.png` | — | Hourly cap reached message |
 
 Not built yet (no screenshot): streaming skeletons (board 2), saved project (8), settings (9), save prompt (10),
 check-in email and page (11, 12), second door (13), low-confidence and clarifying-question states (drawn on board 6,
@@ -88,7 +91,7 @@ Faces are self-hosted by `next/font/google`: **Young Serif** (display), **Figtre
 | Text input / textarea | `.input`, `.textarea` | default · placeholder · focus · invalid (aria-invalid) |
 | Tag | `.tag` | dashed outline, caps |
 | Placeholder value | `.ph` | mono on `tag` fill, dashed border |
-| Banner | `.banner` | sample (dashed) · `warn` (solid clay border) |
+| Banner | `.banner` | sample (dashed) · `warn` (solid clay border; degraded, quota, paused, expired) |
 | Pick card | `PickCard` / `.card` | direct (solid `line` border) · also-worth-knowing (`.awk`, dashed moss border); level 2 and 3 closed/open |
 | Match meter | `MatchMeter` | 4 segments; strong 4 · good 3 · possible 2 · weak 1 · skip 0; always with the word |
 | Confidence dots | `ConfidenceDots` | 3 dots; Sure 3 · Fairly sure 2 · Not sure yet 1; always with the word |
@@ -132,3 +135,4 @@ Confidence always shown as two separate indicators with words; score numbers onl
 |---|---|---|
 | 2026-09-30 08:55 | L6a | Counter, results page, card levels, outcomes, order and refine built and verified (27 checks) |
 | 2026-09-30 09:00 | L6b | Setup page: tabs, paste message, decoded Cursor config, warnings, copy, It worked / Stuck (41 checks). Fixed: order listed the unticked extra idea; refine chips stacked; duplicate "Needed now" wording; Cursor pseudo-host shown as a connection; internal plan wording shown to users; full-width install button |
+| 2026-09-30 09:14 | L8 | Quota, paused, AI-off and revoked states; honeypot field; error page. Fixed: warn banner double indent; degraded copy now says when AI understanding was unavailable |
