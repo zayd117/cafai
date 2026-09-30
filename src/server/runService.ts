@@ -10,7 +10,7 @@ import type { Constraints } from "@/engine/match";
 import { runPipeline } from "@/engine/pipeline";
 import type { DecisionProvider, LlmProvider } from "@/engine/providers/types";
 import { redact } from "@/engine/redact";
-import type { Explanation, NeedAnswer, NotNeeded, ProfileItem, RunOutcome, RunResult } from "@/engine/types";
+import type { Alternative, Explanation, NeedAnswer, NotNeeded, ProfileItem, RunOutcome, RunResult } from "@/engine/types";
 import type { UserItem } from "@/engine/understand";
 
 export interface StartRun {
@@ -49,6 +49,7 @@ export interface StoredPick {
   evidence_ids: string[];
   explanation: Explanation;
   notes: string[];
+  alternatives: Alternative[];
 }
 
 export interface StoredRun {
@@ -62,6 +63,8 @@ export interface StoredRun {
   declared_clients: string[];
   details: RunDetails;
   picks: StoredPick[];
+  /** Concept expansion behind the read-back (internal; shown only under "How we understood this"). */
+  concepts: { term: string; capability_id: string | null }[];
 }
 
 export async function startRun(
@@ -109,11 +112,11 @@ export async function startRun(
     for (const p of result.picks) {
       await c.query(
         `INSERT INTO recommendations (run_id, offering_id, catalog_version, lane, rank, capability_id, need_type, match_band,
-           match_components, confidence_band, confidence_inputs, evidence_ids, explanation, do_you_need_it, notes)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
+           match_components, confidence_band, confidence_inputs, evidence_ids, explanation, do_you_need_it, notes, alternatives)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
         [id, p.offering_id, snapshot.version, p.lane, p.rank, p.capability_id, p.need_type, p.match.band,
           JSON.stringify(p.match.components), p.confidence.band, JSON.stringify(p.confidence.inputs), p.evidence_ids,
-          JSON.stringify(p.explanation), p.do_you_need_it, p.notes],
+          JSON.stringify(p.explanation), p.do_you_need_it, p.notes, JSON.stringify(p.alternatives)],
       );
     }
     for (const u of result.usage) {
@@ -137,7 +140,7 @@ export async function loadRun(pool: pg.Pool, runId: string): Promise<StoredRun |
     const r = await c.query("SELECT * FROM recommendation_runs WHERE id = $1", [runId]);
     if (r.rowCount === 0) return null;
     const run = r.rows[0];
-    const ctx = await c.query("SELECT raw_text, declared_clients FROM context_snapshots WHERE run_id = $1 ORDER BY version DESC LIMIT 1", [runId]);
+    const ctx = await c.query("SELECT raw_text, declared_clients, profile FROM context_snapshots WHERE run_id = $1 ORDER BY version DESC LIMIT 1", [runId]);
     const picks = await c.query("SELECT * FROM recommendations WHERE run_id = $1 ORDER BY rank", [runId]);
     return {
       id: run.id,
@@ -150,6 +153,7 @@ export async function loadRun(pool: pg.Pool, runId: string): Promise<StoredRun |
       declared_clients: ctx.rows[0]?.declared_clients ?? [],
       details: run.details,
       picks: picks.rows,
+      concepts: ctx.rows[0]?.profile?.concepts ?? [],
     } as StoredRun;
   });
 }

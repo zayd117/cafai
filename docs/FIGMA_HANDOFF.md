@@ -24,6 +24,7 @@ Desktop frames are 1440 wide, mobile frames 390 wide, full page height. All samp
 | 09 | `/r/:runId` | 5 (trust states) | `09-revoked-pick-desktop.png` | — | Pick revoked after the run (withdrawn notice) |
 | 10 | `/r/:runId` | 6 States | `10-ai-off-desktop.png` | — | AI off: degraded banner + low-confidence read-back |
 | 11 | `/` | 6 States (quota, unspecified) | `11-quota-desktop.png` | — | Hourly cap reached message |
+| 12 | `/r/:runId` (one card) | 3 Picks ("Show alternatives", should have) | `12-alternatives-desktop.png` | — | Level 2 open with one alternative |
 
 Not built yet (no screenshot): streaming skeletons (board 2), saved project (8), settings (9), save prompt (10),
 check-in email and page (11, 12), second door (13), low-confidence and clarifying-question states (drawn on board 6,
@@ -135,4 +136,5 @@ Confidence always shown as two separate indicators with words; score numbers onl
 |---|---|---|
 | 2026-09-30 08:55 | L6a | Counter, results page, card levels, outcomes, order and refine built and verified (27 checks) |
 | 2026-09-30 09:00 | L6b | Setup page: tabs, paste message, decoded Cursor config, warnings, copy, It worked / Stuck (41 checks). Fixed: order listed the unticked extra idea; refine chips stacked; duplicate "Needed now" wording; Cursor pseudo-host shown as a connection; internal plan wording shown to users; full-width install button |
-| 2026-09-30 09:14 | L8 | Quota, paused, AI-off and revoked states; honeypot field; error page. Fixed: warn banner double indent; degraded copy now says when AI understanding was unavailable |
+| 2026-09-30 09:07 | L8 | Quota, paused, AI-off and revoked states; honeypot field; error page. Fixed: warn banner double indent; degraded copy now says when AI understanding was unavailable |
+| 2026-09-30 09:13 | L9 | "Show alternatives" inside level 2; "How we understood this" panel |

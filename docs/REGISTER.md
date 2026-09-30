@@ -39,6 +39,7 @@ Status: **RESOLVED** (user-confirmed), **DEFERRED** (decision postponed to a nam
 | A-033 | Budget cap behaviour | §9: "queue the run and email when ready, if the user opts in" | Queueing needs email (A-005). Interim: runs continue with no model calls (deterministic rules, degraded banner). |
 | A-034 | Client address for quotas | §14 | Uses the first `x-forwarded-for` value; only trustworthy behind a known proxy. Hosting is undecided (A-004), so revisit at deploy. |
 | A-035 | Bot check | §14, §24 name a bot check, no vendor | Honeypot field as an interim measure; real bot check waits for a vendor (A-005). |
+| A-036 | Manifest paste → stack signals | §12, §24 | Needs a curated mapping from dependency names to capabilities; no such field exists yet. Not built. |
 | A-020 | GitHub push access | environment | RESOLVED 2026-09-30: access fixed by the user; all commits pushed. |
 
 Wireframe canvas unknowns (21 items, exact answers needed) are listed on the canvas sticky note: https://claude.ai/artifact/Ws1hft8GALEGne1L616Y4Y

@@ -134,6 +134,23 @@ export function PickCard(props: {
             <span className="part-label">First thing to try</span>
             <p className="quote">“{o.editorial.first_prompt}”</p>
           </div>
+          {pick.alternatives?.length > 0 && (
+            <details className="alts">
+              <summary>Show alternatives ({pick.alternatives.length})</summary>
+              <ul>
+                {pick.alternatives.map((a) => {
+                  const alt = snapshot.offerings.find((x) => x.id === a.offering_id);
+                  return alt ? (
+                    <li key={a.offering_id}>
+                      <strong>{alt.identity.display_name}</strong> <span className="muted small">by {alt.identity.vendor}</span>
+                      <br />{alt.editorial.what_it_is}{" "}
+                      <span className="small">{MATCH_LABEL[a.match_band]} · {CONFIDENCE_LABEL[a.confidence_band]}</span>
+                    </li>
+                  ) : null;
+                })}
+              </ul>
+            </details>
+          )}
         </div>
       </details>
 

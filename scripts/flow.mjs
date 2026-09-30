@@ -64,6 +64,15 @@ for (const [label, width, height] of [["desktop", 1440, 1000], ["mobile", 390, 8
   expect(`${label}: level 3 shows offering type`, await first.getByText("Offering type").isVisible());
   await first.screenshot({ path: `${out}/03-card-levels-${label}.png` });
 
+  // Should-haves: alternatives inside level 2, and "How we understood this".
+  const withAlt = page.locator("article.card").filter({ hasText: "Sample app database access" });
+  await withAlt.getByText("How it fits and how to set it up").click();
+  await withAlt.getByText(/Show alternatives/).click();
+  expect(`${label}: alternatives listed`, await withAlt.getByText("Sample hosted database helper").isVisible());
+  await page.getByText("How we understood this").click();
+  expect(`${label}: unmapped concept shown as a gap`, await page.getByText("barcode scanning: not on our menu yet").isVisible());
+  if (label === "desktop") await withAlt.screenshot({ path: `${out}/12-alternatives-${label}.png` });
+
   // Card feedback round-trip.
   await first.getByRole("button", { name: "Useful", exact: true }).click();
   await page.waitForURL(/thanks=useful/);

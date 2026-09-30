@@ -132,3 +132,5 @@ summary::-webkit-details-marker { display: none; }
 .btn.fit { align-self: flex-start; }
 .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 .page .banner { margin-left: 0; margin-right: 0; }
+.alts summary { font-weight: 700; min-height: 44px; display: flex; align-items: center; }
+.alts ul { margin: 4px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }

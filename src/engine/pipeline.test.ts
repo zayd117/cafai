@@ -83,6 +83,15 @@ describe("runPipeline (MOCK providers, FIXTURE catalog)", () => {
     expect(awk[0]!.confidence.band).not.toBe("low");
   });
 
+  it("keeps other Strong or Good offerings for the same capability as alternatives, never flagged ones", async () => {
+    const r = await run(provider());
+    const storage = r.picks.find((p) => p.capability_id === "app-data-storage")!;
+    const ids = [storage.offering_id, ...storage.alternatives.map((a) => a.offering_id)].sort();
+    expect(ids).toEqual(["fx-app-database", "fx-hosted-database"]);
+    const testing = r.picks.find((p) => p.capability_id === "click-through-testing")!;
+    expect(testing.alternatives.map((a) => a.offering_id)).not.toContain("fx-flagged-tool");
+  });
+
   it("never recommends flagged offerings and keeps one pick per capability", async () => {
     const r = await run(provider());
     expect(r.picks.map((p) => p.offering_id)).not.toContain("fx-flagged-tool");

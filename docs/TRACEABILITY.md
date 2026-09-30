@@ -113,3 +113,14 @@ Format: MD section → requirement → engineering task → files → test. Kind
 | §17 | Redacted structured logs (no description text) | CONFIRMED | `runService.ts` `run_completed` log | — |
 | §24 | Bot check on anonymous runs | PARTIAL: honeypot field only; vendor open (A-005) | `page.tsx` `.hp` | controls-flow "honeypot" |
 | §24 | Day 3–7 follow-up email | BLOCKED: email provider (A-005) and where the address is asked (A-012) | — | — |
+
+## L9 Should-haves
+
+| Plan § | Requirement | Kind | Files | Verification |
+|---|---|---|---|---|
+| §24, §8 | "Show alternatives": other eligible offerings for the same capability | CONFIRMED (two-pick comparison not built) | `assemble.ts`, `004_alternatives.sql`, `PickCard` | pipeline test; flow "alternatives listed" |
+| §9, §24 | "How we understood this": concepts behind the read-back, unmapped ones shown as gaps | CONFIRMED | `r/[runId]/page.tsx` | flow "unmapped concept shown as a gap" |
+| §24 | Pasting a manifest | NOT BUILT: no mapping from dependency names to capabilities in the plan or catalog schema (A-036) | — | — |
+| §24 | Glossary tooltips | NOT BUILT: wording unspecified (A-029) | — | — |
+| §24 | Priced Pro waitlist | NOT BUILT: price is a range to test and needs an email provider (A-005) | — | — |
+| §24 | Automated weekly catalog checks | NOT BUILT: real catalog is empty (A-006) | — | — |

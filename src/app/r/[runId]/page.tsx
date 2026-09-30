@@ -199,6 +199,18 @@ export default async function RunPage({ params, searchParams }: {
             </details>
           )}
 
+          {run.concepts.length > 0 && (
+            <details className="card notneeded">
+              <summary>How we understood this</summary>
+              <p className="small muted">For technical users: the ideas behind the read-back, and whether our menu covers them yet.</p>
+              <ul>
+                {run.concepts.map((c, i) => (
+                  <li key={i}>{c.term}: {c.capability_id ? capName(c.capability_id) : "not on our menu yet (noted as a gap)"}</li>
+                ))}
+              </ul>
+            </details>
+          )}
+
           {run.picks.length > 0 && (
             <details className="card notneeded">
               <summary>How we chose these</summary>

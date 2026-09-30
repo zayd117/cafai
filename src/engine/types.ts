@@ -79,11 +79,19 @@ export interface ScoredCandidate {
   notes: string[]; // e.g. "checked_trust", "stale_verification", "thin_evidence"
 }
 
+export interface Alternative {
+  offering_id: string;
+  match_band: MatchBand;
+  confidence_band: ConfidenceBand;
+}
+
 export interface Pick extends ScoredCandidate {
   lane: "direct" | "also_worth_knowing";
   rank: number;
   do_you_need_it: NeedAnswer;
   explanation: Explanation;
+  /** Other eligible (Strong or Good) offerings for the same capability, best first ("Show alternatives", §24). */
+  alternatives: Alternative[];
 }
 
 export type NotNeededReason =
