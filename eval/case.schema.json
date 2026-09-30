@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cafai.local/schema/eval-case.schema.json",
+  "title": "Evaluation case (plan §9 Evaluation, §25 Phase 0 design, §29 concierge runs)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "fixture", "input_type", "text", "declared_clients", "labels"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,80}$" },
+    "fixture": { "type": "boolean" },
+    "input_type": {
+      "enum": ["A", "B", "C", "D", "E", "F", "G", "H"],
+      "description": "A knows exactly · B knows the problem · C only says what they build · D beginner · E highly technical · F vague · G names a wrong tool · H an unexpected resource helps (§25)."
+    },
+    "source": {
+      "enum": ["concierge", "synthetic", "adversarial"],
+      "description": "Concierge projects supply B–F (and H); rewordings supply A, G, H; adversarial covers injection, nonsense, non-English (§9, §25)."
+    },
+    "text": { "type": "string", "minLength": 1, "maxLength": 4000, "description": "The person's own words, with secrets and personal details removed." },
+    "declared_clients": { "type": "array", "items": { "enum": ["claude_code", "cursor", "claude_desktop", "other"] }, "uniqueItems": true },
+    "adversarial": { "enum": ["injection", "nonsense", "non_english"] },
+    "labels": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["must_recommend", "acceptable_offerings", "must_not_recommend", "potentially_missed", "probably_not_needed"],
+      "properties": {
+        "must_recommend": { "type": "array", "items": { "type": "string" }, "uniqueItems": true, "description": "Capability ids" },
+        "acceptable_offerings": { "type": "array", "items": { "type": "string" }, "uniqueItems": true, "description": "Offering ids" },
+        "must_not_recommend": { "type": "array", "items": { "type": "string" }, "uniqueItems": true, "description": "Offering or capability ids; any hit is a harmful pick" },
+        "potentially_missed": { "type": "array", "items": { "type": "string" }, "uniqueItems": true, "description": "Capability ids for needs the person did not name (H6)" },
+        "probably_not_needed": { "type": "array", "items": { "type": "string" }, "uniqueItems": true, "description": "Capability ids" },
+        "expected_outcome": { "enum": ["picks", "needs_confirmation", "needs_clarification", "nothing_needed", "no_good_pick", "out_of_scope"] },
+        "labeled_by": { "type": "string" },
+        "labeled_on": { "type": "string", "format": "date" }
+      }
+    },
+    "mock": { "type": "object", "description": "Fixture cases only: scripted model outputs." },
+    "baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assistant", "collected_on", "prompt", "answer"],
+      "description": "A0 baseline: a general assistant's answer, saved by a person (GPT/ChatGPT or Claude chat; baseline only, A-041).",
+      "properties": {
+        "assistant": { "type": "string", "minLength": 1 },
+        "model_or_plan": { "type": "string" },
+        "collected_on": { "type": "string", "format": "date" },
+        "prompt": { "type": "string", "minLength": 1 },
+        "answer": { "type": "string", "minLength": 1 }
+      }
+    },
+    "concierge": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Concierge run record (§29): picks returned by hand, minutes spent, and the day-7 follow-up.",
+      "properties": {
+        "minutes_spent": { "type": "integer", "minimum": 0 },
+        "picks_returned": { "type": "array", "items": { "type": "string" } },
+        "day7": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "tried": { "type": "array", "items": { "type": "string" } },
+            "helped": { "type": "array", "items": { "type": "string" } },
+            "knew_before": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    { "if": { "properties": { "fixture": { "const": true } } }, "then": { "required": ["mock"] } },
+    { "if": { "properties": { "fixture": { "const": false } } }, "then": { "not": { "required": ["mock"] } } }
+  ]
+}

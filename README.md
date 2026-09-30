@@ -15,6 +15,7 @@ model. The site says so on every page. Nothing in sample mode is a real recommen
 | `docs/TRACEABILITY.md` | Plan section → requirement → files → test, per build layer |
 | `docs/TEST_CASES.md` | Every automated suite and the manual cases still open |
 | `docs/FIGMA_HANDOFF.md` | Tokens, components, screens and steps to rebuild the UI in Figma |
+| `docs/PHASE0_INTAKE.md` | Turning interviews and concierge runs into test cases, capabilities and tools; running the bake-off |
 | `docs/figma-handoff/screens/` | Real Chromium screenshots, desktop and mobile |
 
 ## Run locally
@@ -39,7 +40,7 @@ Real model calls: set `ANTHROPIC_API_KEY` (and optionally `CAFAI_MODEL_*`); see 
 ## Check
 
 ```
-npm run typecheck && npm run catalog:check && npm test && npm run eval
+npm run typecheck && npm run catalog:check && npm run cases:check && npm test && npm run eval
 npm run flow -- http://localhost:3100 docs/figma-handoff/screens     # 47 Chromium checks
 npm run a11y -- http://localhost:3100                                # axe WCAG 2.2 AA + keyboard
 DATABASE_OWNER_URL=... node scripts/controls-flow.mjs http://localhost:3101   # server with CAFAI_RUNS_PER_HOUR=3

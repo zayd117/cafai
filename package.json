@@ -17,7 +17,8 @@
     "db:migrate": "tsx scripts/migrate.ts",
     "eval": "tsx scripts/eval.ts",
     "flow": "node scripts/flow.mjs",
-    "a11y": "node scripts/a11y.mjs"
+    "a11y": "node scripts/a11y.mjs",
+    "cases:check": "tsx scripts/check-cases.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.129.0",

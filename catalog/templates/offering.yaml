@@ -1,0 +1,54 @@
+# Template for catalog/offerings/<id>.yaml (plan §11). Every fact needs a source URL and date, and an evidence tag:
+#   claimed  = the source says so · observed = docs, code, examples or a test support it · inferred = our own reading
+# An offering whose "provides" facts are all inferred can never be a pick. Changed install lines need a second review.
+id: short-kebab-id
+kind: mcp_server            # mcp_server | skill | plugin | api | library | play
+identity:
+  display_name: The outcome in plain words (no MCP/API/SDK words)
+  vendor: Maker name
+  repo_url: https://example.com/repo
+capabilities:
+  - capability-id-from-taxonomy
+need_signals: []
+skip_if:
+  - When to skip it, in plain words
+resource_profile:
+  provides:
+    - text: What it does
+      evidence: claimed
+      source_url: https://vendor.example/docs
+      as_of: 2026-10-01
+  requires: []
+  supports: []
+  limits: []
+distributions:
+  - client: claude_code        # claude_code | cursor | claude_desktop | any
+    method: cli_command        # claude_code: cli_command, plugin_marketplace · cursor: deeplink · claude_desktop: connector · any: package_manager, manual_steps, signup
+    command: exact command from the vendor's official install docs
+    compatibility: declared    # tested | reported | derived | declared
+    verified_on: 2026-10-01
+    source_url: https://vendor.example/install
+access:
+  auth: oauth                  # oauth | api_key | none
+  read_write: read_only        # read_only | read_write | not_applicable
+  access_plain: What it can reach, in plain words
+  effort_plain: Effort in a few words
+  least_privilege_steps:
+    - Use a test project and read-only access.
+runtime:
+  location: remote             # local | remote | not_applicable
+cost:
+  model: free                  # free | paid | usage_based
+  source_url: https://vendor.example/pricing
+  as_of: 2026-10-01
+trust:
+  state: reviewed              # reviewed | checked | unmatched | flagged | revoked
+  vendor_official: true
+  namespace_verified: false
+editorial:
+  what_it_is: One plain sentence.
+  could_help_with: One plain sentence about this kind of project.
+  first_prompt: A first thing to ask your AI tool to try.
+  reviewer: your initials
+  reviewed_on: 2026-10-01
+last_verified_on: 2026-10-01
