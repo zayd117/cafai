@@ -25,6 +25,7 @@ npm run flow -- http://localhost:3100 docs/figma-handoff/screens
 | `src/eval/bakeoff.test.ts` | 5 | False-positive rate, calibration error, repeat consistency, Jev win rule, H4 guard |
 | `src/engine/providers/jev.test.ts` | 6 | Jev request shape (read-back state only, no raw text, pinned model, question set), answer mapping and thresholds, intent without an item → none, engine quote check end to end, API error → degrade, key env names |
 | `src/discover/bakeoff.test.ts` | 12 | Discovery bake-off: precision/recall/false-positive/overlap maths, labelled vs unlabelled summaries, unknown price never free, search cache, arm runner (kept/dropped queries, per-run usage, failure as error), Claude rater (fenced data, clamping, batching, defaults), recorded subagent ratings (replay, gaps are errors, unmetered arms show unknown) |
+| `src/discover/labels.test.ts` | 6 | Labelling sheet: slug order with no rank, existing labels filled in, formula-safe cells, CSV round trip (quotes, newlines, BOM), strict import (typos, unknown case, conflicts write nothing), case-file layout unchanged |
 | `src/eval/metrics.test.ts` | 5 | Metrics, release gate, pricing, blind pairs |
 | `src/server/controls.db.test.ts` | 4 | Quota hashing and cap, budget breaker, app-role purge, flag audit and grants |
 | `src/setup/handoff.test.ts` | 6 | Danger detection, Cursor link decoding (incl. "+"), hostnames, route choice, paste message |

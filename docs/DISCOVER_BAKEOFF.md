@@ -59,10 +59,12 @@ Agreement without labels tells you whether the arms differ, not which is right.
 
 ## Labelling (how accuracy gets a number)
 
-1. Run once. `eval/reports/discover-pool.json` lists every listing either arm ranked, per case, with title, description and best rank per arm.
-2. Judge each listing for that case from its description, without looking at which arm ranked it.
-3. Put the slugs into the case file's `relevant` (a good answer contains these) and `irrelevant` (must not rank in the top 5).
-4. Re-run with `--cache` so the listings match what you labelled.
+1. `npm run discover:labels -- --export` writes `eval/reports/discover-labelling-sheet.csv` (git-ignored: it holds third-party text) and saves the searches to `eval/discover/search-cache.json`. One row per listing that any of the case's queries retrieves (about 29 per case), in slug order with no rank or arm shown, so the labels hold for every arm. Cases without a fixed interpretation are skipped until Claude can interpret them.
+2. Judge each row against the person's own words (the `need` column), from the listing text only. Fill `label` with `relevant` (a good answer contains it), `irrelevant` (must not rank in the top 5) or `unsure`. Leave it blank if either outcome is fine. `note` is free text and is not imported.
+3. `npm run discover:labels -- --import <filled-sheet.csv>` writes the slugs into each case file's `relevant` and `irrelevant`. A misspelt label or unknown case stops the import and nothing is written. Blank rows change nothing; `unsure` removes the slug from both lists.
+4. Re-run the bake-off with `--cache eval/discover/search-cache.json` so the listings match what you labelled. The cache is git-ignored and lasts only as long as the container: import in the same session, or export again (the directory may then return different listings).
+
+Every arm reads the same labels; the older route is still there: a run also writes `eval/reports/discover-pool.json` (only the listings some arm ranked).
 
 New cases: copy `eval/discover/cases/_TEMPLATE.json`. Delete `interpretation` to let Claude interpret live, or keep it
 to compare only the raters. Use 10 or more real cases before reading anything into the numbers, and fix any pass line before the run.
@@ -71,3 +73,6 @@ to compare only the raters. Use 10 or more real cases before reading anything in
 
 `excel-php-notifications` and `calorie-tracker` use the scripted interpretations from `npm run discover -- --mock`. Only
 their query labels are set (one off-topic query each, off topic by construction), so ranking metrics print `—` until you label them.
+
+`hiking-trails-app` and `ios-apps-dashboards` are the first real interview answers (30 Sep 2026), words as given. They have no fixed
+interpretation, so they run only once Claude can interpret them (`ANTHROPIC_API_KEY`); until then the bake-off skips them with a warning.

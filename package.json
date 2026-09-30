@@ -21,7 +21,8 @@
     "cases:check": "tsx scripts/check-cases.ts",
     "jev:smoke": "tsx scripts/jev-smoke.ts",
     "discover": "tsx scripts/discover.ts",
-    "discover:bakeoff": "tsx scripts/discover-bakeoff.ts"
+    "discover:bakeoff": "tsx scripts/discover-bakeoff.ts",
+    "discover:labels": "tsx scripts/discover-labels.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.129.0",
