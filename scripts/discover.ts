@@ -1,10 +1,12 @@
 // Discovery loop, live: Claude interprets -> Jev scores queries -> mcp.market search -> Jev scores results -> rank -> Claude explains.
 //   npm run discover -- --text "I'm making a calorie tracker app for phones"
 //   npm run discover -- --mock                 # no Claude key: scripted interpretation (calorie/excel texts only), live Jev and live mcp.market
+//   npm run discover -- --loop classic         # the older loop (Jev rates, code keeps 2 queries per need); default is the Jev-led loop (src/discover/led.ts)
 // Exploratory: not part of the closed-world engine (listing text is third-party). Says nothing about quality until tuned on real cases.
 import { jevKeyFrom } from "../src/engine/providers/jev";
 import { DiscoverClaude } from "../src/discover/claude";
 import { costMicros } from "../src/config/pricing";
+import { discoverLed } from "../src/discover/led";
 import { discover, type Interpreter } from "../src/discover/run";
 import type { Interpretation } from "../src/discover/types";
 import { JevScorer } from "../src/discover/scorer";
@@ -14,6 +16,11 @@ const arg = (name: string) => {
   return i >= 0 ? process.argv[i + 1] : undefined;
 };
 const mock = process.argv.includes("--mock");
+const loop = arg("--loop") ?? "led";
+if (loop !== "led" && loop !== "classic") {
+  console.error(`--loop must be led or classic, got "${loop}"`);
+  process.exit(2);
+}
 const text = arg("--text") ?? "I'm making a calorie and macro tracker app for phones. I use Claude Code. I don't really know what I need.";
 
 const jevKey = jevKeyFrom();
@@ -72,11 +79,15 @@ const scripted: Interpreter = { interpret: async () => script!.out };
 const claude = mock ? null : new DiscoverClaude();
 const jev = new JevScorer({ apiKey: jevKey, model: process.env.CAFAI_JEV_MODEL });
 const t0 = Date.now();
-const r = await discover({ text, claude: claude ?? scripted, jev });
+const led = loop === "led" ? await discoverLed({ text, claude: claude ?? scripted, jev }) : null;
+const r = led ?? (await discover({ text, claude: claude ?? scripted, jev }));
 
-console.log(`input: ${text}\ninterpreter: ${claude ? claude.id : "MOCK (scripted)"}; scorer: ${jev.id}; ${Date.now() - t0} ms\n`);
-console.log("items:");
-for (const it of r.interpretation.items) console.log(`  ${it.id}  ${it.text}`);
+console.log(`input: ${text}\ninterpreter: ${claude ? claude.id : "MOCK (scripted)"}; scorer: ${jev.id}; loop: ${loop}; ${Date.now() - t0} ms\n`);
+console.log(loop === "led" ? "items (Jev weight = how central, core x (1 - extra / 2)):" : "items:");
+for (const it of r.interpretation.items) {
+  const w = led?.itemScores.find((s) => s.item_id === it.id);
+  console.log(`  ${it.id}  ${it.text}${w ? `  [weight ${w.weight.toFixed(2)}]` : ""}`);
+}
 console.log("\nqueries (Jev score = faithful x (1 - drift)):");
 for (const q of r.interpretation.queries) {
   const s = r.queryScores.find((x) => x.query_id === q.id)!;
@@ -85,11 +96,12 @@ for (const q of r.interpretation.queries) {
   console.log(`  ${q.id} [${q.item_id}] "${q.text}"  faithful ${s.faithful.toFixed(2)}, drift ${s.drift.toFixed(2)}, score ${s.score.toFixed(2)}  -> ${tag}`);
 }
 if (r.uncovered_items.length) console.log(`\nno query kept for: ${r.uncovered_items.join(", ")}`);
+if (led?.gaps.length) console.log(`\nno confident match for: ${led.gaps.join(", ")}`);
 console.log(`\nranked (${r.ranked.length}):`);
 r.ranked.forEach((x, n) => {
   const l = x.listing;
   const price = l.price_micros ? `$${(l.price_micros / 1e6).toFixed(2)}/call` : "free";
-  console.log(`${n + 1}. ${l.title ?? l.name}  [${l.grade ?? "no grade"} ${l.grade_score ?? "-"}, ${price}]  final ${x.final.toFixed(3)} = fit ${x.fit.toFixed(2)}, query ${x.p_query.toFixed(2)}, trust ${x.trust.toFixed(2)}${x.weak ? "  WEAK FIT" : ""}`);
+  console.log(`${n + 1}. ${l.title ?? l.name}  [${l.grade ?? "no grade"} ${l.grade_score ?? "-"}, ${price}]  final ${x.final.toFixed(3)} = fit ${x.fit.toFixed(2)}, ${loop === "led" ? "term" : "query"} ${x.p_query.toFixed(2)}${x.pair !== undefined ? `, head-to-head ${x.pair.toFixed(2)}` : ""}, trust ${x.trust.toFixed(2)}${x.weak ? "  WEAK FIT" : ""}`);
   console.log(`   covers: ${x.covers.join(", ") || "none confidently"}; found by ${x.found_by.join(", ")}\n   ${r.explanations.get(l.slug) ?? l.description}\n   ${l.url}`);
 });
 const usage = [...jev.usage, ...(claude?.usage ?? [])];

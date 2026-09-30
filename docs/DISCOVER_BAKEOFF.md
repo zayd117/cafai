@@ -81,6 +81,31 @@ came from one live Claude call each and are saved in the case files, so both arm
 In this project's environment the Anthropic key is stored as `CAFAI_ANTHROPIC_KEY`; the scripts read `ANTHROPIC_API_KEY`, so run with
 `ANTHROPIC_API_KEY="$CAFAI_ANTHROPIC_KEY" npm run discover:bakeoff -- ...` until the variable is renamed.
 
+## The Jev-led loop and the known-item test (30 Sep 2026)
+
+`npm run discover` now runs the Jev-led loop (`src/discover/led.ts`); `--loop classic` runs the older one. Steps: Claude interprets; Jev weighs
+the needs and rates every query, and code keeps each need's best two queries then fills a budget of 18 by Jev's ranking; code searches
+mcp.market; Jev rates each result per need, overall and against the search terms that found it; Jev compares the shortlist of 8 head to head
+(every pair in both orders, averaged, so a lean toward whichever is named first cancels out); code combines the scores and cuts the list. Needs
+are never dropped: Jev sees only the needs, not the person's words, and rated needs the person named as minor. All thresholds are placeholders.
+
+`npm run discover:known` measures it without labels. Each task is a project description written from one real listing, so that listing is the
+known right answer (`eval/discover/known-item/`: 28 tasks, with interpretations written in-session as stand-ins for the API). Every arm gets the
+same interpretation and the same mcp.market responses. Arms: `claude`, `jev-classic`, `jev-led`, and `jev-led-nopair` / `-noweights` /
+`-noterms` (one Jev step switched off). Only the known listing counts as right, so other good results count as misses for every arm alike.
+
+| 28 tasks x 3 repeats, Jev only | classic | Jev-led | Jev-led, no head-to-head |
+|---|---|---|---|
+| Known listing ranked 1st / in top 3 / in top 5 | 14% / 25% / 46% | 35% / 46% / 58% | 24% / 36% / 46% |
+| Ranking score (MRR) | 0.24 | 0.43 | 0.32 |
+| Known listing never searched for | 9 of 28 | 6 of 28 | 6 of 28 |
+| Cost / time per project | $0.0019 / 0.55 s | $0.0034 / 0.88 s | $0.0030 / 0.50 s |
+
+Sign test over projects, Jev-led vs classic: ranking score better on 12, worse on 3 (p = 0.04); top 5 better on 5, worse on 2 (p = 0.45).
+The head-to-head step carries the gain; weighing needs (MRR 0.42 without) and rating against terms (0.44 without) changed nothing measurable.
+The first 14 tasks (t13-t26) and last 14 (t27-t40) point the same way. Nothing was tuned on these tasks. Not measured: Claude alone (no credit
+on the Anthropic account; run `--arms claude,jev-classic,jev-led` once there is), the real API interpretations, and human-labelled accuracy.
+
 ## First live run (30 Sep 2026): no accuracy number yet
 
 4 cases, 3 repeats, `claude` (claude-sonnet-5-5) vs `claude+jev` (jev-1.13.0), live mcp.market cached, 0 errors. Unlabelled, so precision,
