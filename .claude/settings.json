@@ -1,0 +1,15 @@
+{
+  "env": {
+    "CAFAI_MODEL_PROVIDER": "mock"
+  },
+  "permissions": {
+    "deny": [
+      "Bash(npm run jev:smoke*)",
+      "Bash(npm run discover*)",
+      "Bash(npx tsx scripts/jev-smoke*)",
+      "Bash(npx tsx scripts/discover*)",
+      "Bash(*CAFAI_MODEL_PROVIDER=anthropic*)",
+      "Bash(*--arms*jev*)"
+    ]
+  }
+}

@@ -4,6 +4,7 @@ Project facts for agents (outside the managed block):
 - Stack: Next.js 16 + TypeScript 5.9 + Postgres 16, Node 22. Built from Caf.ai Master Plan v3.1; pre-validation build on labeled FIXTURE data and a MOCK model (see README.md and docs/REGISTER.md).
 - Checks: see `.team/team.json` and README "Check". DB tests need local Postgres; browser checks need a running server.
 - Commit and push policy: ask the Boss first. Never push to main.
+- Money: the Boss uses only Claude plan usage. Never run anything that calls a paid API (real-model eval, `discover`, `discover:bakeoff`, `jev:smoke`, `CAFAI_MODEL_PROVIDER=anthropic`, Jev arms). `.claude/settings.json` forces the mock model and denies those scripts. Ask the Boss before any step that could cost money.
 
 <!-- ai-team:begin v0.1.0 -->
 ## AI Engineering Team (managed by ai-team; do not edit between the markers, run `team-sync` to update)
