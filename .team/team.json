@@ -1,0 +1,11 @@
+{
+  "project": "cafai",
+  "commit_policy": "ask",
+  "commands": {
+    "install": "npm ci",
+    "build": "CAFAI_CATALOG=fixture QUOTA_SALT=dev-only-salt npm run build",
+    "test": "npm run typecheck && npm run catalog:check && npm run cases:check && npm test && npm run eval",
+    "lint": null
+  },
+  "notes": "Tests in src/db/*.db.test.ts and src/server/*.db.test.ts need local Postgres 16 (scripts/db-bootstrap.sh); without it they fail with ECONNREFUSED 127.0.0.1:5432. Browser checks (npm run flow, npm run a11y) need a running server and Chromium. See README 'Check'."
+}
