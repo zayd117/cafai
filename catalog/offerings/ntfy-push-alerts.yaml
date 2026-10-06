@@ -2,7 +2,7 @@
 id: ntfy-push-alerts
 kind: api
 identity:
-  display_name: Alerts on your phone from your own script
+  display_name: Get an alert on your phone when your script spots a change
   vendor: ntfy
   technical_name: ntfy.sh publish API
   repo_url: https://github.com/binwiederhier/ntfy
@@ -14,24 +14,24 @@ need_signals:
 - text: notification should reach a phone or another device, not only the computer running the script
   need_type: latent
 skip_if:
-- A desktop pop-up on the same computer is enough; Tampermonkey's built-in GM_notification already does that.
-- Your employer does not allow work data to pass through outside services, and you cannot keep alerts free of spreadsheet contents.
+- A pop-up on the same computer is enough. Tampermonkey can already show one by itself.
+- Your employer doesn't allow work data in outside services, and your alerts would need what's in the sheet.
 resource_profile:
   provides:
-  - text: Sends push notifications to your phone or desktop from any script with a plain HTTP PUT or POST request.
+  - text: Turns a short message from any script into an alert on your phone or computer.
     evidence: claimed
     source_url: https://docs.ntfy.sh/
     as_of: 2026-10-06
-  - text: Open-source Android (Google Play, F-Droid) and iOS (App Store) apps receive the messages after you subscribe to a topic.
+  - text: Phone apps for Android (Google Play, F-Droid) and iPhone (App Store) show your alerts. You subscribe to your alert name in the app. Anyone can look at how the apps are made.
     evidence: claimed
     source_url: https://github.com/binwiederhier/ntfy/blob/main/README.md
     as_of: 2026-10-06
-  - text: The vendor's docs include a browser JavaScript example (fetch with method POST to https://ntfy.sh/<topic>).
+  - text: ntfy's help pages include sample code for sending an alert from a web page.
     evidence: observed
     source_url: https://docs.ntfy.sh/
     as_of: 2026-10-06
   requires:
-  - text: No sign-up for the free service; the topic name works like a password, so it must be hard to guess.
+  - text: No sign-up for the free service. Your alert name works like a password, so make it hard to guess.
     evidence: claimed
     source_url: https://docs.ntfy.sh/publish/#picking-a-topic
     as_of: 2026-10-06
@@ -49,19 +49,19 @@ resource_profile:
     source_url: https://docs.ntfy.sh/faq/
     as_of: 2026-10-06
   limits:
-  - text: Topic names on ntfy.sh are public; without access control, anyone who knows or guesses the topic can read its messages.
+  - text: On the free service, alert names are public. Anyone who knows or guesses yours can read your alerts. Locking one needs a paid plan, or running ntfy on a computer of your own.
     evidence: claimed
     source_url: https://docs.ntfy.sh/
     as_of: 2026-10-06
-  - text: On ntfy.sh the free daily message limit is 250, and each message can be up to 4,096 bytes.
+  - text: The free service allows 250 alerts a day. Each alert's text can be up to 4,096 bytes, plenty for a short note.
     evidence: claimed
     source_url: https://github.com/binwiederhier/ntfy/blob/main/docs/publish.md#limitations
     as_of: 2026-10-06
-  - text: Messages are cached on the server (12 hours by default) and, on ntfy.sh, also sent through Firebase Cloud Messaging for Android delivery.
+  - text: ntfy keeps each alert on its own computers for 12 hours by default. On Android, alerts also pass through Google's delivery service (Firebase Cloud Messaging).
     evidence: claimed
     source_url: https://docs.ntfy.sh/faq/
     as_of: 2026-10-06
-  - text: Uptime is best effort; the vendor gives no guarantee.
+  - text: ntfy does not promise the free service will always work.
     evidence: claimed
     source_url: https://docs.ntfy.sh/faq/
     as_of: 2026-10-06
@@ -70,25 +70,25 @@ distributions:
   method: manual_steps
   steps:
   - Install the ntfy app on your phone (Google Play, App Store or F-Droid).
-  - Pick a long random topic name (letters, numbers, - and _, up to 64 characters); the docs include a generator.
-  - In the app, subscribe to that topic.
-  - Have your script send a POST request with a short message to https://ntfy.sh/<your-topic>.
+  - "Make up a long, random alert name. ntfy calls it a \"topic\". Treat it like a password: anyone who knows it can read your alerts. Use letters, numbers, dashes (-) and underscores (_), up to 64 characters. The \"Official guide\" link below goes to ntfy's help pages, which can make one for you."
+  - In the phone app, subscribe to that alert name (the app calls it a topic). Your alerts will show up there.
+  - Ask your AI to make your script send a short message to https://ntfy.sh/<your-alert-name>. The "First thing to try" message on the Caf.ai setup page does this for you.
   compatibility: declared
   verified_on: 2026-10-06
   source_url: https://docs.ntfy.sh/
 access:
   auth: none
-  credential_needed: Your topic name, which acts as the password on the free service
+  credential_needed: a long, made-up alert name (ntfy calls it a topic). It works like a password
   read_write: not_applicable
   data_touched:
   - The text of each alert you send
-  access_plain: Gets nothing from your computer or Excel. It only receives the alert text your script sends, which anyone with the topic name could read.
-  effort_plain: About 5 minutes; phone app, no account
+  access_plain: Can't see anything on your computer or in Excel. Can see only the alert text your script sends. Anyone who knows your alert name can read it too.
+  effort_plain: About 5 minutes. Needs only the ntfy phone app, with no sign-up.
   least_privilege_steps:
-  - Use a long random topic name from the docs' generator and keep it out of shared code.
-  - Send only a short "something changed in <sheet>, open Excel" message, never the cell values.
-  - If alerts must carry details, use a reserved topic with an access token (paid plan) or self-host ntfy.
-  - Check your employer's rules before sending anything about work spreadsheets to an outside service.
+  - Use a long, random alert name, and keep it out of any script you share with others.
+  - Send only a short note, like "Something changed in your sheet, open Excel". Never send the cell values.
+  - Want the alert to show the cell values? First lock your alert name so only you can read it. That needs a paid ntfy plan, or running ntfy on a computer of your own.
+  - Watching a work spreadsheet? Check your employer's rules before sending anything about it to an outside service.
 runtime:
   location: remote
 cost:
@@ -102,9 +102,9 @@ trust:
   namespace_verified: false
   notes: The ntfy.sh service and its HTTP API are run by the ntfy project itself (open source, maintainer binwiederhier on GitHub; server v2.28.0 released 2026-08-27). Widely used; no broad credentials needed. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
 editorial:
-  what_it_is: A free service that turns a simple web request from your script into a push notification on your phone.
-  could_help_with: When your Excel watcher spots a change, it can buzz your phone even if you are away from the computer.
-  first_prompt: Add a phone alert to my Tampermonkey script. When a watched cell changes, send a short message (no cell values) by POST to https://ntfy.sh/<my-random-topic> using GM_xmlhttpRequest, and add the matching @connect line.
+  what_it_is: ntfy is a free alert service with a phone app. Your script sends it a short message, and your phone buzzes.
+  could_help_with: Buzzing your phone with a short note, like "Something changed, open Excel", each time a cell you watch changes.
+  first_prompt: Add a phone alert to my Tampermonkey script. When a cell I watch changes, send a short note to https://ntfy.sh/[paste your alert name here]. Leave the cell values out of the note. Use Tampermonkey's own way of sending (GM_xmlhttpRequest), and add the @connect line it needs. Explain each change in plain words.
   reviewer: Claude (AI), not yet a person
   reviewed_on: 2026-10-06
 last_verified_on: 2026-10-06

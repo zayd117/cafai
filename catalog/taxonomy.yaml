@@ -5,7 +5,7 @@
 
 # Calorie tracker app
 - id: mobile-app-build
-  plain_name: Build and test a phone app
+  plain_name: Make and test a phone app
   job_phrases:
     - app for phones
     - iPhone and Android app
@@ -45,7 +45,7 @@
     - The app will not scan barcodes
   native_coverage: []
 - id: app-data-storage
-  plain_name: Save user accounts and logs online
+  plain_name: Save each user's account and data online
   job_phrases:
     - user accounts
     - sync between devices
@@ -58,7 +58,7 @@
     - Data stays only on the phone
   native_coverage: []
 - id: error-alerts
-  plain_name: Get alerts when the app crashes
+  plain_name: Find out when your app crashes
   job_phrases:
     - crash reporting
     - error monitoring
@@ -70,7 +70,7 @@
     - You already use an error tracker
   native_coverage: []
 - id: project-notes
-  plain_name: Tell your AI what the project is for
+  plain_name: Help your AI remember your project between chats
   job_phrases:
     - project notes file
     - stop re-explaining the project
@@ -85,7 +85,7 @@
 
 # Excel change alerts
 - id: live-page-inspection
-  plain_name: Let your AI look at and test a live web page
+  plain_name: Let your AI see and test a web page
   job_phrases:
     - debug my userscript
     - see the page my script runs on
@@ -98,7 +98,7 @@
     - Your AI tool can already open and read pages in your browser
   native_coverage: []
 - id: phone-alerts
-  plain_name: Send alerts to your phone from a script
+  plain_name: Get alerts on your phone from a script
   job_phrases:
     - notify me on my phone
     - push notification from a script
@@ -125,7 +125,7 @@
     - A heartbeat or cron monitor is already in place
   native_coverage: []
 - id: scheduled-spreadsheet-checks
-  plain_name: Check an Excel workbook on a schedule in the cloud
+  plain_name: Have Microsoft check your Excel file on a schedule
   job_phrases:
     - Excel automation on a schedule
     - run a script on my workbook every hour
@@ -162,7 +162,7 @@
     - Your spreadsheets are not in Google Drive
   native_coverage: []
 - id: in-sheet-help
-  plain_name: Get AI help inside your spreadsheet
+  plain_name: Get your AI's help inside your spreadsheet
   job_phrases:
     - write my spreadsheet formulas
     - fix my formulas

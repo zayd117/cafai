@@ -6,7 +6,7 @@ import { isUuid } from "@/db/client";
 import { readFlags } from "@/server/controls";
 import { getRuntime, snapshotFor } from "@/server/runtime";
 import { loadRun } from "@/server/runService";
-import { handoffsFor, pasteMessage } from "@/setup/handoff";
+import { handoffsFor, isDirectoryPage, pasteMessage } from "@/setup/handoff";
 import { sendFeedback } from "../../../actions";
 import { CopyButton } from "../../../_components/CopyButton";
 import { SubmitButton } from "../../../_components/SubmitButton";
@@ -109,8 +109,8 @@ export default async function SetupPage({ params, searchParams }: {
             </section>
 
             <div className="section-head">
-              <h2>What your AI tool will do</h2>
-              <p className="muted">You do not need to run these yourself. They are here so you can check them first.</p>
+              <h2>Setup steps</h2>
+              <p className="muted">Your AI tool runs any commands for you. Sign-ins and clicks are yours to do. Each step is here so you can check it first.</p>
             </div>
 
             {handoffs.map((h, i) => {
@@ -140,7 +140,7 @@ export default async function SetupPage({ params, searchParams }: {
                       )}
                       {h.decoded && "error" in h.decoded && <p className="danger">{h.decoded.error}</p>}
                       {d.link && !h.decoded && <p className="source">Install link: <a href={d.link}>{hostOf(d.link)}</a></p>}
-                      {d.url && (d.method === "connector"
+                      {d.url && (d.method === "connector" && !isDirectoryPage(d.url)
                         ? <p className="source">Connector URL: <code className="inline-code" translate="no">{d.url}</code></p>
                         : <p className="source">Start here: <a href={d.url}>{hostOf(d.url)}</a></p>)}
                       {d.steps?.length ? <ol className="steps-list">{d.steps.map((s) => <li key={s}>{s}</li>)}</ol> : null}

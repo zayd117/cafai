@@ -2,8 +2,8 @@
 id: claude-for-google-sheets
 kind: plugin
 identity:
-  display_name: Claude in a sidebar inside Google Sheets
-  vendor: Anthropic
+  display_name: Get Claude's help right inside your Google Sheet
+  vendor: Anthropic, the maker of Claude
   technical_name: Claude for Google Workspace (Google Workspace Marketplace add-on for Docs, Sheets and Slides)
 capabilities:
 - in-sheet-help
@@ -11,20 +11,20 @@ need_signals:
 - text: Builds a summary, formulas or a report by hand in Google Sheets
   need_type: implied
 skip_if:
-- Your Google admin blocks Marketplace add-ons and won't allow this one.
-- You'd rather have Claude Desktop do the whole report through connectors.
+- Your work or school blocks add-ons on your Google account and won't allow this one.
+- You'd rather have Claude Desktop do the whole report for you.
 resource_profile:
   provides:
-  - text: Adds a Claude sidebar to Google Docs, Sheets and Slides that reads the open file and edits it in place, with every change in version history.
+  - text: Adds a Claude panel to Google Docs, Sheets and Slides. It reads the file you have open and edits it right there. Every change is kept in the file's version history.
     evidence: claimed
     source_url: https://support.claude.com/en/articles/16951679-use-claude-in-google-docs-sheets-and-slides
     as_of: 2026-10-06
-  - text: In Sheets it can build spreadsheet models, write and fix formulas, and clean up data.
+  - text: In Sheets it can build spreadsheets that do the math, write and fix formulas, and tidy up messy data.
     evidence: claimed
     source_url: https://support.claude.com/en/articles/16951679-use-claude-in-google-docs-sheets-and-slides
     as_of: 2026-10-06
   requires:
-  - text: A Pro, Max, Team or Enterprise plan, and a Google account that is allowed to install Google Workspace Marketplace apps.
+  - text: A paid Claude plan (Pro, Max, Team or Enterprise). Your Google account must be allowed to add apps from Google's add-on store, the Google Workspace Marketplace.
     evidence: claimed
     source_url: https://support.claude.com/en/articles/16951679-use-claude-in-google-docs-sheets-and-slides
     as_of: 2026-10-06
@@ -34,11 +34,11 @@ resource_profile:
     source_url: https://support.claude.com/en/articles/16951679-use-claude-in-google-docs-sheets-and-slides
     as_of: 2026-10-06
   limits:
-  - text: It is in beta.
+  - text: It is still in testing.
     evidence: claimed
     source_url: https://support.claude.com/en/articles/16951679-use-claude-in-google-docs-sheets-and-slides
     as_of: 2026-10-06
-  - text: If your organization blocks Marketplace apps, only a Google Workspace admin can allow or install it.
+  - text: Your work or school may block add-ons on your Google account. If so, only the person who runs its Google accounts can allow this one or add it for you.
     evidence: claimed
     source_url: https://support.claude.com/en/articles/16951679-use-claude-in-google-docs-sheets-and-slides
     as_of: 2026-10-06
@@ -46,22 +46,22 @@ distributions:
 - client: any
   method: manual_steps
   steps:
-  - Open Claude's listing in the Google Workspace Marketplace (linked from Anthropic's help page), click Install and choose the Google account you use for Sheets.
-  - Reload your sheet, then go to Extensions > Claude > Open Claude, allow the two permissions Google asks for, and sign in with your Claude account.
+  - Open the "Official guide" link below. On that page, follow the link to the Google Workspace Marketplace (Google's add-on store). Click Install there, and pick the Google account you use for Sheets.
+  - Reload your sheet. Go to Extensions > Claude > Open Claude. Say yes to the two permissions Google asks for, then sign in with your Claude account.
   compatibility: declared
   verified_on: 2026-10-06
   source_url: https://support.claude.com/en/articles/16951679-use-claude-in-google-docs-sheets-and-slides
 access:
   auth: oauth
-  credential_needed: Allow two Google permissions, then sign in with your Claude account
+  credential_needed: your Claude account, and a yes to two Google permission requests
   read_write: read_write
   data_touched:
   - The Google Docs, Sheets or Slides file you have open
-  access_plain: Reads and edits the file you have open when you ask it to. Every change shows in the file's version history.
-  effort_plain: About 2 minutes if your Google account can install Marketplace apps
+  access_plain: Can see and change the file you have open, when you ask it to. Every change shows in the file's version history.
+  effort_plain: About 2 minutes. Needs a paid Claude plan.
   least_privilege_steps:
-  - Select the cells you want it to work on first, so it stays in that range.
-  - Check the version history after its first edit, so you know how to undo one.
+  - First select the cells you want it to work on. That tells it where to work. It can still see the rest of the file.
+  - After its first change, open your sheet's version history. That's where you can undo a change.
 runtime:
   location: remote
 cost:
@@ -75,9 +75,9 @@ trust:
   namespace_verified: false
   notes: Anthropic's own add-on, documented in Anthropic's help center. Not an MCP server, so it has no mcp.market listing. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
 editorial:
-  what_it_is: Anthropic's add-on that puts Claude in a sidebar inside Google Sheets, Docs and Slides.
-  could_help_with: Building the weekly summary tab, with formulas, right in the sheet where your orders land.
-  first_prompt: Using the orders on this sheet, add a Summary tab with total sales, order count, average order value and the top 5 products for last week. Use formulas so it updates when new rows are added.
+  what_it_is: An add-on that puts a Claude panel inside Google Sheets, Docs and Slides. It works on the file you have open. It is still in testing.
+  could_help_with: Building a summary tab that adds up each week for you. Fixing broken formulas and tidying messy order data.
+  first_prompt: Use the orders on this sheet. Add a Summary tab with last week's total sales, order count, average order value and top 5 products. Use formulas, so it updates when new rows are added.
   reviewer: Claude (AI), not yet a person
   reviewed_on: 2026-10-06
 last_verified_on: 2026-10-06

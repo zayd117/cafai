@@ -14,24 +14,24 @@ need_signals:
 - text: The app has sign-in or keeps each person's food log and goals
   need_type: implied
 skip_if:
-- Logs stay only on the phone and you don't need sign-in or syncing between devices.
-- You already chose another backend, such as Firebase.
+- Logs stay only on the phone, and you don't need sign-in or the same log on more than one device.
+- You already chose another place to keep your app's data online, such as Firebase.
 resource_profile:
   provides:
-  - text: The AI can list tables, apply database migrations, run SQL, get security and performance advisors, query project logs, deploy Edge Functions and generate TypeScript types for your Supabase project.
+  - text: Your AI can see how your app's data is set up, and change it. It can read and change the data itself. It can get Supabase's advice on security and speed, and read your app's error messages. It can also put small bits of code online.
     evidence: claimed
     source_url: https://supabase.com/docs/guides/getting-started/mcp
     as_of: 2026-10-06
-  - text: The plugin bundles the Supabase MCP server with two skills, supabase (product guidance for Database, Auth, Edge Functions, Storage, Realtime) and supabase-postgres-best-practices (schema design and row-level security patterns).
+  - text: The add-on links your AI to your Supabase account and adds two how-to guides. One covers sign-in, storing data and files, small bits of code online and live updates. The other covers laying out your data and keeping each person's data private (row-level security).
     evidence: claimed
     source_url: https://supabase.com/docs/guides/ai-tools/plugins
     as_of: 2026-10-06
-  - text: The Claude Code plugin's server file points at https://mcp.supabase.com/mcp.
+  - text: The add-on links Claude Code to your Supabase account online.
     evidence: observed
     source_url: https://github.com/supabase-community/supabase-plugin/blob/main/agents/claude/.mcp.json
     as_of: 2026-10-06
   requires:
-  - text: A Supabase account and project; the client opens a browser sign-in during setup, where you pick the organization that holds the project.
+  - text: A Supabase account and project. At setup, a sign-in page opens in your web browser. There, pick the organization (Supabase's folder for your projects) that holds your project.
     evidence: claimed
     source_url: https://supabase.com/docs/guides/getting-started/mcp
     as_of: 2026-10-06
@@ -49,19 +49,19 @@ resource_profile:
     source_url: https://claude.com/connectors/supabase
     as_of: 2026-10-06
   limits:
-  - text: Supabase warns that connecting an LLM to your projects carries risks such as prompt injection from data in the database, and that the server acts with your developer permissions, so it must not be given to customers.
+  - text: Supabase warns that linking an AI to your projects has risks. Text hidden in your saved data could trick the AI (prompt injection). The link has your own permissions, as the app's maker. So only you should use it, never your app's users.
     evidence: claimed
     source_url: https://supabase.com/docs/guides/getting-started/mcp
     as_of: 2026-10-06
-  - text: Free plan limits include 2 active projects, a 500 MB database and 50,000 monthly active users; free projects are paused after 1 week of inactivity.
+  - text: The free plan allows 2 active projects, 500 MB of data storage and 50,000 active users a month. Free projects are paused after 1 week without use.
     evidence: claimed
     source_url: https://supabase.com/pricing
     as_of: 2026-10-06
-  - text: The branching tools need a paid plan.
+  - text: Supabase's built-in test copies of a project (called branching) need a paid plan. A separate free test project does not.
     evidence: claimed
     source_url: https://supabase.com/docs/guides/getting-started/mcp
     as_of: 2026-10-06
-  - text: A table in an exposed schema without row-level security is readable and writable by any role with a grant on it, so every table needs it turned on.
+  - text: Every table your app can reach (a list of your app's data, like food logs) needs row-level security turned on. Without it, anyone allowed into a table can read and change all of it.
     evidence: claimed
     source_url: https://supabase.com/docs/guides/database/postgres/row-level-security
     as_of: 2026-10-06
@@ -70,8 +70,8 @@ distributions:
   method: plugin_marketplace
   command: claude plugin install supabase@claude-plugins-official
   steps:
-  - "If Claude Code says the marketplace is unknown, first run: claude plugin marketplace add anthropics/claude-plugins-official"
-  - Run /reload-plugins inside Claude Code, then /mcp to sign in to Supabase.
+  - "Claude Code runs the command above. If it says it can't find the add-on store (the marketplace), it first runs this, then tries again: claude plugin marketplace add anthropics/claude-plugins-official"
+  - Make a free Supabase test project, if you don't have one yet. Then type /reload-plugins in Claude Code to load the add-on. Then type /mcp and sign in to Supabase. When asked, pick the organization (Supabase's folder for your projects) that holds your test project.
   compatibility: declared
   verified_on: 2026-10-06
   source_url: https://supabase.com/docs/guides/ai-tools/plugins
@@ -79,7 +79,7 @@ distributions:
   method: cli_command
   command: claude mcp add --scope project --transport http supabase "https://mcp.supabase.com/mcp?features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching"
   steps:
-  - Use this only if you want the live connection without the skills. Then run claude /mcp in a regular terminal and pick the Supabase server to sign in.
+  - Use this only if you want the link to your Supabase account without Supabase's how-to guides. Then type claude /mcp in the window where you start Claude Code (the terminal). Pick Supabase, and sign in.
   compatibility: declared
   verified_on: 2026-10-06
   source_url: https://supabase.com/docs/guides/getting-started/mcp
@@ -87,7 +87,7 @@ distributions:
   method: deeplink
   link: cursor://anysphere.cursor-deeplink/mcp/install?name=supabase&config=eyJ1cmwiOiJodHRwczovL21jcC5zdXBhYmFzZS5jb20vbWNwIn0%3D
   steps:
-  - The link carries {"url":"https://mcp.supabase.com/mcp"}, built from the settings in Supabase's README. Cursor then asks you to sign in to Supabase.
+  - This link only adds Supabase's address, https://mcp.supabase.com/mcp, taken from Supabase's own instructions. Cursor then asks you to sign in to Supabase.
   compatibility: derived
   verified_on: 2026-10-06
   source_url: https://github.com/supabase/mcp
@@ -95,27 +95,27 @@ distributions:
   method: connector
   url: https://claude.com/connectors/supabase
   steps:
-  - Add Supabase from the Claude connectors directory and sign in, choosing the organization with your test project.
+  - Make a free Supabase test project first, if you don't have one. Then open the "Start here" link above. It's Supabase's page in Claude's list of add-ons. Add it, then sign in to Supabase. When asked, pick the organization (Supabase's folder for your projects) that holds your test project.
   compatibility: declared
   verified_on: 2026-10-06
   source_url: https://claude.com/connectors/supabase
 access:
   auth: oauth
-  credential_needed: Sign in to Supabase in the browser; there is no key to paste.
+  credential_needed: a free Supabase account. You sign in to it in your web browser, with no key to copy
   read_write: read_write
   data_touched:
   - Database tables and their rows
   - Schema migrations
   - Edge Functions and project logs
   - Project URL and publishable keys
-  access_plain: Reads and changes the database of the Supabase project you allow, including tables, data and backend functions; in read-only mode it can only read.
-  effort_plain: About 15 minutes; free Supabase account
+  access_plain: Can see and change your app's data in the Supabase project you pick. Can also change the small bits of code your app runs there. You can limit it to looking only.
+  effort_plain: About 15 minutes. Needs a free Supabase account.
   least_privilege_steps:
-  - Make a separate free project for building with the AI (the free plan allows two active projects) and keep real users' logs in the other one.
-  - Limit the connection to that one project by adding project_ref=<your-project-id> to the server address, or copy a ready-made address from the MCP tab of your Supabase dashboard's Connect dialog.
-  - Add read_only=true whenever you only want the AI to look, for example when checking real user data.
-  - Keep Claude Code's approval prompts on and read each execute_sql or apply_migration call before allowing it.
-  - Turn on row-level security for every table, with policies so each person can read only their own food log.
+  - Make a separate free test project for working with your AI, and keep real users' logs in the other one. The free plan allows two active projects.
+  - Let your AI reach only that test project. Ask it to add project_ref=<your-project-id> to the Supabase address it uses. Or copy the ready-made address from the MCP tab in Supabase's Connect window, and paste it to your AI.
+  - Ever need your AI to look at your real project, with real users' logs? First ask it to add read_only=true to the Supabase address it uses. Then it can look at your data but not change it.
+  - Leave your AI asking you before it acts. Two of its requests, execute_sql and apply_migration, can change your data or how it is laid out. Before you allow either one, ask your AI to explain it in plain words.
+  - Make sure each person can see only their own food log. Ask your AI to turn on row-level security for every table, with rules that keep each log private.
 runtime:
   location: remote
 cost:
@@ -133,9 +133,9 @@ trust:
     grade: A
     as_of: '2026-10-06'
 editorial:
-  what_it_is: A hosted database with sign-in, plus a connection that lets your AI set up and check its tables for you.
-  could_help_with: Storing each person's meals, calorie and macro goals and weigh-ins so they survive a phone change and sync across devices.
-  first_prompt: In my Supabase test project, propose tables for users' daily food logs, saved foods and calorie and macro goals, with row-level security so each user sees only their own data. Show me the migration before applying it.
+  what_it_is: Supabase is online storage for your app, with sign-in built in. This add-on lets your AI set it up and check on it.
+  could_help_with: Saving each person's meals, calorie and macro goals, and weigh-ins, so they match on every device they use.
+  first_prompt: In my Supabase test project, plan where to keep each user's daily food log and saved foods. Include their calorie and macro goals. Use row-level security so each user sees only their own data. Explain the change in plain words, and show it to me before you make it.
   reviewer: Claude (AI), not yet a person
   reviewed_on: 2026-10-06
 last_verified_on: 2026-10-06

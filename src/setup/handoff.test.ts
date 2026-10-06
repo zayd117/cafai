@@ -1,7 +1,7 @@
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { loadCatalog } from "@/catalog/load";
-import { analyzeCommand, decodeCursorDeeplink, handoffsFor, hostnames, pasteMessage } from "./handoff";
+import { analyzeCommand, decodeCursorDeeplink, handoffsFor, hostnames, isDirectoryPage, pasteMessage } from "./handoff";
 
 const res = loadCatalog({ root: fileURLToPath(new URL("../../catalog", import.meta.url)), fixtures: true });
 if (!res.ok) throw new Error("fixture catalog invalid");
@@ -42,6 +42,15 @@ describe("setup handoff", () => {
     expect(msg).toContain("Ask me before each step");
     expect(msg).toContain("Skip this one for now: Caf.ai has no setup steps for Cursor yet.");
     expect(msg).toContain("Use a development project and read-only access.");
+  });
+});
+
+describe("connector pages in Claude's own list of add-ons", () => {
+  it("are pages to open, not addresses to paste into a custom connector", () => {
+    expect(isDirectoryPage("https://claude.com/marketplace/connectors/shopify")).toBe(true);
+    expect(isDirectoryPage("https://claude.ai/directory/expo")).toBe(true);
+    expect(isDirectoryPage("https://mcp.example.com/mcp")).toBe(false);
+    expect(isDirectoryPage("not a url")).toBe(false);
   });
 });
 

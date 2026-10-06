@@ -2,8 +2,8 @@
 id: healthchecks-io
 kind: api
 identity:
-  display_name: Get told when your watcher script stops running
-  vendor: Healthchecks.io
+  display_name: Get told when your script quietly stops
+  vendor: Healthchecks
   technical_name: Healthchecks.io pinging API
   repo_url: https://github.com/healthchecks/healthchecks
 capabilities:
@@ -14,28 +14,28 @@ need_signals:
 - text: the script depends on a page layout or sign-in that can change or expire
   need_type: latent
 skip_if:
-- You check on the script by hand every day and a silent stop would cost you nothing.
-- You already use a heartbeat or cron monitor.
+- You check the script yourself every day, and a missed change wouldn't matter.
+- You already use another service that warns you when a script stops checking in.
 resource_profile:
   provides:
-  - text: Listens for HTTP requests ("pings") from your jobs, stays silent while they arrive on time and raises an alert as soon as one is late; it works as a dead man's switch for processes that run continuously.
+  - text: Waits for your script to check in. It stays quiet while check-ins arrive on time, and warns you as soon as one is late. Works for scripts that run all the time.
     evidence: claimed
     source_url: https://healthchecks.io/docs/
     as_of: 2026-10-06
-  - text: Pings can be sent from a browser; the service sets the Access-Control-Allow-Origin:* header so cross-domain requests work.
+  - text: Check-ins can come from a script running in a web page, like your Tampermonkey script. Healthchecks is set up so the browser lets them through.
     evidence: claimed
     source_url: https://healthchecks.io/docs/javascript/
     as_of: 2026-10-06
-  - text: A separate /fail address (https://hc-ping.com/<uuid>/fail) reports a failure right away instead of waiting for a missed ping.
+  - text: The same link with /fail on the end warns you right away, instead of waiting for a missed check-in.
     evidence: claimed
     source_url: https://healthchecks.io/docs/http_api/
     as_of: 2026-10-06
-  - text: Alerts can go to email and to other channels, including ntfy, Telegram, Microsoft Teams, Slack and Pushover.
+  - text: Warnings can go to email or to other apps, including ntfy, Telegram, Microsoft Teams, Slack and Pushover.
     evidence: claimed
     source_url: https://healthchecks.io/
     as_of: 2026-10-06
   requires:
-  - text: A free account and one check; each check has its own ping address, an expected time between pings (Period) and extra waiting time before alerting (Grace Time).
+  - text: A free account. You add one check for your script, and it gets its own link. You set how often to expect a check-in (Period) and extra waiting time before a warning (Grace Time).
     evidence: claimed
     source_url: https://healthchecks.io/docs/configuring_checks/
     as_of: 2026-10-06
@@ -45,19 +45,19 @@ resource_profile:
     source_url: https://github.com/healthchecks/healthchecks
     as_of: 2026-10-06
   limits:
-  - text: The free Hobbyist plan covers 20 monitored jobs with 100 log entries per job.
+  - text: The free Hobbyist plan watches up to 20 scripts or other tasks. It keeps a history of 100 entries, like check-ins, for each.
     evidence: claimed
     source_url: https://healthchecks.io/pricing/
     as_of: 2026-10-06
-  - text: Pinging one check more than 5 times a minute may get requests rate limited.
+  - text: Checking in more than 5 times a minute on one check may get blocked.
     evidence: claimed
     source_url: https://healthchecks.io/docs/http_api/
     as_of: 2026-10-06
-  - text: It only knows whether your script pinged; it cannot tell whether the values your script read are correct.
+  - text: It only knows whether your script checked in. It can't tell if the values your script read are right.
     evidence: inferred
     source_url: https://healthchecks.io/docs/
     as_of: 2026-10-06
-  - text: POST request bodies are stored (up to 100 kB per ping), so anything sent in a ping body is kept on the service.
+  - text: Anything your script puts inside a check-in message is stored by Healthchecks (up to 100 kB of data each time).
     evidence: claimed
     source_url: https://healthchecks.io/docs/http_api/
     as_of: 2026-10-06
@@ -65,32 +65,39 @@ distributions:
 - client: any
   method: signup
   url: https://healthchecks.io/
+  steps:
+  - Open the "Start here" link above. Sign up there for a free account.
+  - "Add a check. That is Healthchecks' name for one script it watches. Set its Period to how often your script will check in. With these steps, that's every 5 minutes. Then set its Grace Time: the extra wait after a missed check-in before it warns you."
+  - Copy your script's private check-in link. It looks like https://hc-ping.com/ followed by a long code.
+  - Ask your AI to make your script check in at that link every 5 minutes, after it reads the cells fine. An empty check-in is enough. The "First thing to try" message on the Caf.ai setup page does this for you.
+  - If it can't find the cells, have it use the same link with /fail on the end.
+  - "Choose where warnings go: email (the default), or another app such as ntfy."
   compatibility: declared
   verified_on: 2026-10-06
   source_url: https://healthchecks.io/pricing/
 - client: any
   method: manual_steps
   steps:
-  - Create a check and set its Period (how often your script should check in) and Grace Time.
-  - Copy the check's ping address (https://hc-ping.com/<uuid>).
-  - Have the script request that address each time it successfully reads the cells.
-  - Have the script request the address with /fail added when it cannot find the cells.
-  - Choose where alerts go (email by default, or another channel such as ntfy).
+  - "Add a check. That is Healthchecks' name for one script it watches. Set its Period to how often your script will check in. With these steps, that's every 5 minutes. Then set its Grace Time: the extra wait after a missed check-in before it warns you."
+  - Copy your script's private check-in link. It looks like https://hc-ping.com/ followed by a long code.
+  - Ask your AI to make your script check in at that link every 5 minutes, after it reads the cells fine. An empty check-in is enough. The "First thing to try" message on the Caf.ai setup page does this for you.
+  - If it can't find the cells, have it use the same link with /fail on the end.
+  - "Choose where warnings go: email (the default), or another app such as ntfy."
   compatibility: declared
   verified_on: 2026-10-06
   source_url: https://healthchecks.io/docs/http_api/
 access:
   auth: none
-  credential_needed: The check's ping address; anyone who has it can send pings to that check
+  credential_needed: your script's private check-in link. Anyone who has it can check in as your script
   read_write: not_applicable
   data_touched:
   - The time of each ping and anything you put in a ping's body
-  access_plain: Gets nothing from your computer or Excel. It only notices when your script checks in, and emails you when it stops.
-  effort_plain: About 10 minutes; free account
+  access_plain: Can't see anything on your computer or in Excel. Can see only when your script checks in, plus anything your script adds to the check-in.
+  effort_plain: About 10 minutes. Needs a free Healthchecks account.
   least_privilege_steps:
-  - Send plain GET pings with no body, so no spreadsheet data reaches the service.
-  - Keep the ping address out of code you share publicly.
-  - Set Period a little longer than your script's check interval, and no more than a few pings a minute.
+  - Keep each check-in empty. Then none of your spreadsheet reaches Healthchecks.
+  - Keep your check-in link out of any script you share with others.
+  - Don't have your script check in more than a few times a minute.
 runtime:
   location: remote
 cost:
@@ -104,9 +111,9 @@ trust:
   namespace_verified: false
   notes: First-party service and API; the same company publishes the open-source code (github.com/healthchecks/healthchecks, BSD 3-clause). No credentials to your other accounts are involved. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
 editorial:
-  what_it_is: A free "dead man's switch" service that emails you when a script that should check in regularly goes quiet.
-  could_help_with: If the Excel tab closes, you get signed out, or Excel changes its page so your script finds no cells, you hear about it instead of silently missing changes.
-  first_prompt: Make my Tampermonkey script ping my Healthchecks.io address every 5 minutes when it successfully reads the cells, and ping the /fail address if it cannot find them. Use GM_xmlhttpRequest and add the @connect line for hc-ping.com.
+  what_it_is: Healthchecks is a free service your script checks in with, to say it's still running. If the check-ins stop, it emails you.
+  could_help_with: Knowing that a quiet day really means no changes, not a stopped script. Plus a warning right away if your script can't find the cells.
+  first_prompt: "Make my Tampermonkey script check in with my Healthchecks link: [paste your check-in link here]. Every 5 minutes, after it reads the cells fine, have it check in. Keep each check-in empty. If it can't find the cells, use the same link with /fail on the end. Use Tampermonkey's own way of sending (GM_xmlhttpRequest), and add the @connect line for hc-ping.com. Explain each change in plain words."
   reviewer: Claude (AI), not yet a person
   reviewed_on: 2026-10-06
 last_verified_on: 2026-10-06

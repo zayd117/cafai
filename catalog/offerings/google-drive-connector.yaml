@@ -14,20 +14,20 @@ skip_if:
 - Your spreadsheets are in Excel or another app, not Google Drive.
 resource_profile:
   provides:
-  - text: Searches your Drive, reads Sheets, Slides, PDFs and Office files, and uploads files with optional conversion to Google formats.
+  - text: Finds files in your Drive and opens Sheets, Slides, PDFs and Office files like Word and Excel. It can also save files there, and turn them into Google Docs, Sheets or Slides if you like.
     evidence: claimed
     source_url: https://support.claude.com/en/articles/10166901-use-google-workspace-connectors
     as_of: 2026-10-06
-  - text: Its tools include search_files, read_file_content, create_file and update_file.
+  - text: It can search, read, make and change files in your Drive.
     evidence: observed
     source_url: https://claude.com/marketplace/connectors/google-drive
     as_of: 2026-10-06
-  - text: Separate Google Docs, Sheets and Slides connectors let Claude create those files and edit them live in a pane beside the chat (beta).
+  - text: In a chat, you can also switch on Claude's separate Google Docs, Sheets and Slides add-ons. Claude then makes and edits those files next to the chat while you watch. These are still in testing.
     evidence: claimed
     source_url: https://support.claude.com/en/articles/10166901-use-google-workspace-connectors
     as_of: 2026-10-06
   requires:
-  - text: A Google account. On Team and Enterprise plans an owner must turn the connector on before members can sign in.
+  - text: A Google account. On Claude Team and Enterprise plans, the team's Claude owner must switch it on first. Then others on the team can sign in.
     evidence: claimed
     source_url: https://support.claude.com/en/articles/10166901-use-google-workspace-connectors
     as_of: 2026-10-06
@@ -41,11 +41,11 @@ resource_profile:
     source_url: https://claude.com/marketplace/connectors/google-drive
     as_of: 2026-10-06
   limits:
-  - text: When it reads a file it takes the text only; images inside documents are not processed.
+  - text: It reads only the words in a file. Pictures inside a file are skipped.
     evidence: claimed
     source_url: https://support.claude.com/en/articles/10166901-use-google-workspace-connectors
     as_of: 2026-10-06
-  - text: Sharing, moving and trashing files ask for your approval each time by default.
+  - text: It asks you each time before it shares, moves or deletes a file. This is on from the start.
     evidence: claimed
     source_url: https://support.claude.com/en/articles/10166901-use-google-workspace-connectors
     as_of: 2026-10-06
@@ -54,22 +54,22 @@ distributions:
   method: connector
   url: https://claude.com/marketplace/connectors/google-drive
   steps:
-  - Add Google Drive from the connectors directory and sign in with Google.
-  - To have Claude write straight into a Google Sheet, also turn on the Google Sheets connector from the + menu in a chat (beta).
+  - Open the "Start here" link above. It's Google Drive's page in Claude's list of add-ons. Add it, then sign in with your Google account.
+  - Want to watch Claude fill in the sheet while you chat? Also switch on Google Sheets from the + menu in a chat. It is still in testing. It's separate from the Claude panel inside Google Sheets.
   compatibility: declared
   verified_on: 2026-10-06
   source_url: https://support.claude.com/en/articles/10166901-use-google-workspace-connectors
 access:
   auth: oauth
-  credential_needed: Sign in with your Google account
+  credential_needed: your Google account, to sign in
   read_write: read_write
   data_touched:
   - Files in your Google Drive, including Google Sheets
-  access_plain: Reads files in your Google Drive and can save new ones. Sharing, moving or deleting a file asks you first.
-  effort_plain: About 5 minutes
+  access_plain: Can see the files in your Google Drive. Can make new files and change existing ones. Asks you first before it shares, moves or deletes a file.
+  effort_plain: About 5 minutes. Needs your Google account.
   least_privilege_steps:
-  - Keep the weekly report in one Drive folder and give Claude the sheet's link, so it doesn't search your whole Drive.
-  - Leave the default "ask before sharing, moving or trashing" setting on.
+  - Keep your weekly reports in one Drive folder. When you ask Claude, paste the sheet's link into the chat, so it doesn't search your whole Drive.
+  - Don't switch off the check that asks you before it shares, moves or deletes a file.
 runtime:
   location: remote
 cost:
@@ -83,9 +83,9 @@ trust:
   namespace_verified: true
   notes: Made by Google per Anthropic's connector directory; documented in Anthropic's help center. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
 editorial:
-  what_it_is: Google's connector that lets Claude find, read and save files in your Google Drive, including Sheets.
-  could_help_with: Saving each week's orders into your Google Sheet and reading last week's numbers to compare, with no downloading and uploading.
-  first_prompt: Find my weekly Shopify sales sheet in Google Drive and tell me which columns it has and what last week's totals were. Don't change the file yet.
+  what_it_is: Lets Claude find, open and save the files in your Google Drive, including your Google Sheets.
+  could_help_with: Adding each week's orders to your sheet, and checking last week's numbers, with no downloading or uploading.
+  first_prompt: "Open this sheet: [paste your sheet's link here]. Tell me which columns it has and what last week's totals were. Don't change the file yet."
   reviewer: Claude (AI), not yet a person
   reviewed_on: 2026-10-06
 last_verified_on: 2026-10-06
