@@ -67,29 +67,42 @@ once you add a key.
 
 ### First, test your keys cheaply
 
-1. In Anthropic's console, buy a small amount of **prepaid credit** and leave **auto-reload off**. Calls stop when the
-   credit runs out, so this is the hard limit on what a mistake can cost.
+1. Create an API key in Anthropic's console. Every real answer from Claude is billed, and a Claude.ai subscription does
+   not cover API calls. When you buy credit, buy a small **prepaid** amount and leave **auto-reload off**. Calls stop
+   when the credit runs out, so that is the hard limit on what a mistake can cost.
 2. In this repo, open **Settings → Secrets and variables → Actions** and add the repository secret `ANTHROPIC_API_KEY`.
    Add `TYPESAFE_API_KEY` too if you have a Jev key.
-3. Open **Actions → check AI → Run workflow**, or ask Claude to run it. It runs `npm run ai:check`:
-   - First it checks each key with a lookup that is not billed. A bad key stops the run before anything is spent.
-   - Then it runs 2 test searches (at most 4) on the sample tool list, through the same model settings as the site.
-     It starts no new search once **max_usd** is spent (default $0.25, at most $1).
-   - It prints each model call's tokens, time and cost, and how many searches $1 and the daily budget cover.
-   - With a Jev key it also runs `npm run jev:smoke`, one Jev call that costs well under a cent.
+3. Open **Actions → check AI → Run workflow** with mode **free** (the default), or ask Claude to run it. It costs $0:
+   - It checks each key with a lookup that is not billed.
+   - It sends the site's requests for 4 sample searches to Anthropic's token counter, which is not billed and generates
+     nothing. The requests use the site's models, prompts, answer formats and effort; only the answer-length limit and
+     the refusal fallback are left out, because the counter does not take them. That proves the key works and the
+     models are available, catches most mistakes in the requests, and prints the input cost of each call.
+   - Answers come from the sample scripts, so it cannot show what Claude would really say or how long it thinks.
+   - A pass does not show that the account has credit. Anthropic may also refuse even these free calls while an
+     account has no credit at all; the run then says so.
+4. Before turning AI on for the site, run it once with mode **paid**. It runs 1 test search (at most 4) on the sample
+   tool list, through the same model settings as the site, and starts no new search once **max_usd** is spent
+   (default $0.25, at most $1). It prints each call's tokens, time and cost, and how many searches $1 and the daily
+   budget cover. It is the only check of real answers and of the refusal fallback. With a Jev key it also runs
+   `npm run jev:smoke`, one Jev call that costs well under a cent.
 
 The site's searches never use Jev yet; it is only checked here (REGISTER A-040).
 
 ### Then turn it on for the site
 
-1. In Vercel, open **Project → Settings → Environment Variables** and add `ANTHROPIC_API_KEY` for Production.
-2. Optionally change `CAFAI_DAILY_AI_BUDGET_USD` (default 1). The app turns AI off for the rest of the day once that
+1. Make sure the Anthropic account has prepaid credit. Without it every Claude call is refused (at no cost), and every
+   search says "Our AI helper was unavailable" and uses simpler rules.
+2. In Vercel, open **Project → Settings → Environment Variables** and add `ANTHROPIC_API_KEY` for Production.
+3. Optionally change `CAFAI_DAILY_AI_BUDGET_USD` (default 1). The app turns AI off for the rest of the day once that
    much is spent (plan §14); calls whose model has no known price count at the highest known price.
-3. Open **Deployments**, then **Redeploy** the latest production deployment.
+4. Open **Deployments**, then **Redeploy** the latest production deployment.
 
 Each search makes three Claude calls (understanding, judgment, explanation). They think at effort `medium`, `medium`
 and `low` by default. `CAFAI_EFFORT_UNDERSTANDING`, `CAFAI_EFFORT_JUDGMENT` and `CAFAI_EFFORT_EXPLANATION` change that
-(`low`, `medium`, `high`, `xhigh` or `max`; REGISTER A-025). Lower effort costs less, and check AI shows by how much.
+(`low`, `medium`, `high`, `xhigh` or `max`; REGISTER A-025). Lower effort costs less. To have check AI use the same
+settings as the site, add them (and any `CAFAI_MODEL_*`) as repository *variables* too, under **Settings → Secrets and
+variables → Actions → Variables**; a paid run then shows what the change saves.
 
 When real catalog data exists (REGISTER A-006), change `CAFAI_CATALOG` from `fixture` to `real` and redeploy.
 
