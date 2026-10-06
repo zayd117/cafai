@@ -42,7 +42,8 @@ jobs:
       - run: npm run build
       # Browser checks (plan §18) on every change, free: the mock model makes no paid calls.
       - name: Prepare the app database
-        run: npm run db:migrate && npx tsx scripts/publish-catalog.ts --fixtures
+        # Both snapshots: the intake's example buttons answer from the real catalog (catalog/examples).
+        run: npm run db:migrate && npx tsx scripts/publish-catalog.ts --fixtures && npx tsx scripts/publish-catalog.ts
       - name: Start the app
         run: |
           npx next start -p 3100 > "$RUNNER_TEMP/next.log" 2>&1 &

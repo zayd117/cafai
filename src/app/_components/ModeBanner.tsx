@@ -6,7 +6,7 @@ export function ModeBanner() {
   const mock = getProviders().mock;
   if (!fixture && !mock) return null;
   return (
-    <aside className="banner" aria-label="Sample mode">
+    <aside className="banner mode-banner" aria-label="Sample mode">
       <span className="tag">Sample mode</span>
       <span>
         {fixture && "The tool list is fictional test data. "}

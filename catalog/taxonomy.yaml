@@ -1,3 +1,187 @@
-# REAL taxonomy v1 (40-60 capabilities). BLOCKED (register A-007): the plan requires it be drafted from concierge needs.
-# Development uses catalog/fixtures/taxonomy.yaml instead.
-[]
+# REAL taxonomy. The full v1 (40-60 capabilities drafted from concierge needs) is still BLOCKED (register A-007).
+# These first capabilities cover the three saved examples on the intake (catalog/examples/); each was drafted from the
+# example's own journey, then checked against the tools in catalog/offerings/ on 2026-10-06.
+# Job phrases double as deterministic rules (a phrase found in a description is a stated need), so keep them specific.
+
+# Calorie tracker app
+- id: mobile-app-build
+  plain_name: Build and test a phone app
+  job_phrases:
+    - app for phones
+    - iPhone and Android app
+    - build a phone app
+    - try my app on my phone
+  need_signals:
+    - text: The project is an app for phones
+      need_type: implied
+  skip_conditions:
+    - The project is a website only
+    - The app is already written natively in Swift or Kotlin, or in Flutter
+  native_coverage: []
+- id: food-data-lookup
+  plain_name: Look up calories and macros for foods
+  job_phrases:
+    - calories for a food
+    - nutrition database
+    - macro lookup
+    - food database
+  need_signals:
+    - text: The app tracks meals, calories or macros
+      need_type: implied
+  skip_conditions:
+    - People type in their own numbers
+    - You already have a food database
+  native_coverage: []
+- id: barcode-food-lookup
+  plain_name: Scan a food's barcode to fill in nutrition
+  job_phrases:
+    - barcode scanner for food
+    - scan a barcode
+    - scan packaged food
+  need_signals:
+    - text: The app logs packaged foods
+      need_type: implied
+  skip_conditions:
+    - The app will not scan barcodes
+  native_coverage: []
+- id: app-data-storage
+  plain_name: Save user accounts and logs online
+  job_phrases:
+    - user accounts
+    - sync between devices
+    - save my users' data
+    - backend database
+  need_signals:
+    - text: The app has sign-in or keeps each person's history
+      need_type: implied
+  skip_conditions:
+    - Data stays only on the phone
+  native_coverage: []
+- id: error-alerts
+  plain_name: Get alerts when the app crashes
+  job_phrases:
+    - crash reporting
+    - error monitoring
+    - know when my app crashes
+  need_signals:
+    - text: The app is heading to testers or real users and no crash or error tracking is mentioned
+      need_type: latent
+  skip_conditions:
+    - You already use an error tracker
+  native_coverage: []
+- id: project-notes
+  plain_name: Tell your AI what the project is for
+  job_phrases:
+    - project notes file
+    - stop re-explaining the project
+  need_signals:
+    - text: Uses an AI coding tool on a project that lasts more than one session
+      need_type: implied
+  skip_conditions:
+    - A project notes file already exists
+  native_coverage:
+    - client: claude_code
+      note: Claude Code reads a CLAUDE.md file at the start of every session, and /init writes a starter one (code.claude.com/docs/en/memory).
+
+# Excel change alerts
+- id: live-page-inspection
+  plain_name: Let your AI look at and test a live web page
+  job_phrases:
+    - debug my userscript
+    - see the page my script runs on
+    - read browser console errors
+    - test a scraper on the real site
+  need_signals:
+    - text: The project reads or changes elements on a live website, such as a userscript, browser extension or scraper
+      need_type: implied
+  skip_conditions:
+    - Your AI tool can already open and read pages in your browser
+  native_coverage: []
+- id: phone-alerts
+  plain_name: Send alerts to your phone from a script
+  job_phrases:
+    - notify me on my phone
+    - push notification from a script
+    - alert my phone
+  need_signals:
+    - text: A script or watcher has to tell a person that something happened
+      need_type: implied
+  skip_conditions:
+    - A pop-up on the same computer is enough
+    - Alerts already go to a chat app you use
+  native_coverage: []
+- id: stopped-script-alerts
+  plain_name: Get told when a script stops running
+  job_phrases:
+    - know if my script stopped
+    - heartbeat monitor
+    - dead man's switch
+    - cron job monitoring
+  need_signals:
+    - text: Something runs unattended, such as a watcher, a scheduled job or a userscript, and could stop without anyone noticing
+      need_type: latent
+  skip_conditions:
+    - A silent stop costs nothing
+    - A heartbeat or cron monitor is already in place
+  native_coverage: []
+- id: scheduled-spreadsheet-checks
+  plain_name: Check an Excel workbook on a schedule in the cloud
+  job_phrases:
+    - Excel automation on a schedule
+    - run a script on my workbook every hour
+  need_signals:
+    - text: The project watches an Excel workbook stored in OneDrive for Business or SharePoint
+      need_type: implied
+  skip_conditions:
+    - Personal or family Microsoft account only
+    - The workbook is not in OneDrive for Business or SharePoint
+  native_coverage: []
+
+# Weekly Shopify report
+- id: store-orders-data
+  plain_name: Let your AI read your store's orders and sales
+  job_phrases:
+    - Shopify orders
+    - store orders
+    - pull my orders
+  need_signals:
+    - text: The person runs an online store and works with its orders or sales by hand
+      need_type: implied
+  skip_conditions:
+    - You don't run an online store
+  native_coverage: []
+- id: spreadsheet-files
+  plain_name: Let your AI read and save your Google Sheets
+  job_phrases:
+    - Google Sheets
+    - spreadsheets in Google Drive
+  need_signals:
+    - text: Reports or exports are kept in Google Sheets or Google Drive
+      need_type: implied
+  skip_conditions:
+    - Your spreadsheets are not in Google Drive
+  native_coverage: []
+- id: in-sheet-help
+  plain_name: Get AI help inside your spreadsheet
+  job_phrases:
+    - write my spreadsheet formulas
+    - fix my formulas
+  need_signals:
+    - text: The person builds summaries, formulas or reports by hand in a spreadsheet
+      need_type: implied
+  skip_conditions:
+    - The summary already builds itself with formulas or a pivot table
+  native_coverage: []
+- id: scheduled-runs
+  plain_name: Have your AI run a task on a schedule
+  job_phrases:
+    - run this on a schedule
+    - scheduled task
+  need_signals:
+    - text: The same task is done by hand every day or every week
+      need_type: implied
+  skip_conditions:
+    - The task only happens once
+  native_coverage:
+    - client: claude_desktop
+      note: On paid plans, Claude's scheduled tasks run a saved prompt hourly, daily, weekly or on weekdays, even when your computer is asleep (support.claude.com/en/articles/13854387).

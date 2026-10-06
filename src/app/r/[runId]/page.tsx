@@ -10,6 +10,7 @@ import { MATCH_LABEL, NOT_NEEDED_REASON } from "../../_components/labels";
 import { OrderSummary } from "../../_components/OrderSummary";
 import { PickCard } from "../../_components/PickCard";
 import { SubmitButton } from "../../_components/SubmitButton";
+import { SavedExampleNote } from "../../_components/SavedExampleNote";
 import { ArrowRightIcon, PencilIcon } from "../../_components/icons";
 
 export const dynamic = "force-dynamic";
@@ -202,6 +203,7 @@ export default async function RunPage({ params, searchParams }: {
   const notice = sp.error && Object.hasOwn(RUN_ERRORS, sp.error) ? RUN_ERRORS[sp.error] : undefined;
   return (
     <main className="page" id="top">
+      {run.details.saved_example && <SavedExampleNote id={run.details.saved_example} />}
       {notice && <div className="banner warn" role="alert"><span>{notice}</span></div>}
       {run.details.degraded && (
         <div className="banner warn" role="status">

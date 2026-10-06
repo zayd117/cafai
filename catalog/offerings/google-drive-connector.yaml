@@ -1,0 +1,91 @@
+# REAL entry, written for the intake's saved examples (catalog/examples/). Every fact cites the maker's own page.
+id: google-drive-connector
+kind: mcp_server
+identity:
+  display_name: Let Claude read and save files in your Google Drive
+  vendor: Google
+  technical_name: Google Drive connector for Claude (remote server https://drivemcp.googleapis.com/mcp/v1)
+capabilities:
+- spreadsheet-files
+need_signals:
+- text: Keeps reports or exports in Google Sheets or Google Drive
+  need_type: implied
+skip_if:
+- Your spreadsheets are in Excel or another app, not Google Drive.
+resource_profile:
+  provides:
+  - text: Searches your Drive, reads Sheets, Slides, PDFs and Office files, and uploads files with optional conversion to Google formats.
+    evidence: claimed
+    source_url: https://support.claude.com/en/articles/10166901-use-google-workspace-connectors
+    as_of: 2026-10-06
+  - text: Its tools include search_files, read_file_content, create_file and update_file.
+    evidence: observed
+    source_url: https://claude.com/marketplace/connectors/google-drive
+    as_of: 2026-10-06
+  - text: Separate Google Docs, Sheets and Slides connectors let Claude create those files and edit them live in a pane beside the chat (beta).
+    evidence: claimed
+    source_url: https://support.claude.com/en/articles/10166901-use-google-workspace-connectors
+    as_of: 2026-10-06
+  requires:
+  - text: A Google account. On Team and Enterprise plans an owner must turn the connector on before members can sign in.
+    evidence: claimed
+    source_url: https://support.claude.com/en/articles/10166901-use-google-workspace-connectors
+    as_of: 2026-10-06
+  supports:
+  - text: Available to all users on Claude and Claude Desktop.
+    evidence: claimed
+    source_url: https://support.claude.com/en/articles/10166901-use-google-workspace-connectors
+    as_of: 2026-10-06
+  - text: Anthropic's connector directory lists it as made by Google, added March 2026.
+    evidence: observed
+    source_url: https://claude.com/marketplace/connectors/google-drive
+    as_of: 2026-10-06
+  limits:
+  - text: When it reads a file it takes the text only; images inside documents are not processed.
+    evidence: claimed
+    source_url: https://support.claude.com/en/articles/10166901-use-google-workspace-connectors
+    as_of: 2026-10-06
+  - text: Sharing, moving and trashing files ask for your approval each time by default.
+    evidence: claimed
+    source_url: https://support.claude.com/en/articles/10166901-use-google-workspace-connectors
+    as_of: 2026-10-06
+distributions:
+- client: claude_desktop
+  method: connector
+  url: https://claude.com/marketplace/connectors/google-drive
+  steps:
+  - Add Google Drive from the connectors directory and sign in with Google.
+  - To have Claude write straight into a Google Sheet, also turn on the Google Sheets connector from the + menu in a chat (beta).
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://support.claude.com/en/articles/10166901-use-google-workspace-connectors
+access:
+  auth: oauth
+  credential_needed: Sign in with your Google account
+  read_write: read_write
+  data_touched:
+  - Files in your Google Drive, including Google Sheets
+  access_plain: Reads files in your Google Drive and can save new ones. Sharing, moving or deleting a file asks you first.
+  effort_plain: About 5 minutes
+  least_privilege_steps:
+  - Keep the weekly report in one Drive folder and give Claude the sheet's link, so it doesn't search your whole Drive.
+  - Leave the default "ask before sharing, moving or trashing" setting on.
+runtime:
+  location: remote
+cost:
+  model: free
+  plan_required: Available to all Claude users
+  source_url: https://support.claude.com/en/articles/10166901-use-google-workspace-connectors
+  as_of: 2026-10-06
+trust:
+  state: reviewed
+  vendor_official: true
+  namespace_verified: true
+  notes: Made by Google per Anthropic's connector directory; documented in Anthropic's help center. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
+editorial:
+  what_it_is: Google's connector that lets Claude find, read and save files in your Google Drive, including Sheets.
+  could_help_with: Saving each week's orders into your Google Sheet and reading last week's numbers to compare, with no downloading and uploading.
+  first_prompt: Find my weekly Shopify sales sheet in Google Drive and tell me which columns it has and what last week's totals were. Don't change the file yet.
+  reviewer: Claude (AI), not yet a person
+  reviewed_on: 2026-10-06
+last_verified_on: 2026-10-06

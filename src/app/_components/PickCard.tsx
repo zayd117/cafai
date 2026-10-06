@@ -183,6 +183,7 @@ export function PickCard(props: {
             <dt>Sign-in method</dt><dd>{o.access.auth === "none" ? "none" : o.access.auth === "oauth" ? "OAuth (you approve access in your browser)" : "API key"}</dd>
             <dt>Pinned version</dt><dd>{o.distributions.find((d) => d.version_pin)?.version_pin ?? "not pinned in the catalog"}</dd>
             <dt>Trust state</dt><dd>{TRUST_LABEL[o.trust.state] ?? o.trust.state} (a gate for eligibility, not a score)</dd>
+            <dt>Reviewed by</dt><dd>{o.editorial.reviewer}, <time dateTime={o.editorial.reviewed_on}>{formatDate(o.editorial.reviewed_on)}</time></dd>
             <dt>Last verified</dt><dd><time dateTime={o.last_verified_on}>{formatDate(o.last_verified_on)}</time></dd>
             <dt>Sources</dt><dd>{[...new Set(facts.map((f) => new URL(f.source_url).hostname))].join(", ")}</dd>
           </dl>

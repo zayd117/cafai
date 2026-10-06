@@ -1,0 +1,92 @@
+# REAL entry, written for the intake's saved examples (catalog/examples/). Every fact cites the maker's own page.
+id: shopify-connector
+kind: mcp_server
+identity:
+  display_name: Let Claude read your Shopify orders and sales
+  vendor: Shopify
+  technical_name: Shopify connector for Claude (remote server https://setup.shopify.com/mcp)
+capabilities:
+- store-orders-data
+need_signals:
+- text: Runs a Shopify store and pulls orders or sales numbers out by hand
+  need_type: implied
+skip_if:
+- Your store is not on Shopify.
+- Shopify's built-in reports already give you the summary you need.
+resource_profile:
+  provides:
+  - text: Reads orders (line items, fulfillment status, shipping details), customers, products, inventory levels and store analytics.
+    evidence: claimed
+    source_url: https://help.shopify.com/en/manual/ai-powered-tools/connecting-ai-tools/shopify-connector-for-claude
+    as_of: 2026-10-06
+  - text: Its 25 tools include list-orders, get-order and run-analytics-query.
+    evidence: observed
+    source_url: https://claude.com/marketplace/connectors/shopify
+    as_of: 2026-10-06
+  requires:
+  - text: A Shopify store and a Claude account; Shopify says to do the setup in a desktop browser.
+    evidence: claimed
+    source_url: https://help.shopify.com/en/manual/ai-powered-tools/connecting-ai-tools/shopify-connector-for-claude
+    as_of: 2026-10-06
+  - text: You approve the data access it asks for in your Shopify admin, and your staff account's permissions still apply.
+    evidence: claimed
+    source_url: https://help.shopify.com/en/manual/ai-powered-tools/connecting-ai-tools/shopify-connector-for-claude
+    as_of: 2026-10-06
+  supports:
+  - text: Anthropic's connector directory lists it as made by Shopify and Anthropic verified, added April 2026.
+    evidence: observed
+    source_url: https://claude.com/marketplace/connectors/shopify
+    as_of: 2026-10-06
+  limits:
+  - text: It can't edit your live theme, refund or cancel orders, adjust gift cards, or change payment, tax or domain settings.
+    evidence: claimed
+    source_url: https://help.shopify.com/en/manual/ai-powered-tools/connecting-ai-tools/shopify-connector-for-claude
+    as_of: 2026-10-06
+  - text: It also has tools that change products, inventory, collections and discount codes, and it handles bulk changes one item at a time.
+    evidence: claimed
+    source_url: https://help.shopify.com/en/manual/ai-powered-tools/connecting-ai-tools/shopify-connector-for-claude
+    as_of: 2026-10-06
+distributions:
+- client: claude_desktop
+  method: connector
+  url: https://claude.com/marketplace/connectors/shopify
+  steps:
+  - Open the Shopify connector page and choose Add to Claude (install it from Claude, not from the Shopify App Store).
+  - When you are sent to your Shopify admin, review and approve the data access it asks for.
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://help.shopify.com/en/manual/ai-powered-tools/connecting-ai-tools/shopify-connector-for-claude
+access:
+  auth: oauth
+  credential_needed: Sign in to Shopify and approve access in your Shopify admin
+  read_write: read_write
+  data_touched:
+  - Orders and order details
+  - Customer records (name, email, location, order count, spending)
+  - Products, collections and inventory
+  - Store analytics
+  access_plain: Reads your orders, customers and sales numbers. It can also change products, inventory and discount codes, so ask it only for reports.
+  effort_plain: About 5 minutes in a desktop browser
+  least_privilege_steps:
+  - Connect it from a staff account that can see orders and reports but not change store settings, if you have one.
+  - Ask for totals and order numbers rather than full customer lists, so names and emails stay out of your chats.
+  - Say "don't change anything in the store" in report prompts.
+runtime:
+  location: remote
+cost:
+  model: free
+  plan_required: Your usual Shopify plan; Shopify charges nothing extra for the connector
+  source_url: https://help.shopify.com/en/manual/ai-powered-tools/connecting-ai-tools/shopify-connector-for-claude
+  as_of: 2026-10-06
+trust:
+  state: reviewed
+  vendor_official: true
+  namespace_verified: true
+  notes: Made by Shopify and marked Anthropic verified in Anthropic's connector directory; Shopify's own help center documents it. mcp.market lists only third-party Shopify servers, none from Shopify, so no grade is recorded. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
+editorial:
+  what_it_is: Shopify's own connector that lets Claude read your store's orders and sales numbers.
+  could_help_with: Pulling last week's orders and totals straight from your store, so the Monday export step goes away.
+  first_prompt: Using my Shopify store, list last week's orders (Monday to Sunday) with order number, date, total and items, then give me total sales, order count and average order value. Don't change anything in the store.
+  reviewer: Claude (AI), not yet a person
+  reviewed_on: 2026-10-06
+last_verified_on: 2026-10-06

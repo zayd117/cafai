@@ -1,0 +1,157 @@
+{
+  "id": "weekly-shopify-report",
+  "label": "Weekly Shopify report",
+  "text": "Every Monday I export Shopify orders to Google Sheets and build a sales summary. I use Claude Desktop, and ChatGPT at work.",
+  "prepared_on": "2026-10-06",
+  "declared_clients": [
+    "claude_desktop"
+  ],
+  "understand": {
+    "in_scope": true,
+    "confidence": "high",
+    "items": [
+      {
+        "id": "u1",
+        "kind": "task",
+        "text": "Every Monday, export Shopify orders to Google Sheets",
+        "quote": "Every Monday I export Shopify orders to Google Sheets"
+      },
+      {
+        "id": "u2",
+        "kind": "task",
+        "text": "Build a sales summary from those orders",
+        "quote": "build a sales summary"
+      },
+      {
+        "id": "u3",
+        "kind": "environment",
+        "text": "You use Claude Desktop",
+        "quote": "I use Claude Desktop"
+      },
+      {
+        "id": "u4",
+        "kind": "environment",
+        "text": "You also use ChatGPT at work",
+        "quote": "ChatGPT at work"
+      }
+    ],
+    "concepts": [
+      {
+        "term": "Shopify orders",
+        "capability_id": "store-orders-data"
+      },
+      {
+        "term": "Google Sheets",
+        "capability_id": "spreadsheet-files"
+      },
+      {
+        "term": "weekly sales summary",
+        "capability_id": "in-sheet-help"
+      },
+      {
+        "term": "every Monday",
+        "capability_id": "scheduled-runs"
+      },
+      {
+        "term": "ChatGPT at work",
+        "capability_id": null
+      }
+    ],
+    "needs": [
+      {
+        "capability_id": "store-orders-data",
+        "need_type": "stated",
+        "evidence_ids": [
+          "u1"
+        ]
+      },
+      {
+        "capability_id": "spreadsheet-files",
+        "need_type": "stated",
+        "evidence_ids": [
+          "u1"
+        ]
+      },
+      {
+        "capability_id": "in-sheet-help",
+        "need_type": "implied",
+        "evidence_ids": [
+          "u2"
+        ]
+      },
+      {
+        "capability_id": "scheduled-runs",
+        "need_type": "not_relevant",
+        "evidence_ids": [
+          "u1"
+        ],
+        "reason": "Claude already does this on paid plans: a scheduled task can run this report every Monday, even when your computer is asleep. Nothing to add."
+      }
+    ],
+    "clarifying_question": null
+  },
+  "judgments": {
+    "shopify-connector": {
+      "capability_id": "store-orders-data",
+      "intent_fit": "direct",
+      "intent_quote": "export Shopify orders",
+      "requirements_met": "yes",
+      "fired_signal_ids": [
+        "o:shopify-connector#0"
+      ],
+      "evidence_enough": true
+    },
+    "google-drive-connector": {
+      "capability_id": "spreadsheet-files",
+      "intent_fit": "direct",
+      "intent_quote": "to Google Sheets",
+      "requirements_met": "yes",
+      "fired_signal_ids": [
+        "o:google-drive-connector#0"
+      ],
+      "evidence_enough": true
+    },
+    "claude-for-google-sheets": {
+      "capability_id": "in-sheet-help",
+      "intent_fit": "direct",
+      "intent_quote": "build a sales summary",
+      "requirements_met": "partly",
+      "fired_signal_ids": [
+        "o:claude-for-google-sheets#0"
+      ],
+      "evidence_enough": true
+    }
+  },
+  "explanations": {
+    "shopify-connector": {
+      "why": "You export Shopify orders every Monday. With Shopify's own connector, Claude can read those orders straight from your store instead.",
+      "evidence_ids": [
+        "u1"
+      ],
+      "how_it_helps": "Claude can pull last week's orders and totals itself, so the export and copy step goes away.",
+      "do_you_need_it": "It's the piece that gets your orders into Claude.",
+      "skip_if": "Skip it if Shopify's built-in reports already give you the summary you need.",
+      "summary": "Shopify's official connector for Claude. It reads orders, customers and sales; it can also edit products, so ask it for reports only."
+    },
+    "google-drive-connector": {
+      "why": "Your weekly orders end up in Google Sheets. Google's connector lets Claude open that sheet and save each new week into your Drive.",
+      "evidence_ids": [
+        "u1"
+      ],
+      "how_it_helps": "Claude can read last week's numbers to compare and save the new orders into your Drive, with no downloading or uploading by hand.",
+      "do_you_need_it": "You need it if the report stays in Google Sheets. To edit a sheet live, also turn on Claude's Google Sheets connector (beta).",
+      "skip_if": "Skip it if you'd rather keep the summary inside Claude and stop using the sheet.",
+      "summary": "Google's official Drive connector for Claude: search, read and save files in your Drive, including Sheets."
+    },
+    "claude-for-google-sheets": {
+      "why": "You build the sales summary by hand each week. Claude can do that inside the sheet itself, with formulas that keep working.",
+      "evidence_ids": [
+        "u2"
+      ],
+      "how_it_helps": "Ask in the sidebar for a summary tab with total sales, order count, average order and top products, and it builds it in place.",
+      "do_you_need_it": "It fits how you work today, building the summary by hand in Sheets. Claude Desktop with the two connectors can also write it for you.",
+      "skip_if": "Skip it if your Google admin blocks Marketplace add-ons, or you'd rather Claude Desktop do the whole report.",
+      "summary": "Anthropic's add-on that puts Claude in a sidebar inside Google Sheets, Docs and Slides (beta, paid plans)."
+    }
+  }
+}

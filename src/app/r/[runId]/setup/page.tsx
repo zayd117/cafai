@@ -10,6 +10,7 @@ import { handoffsFor, pasteMessage } from "@/setup/handoff";
 import { sendFeedback } from "../../../actions";
 import { CopyButton } from "../../../_components/CopyButton";
 import { SubmitButton } from "../../../_components/SubmitButton";
+import { SavedExampleNote } from "../../../_components/SavedExampleNote";
 import { Thanks } from "../../../_components/Thanks";
 import { formatDate } from "../../../_components/format";
 import { ArrowLeftIcon } from "../../../_components/icons";
@@ -63,6 +64,7 @@ export default async function SetupPage({ params, searchParams }: {
 
   return (
     <main className="page">
+      {run.details.saved_example && <SavedExampleNote id={run.details.saved_example} />}
       <div className="setup">
         <a className="back" href={`/r/${run.id}`}><ArrowLeftIcon />Back to your picks</a>
         {picks.length === 0 ? (

@@ -20,6 +20,8 @@ export interface StartRun {
   userItems?: UserItem[];
   confirmed?: boolean;
   parentRunId?: string;
+  /** Id of the intake example whose saved answer produced this run (catalog/examples). */
+  savedExample?: string;
 }
 
 /** Everything a results page needs besides catalog facts. */
@@ -32,6 +34,7 @@ export interface RunDetails {
   flags: RunResult["flags"];
   constraints: Constraints;
   confirmed: boolean;
+  saved_example?: string;
 }
 
 export interface StoredPick {
@@ -96,6 +99,7 @@ export async function startRun(
     flags: result.flags,
     constraints,
     confirmed: !!input.confirmed,
+    ...(input.savedExample ? { saved_example: input.savedExample } : {}),
   };
   await withAccess(pool, { runId: id }, async (c) => {
     await c.query(

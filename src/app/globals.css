@@ -50,6 +50,10 @@ summary::-webkit-details-marker { display: none; }
 .page:has(.counter) { padding-bottom: 120px; }
 .banner { margin: 0 clamp(16px, 5vw, 72px) 16px; display: flex; gap: 12px; align-items: flex-start; padding: 10px 16px; border: 1px dashed var(--line-strong); border-radius: 12px; font-size: 14px; }
 .banner.warn { border-style: solid; border-color: var(--color-border-accent); background: var(--color-bg-accent-soft); color: var(--color-text-on-accent-soft); }
+/* A saved example shows real tools, so its own note replaces the sample-mode one on that run's pages. */
+.banner.saved-note { border-style: solid; border-color: var(--color-border-brand); background: var(--color-bg-brand-soft); color: var(--color-text-on-brand-soft); }
+.banner.saved-note .tag { border-style: solid; border-color: var(--color-border-brand); }
+.main:has(.saved-note) > .mode-banner { display: none; }
 
 /* Tags and placeholders */
 .tag { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border: 1px dashed var(--line-strong); border-radius: 6px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
