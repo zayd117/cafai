@@ -1,14 +1,23 @@
 import { ENGINE_CONFIG } from "@/engine/config";
 import { submitOrder } from "./actions";
+import { ProjectInput } from "./_components/ProjectInput";
 
 export const dynamic = "force-dynamic";
 
 // Example prompts are the plan's own journeys (§6, §7), never invented ones.
+// Each has a short chip label; the full journey text is what gets submitted.
 const EXAMPLES = [
-  "I'm making a calorie and macro tracker app for phones. I use Claude Code. I don't really know what I need.",
-  "I'm writing a Tampermonkey script that reads visible Excel cells and notifies me when something changes.",
-  "Every Monday I export Shopify orders to Google Sheets and build a sales summary. I use Claude Desktop, and ChatGPT at work.",
-];
+  ["Calorie tracker app", "I'm making a calorie and macro tracker app for phones. I use Claude Code. I don't really know what I need."],
+  ["Excel change alerts", "I'm writing a Tampermonkey script that reads visible Excel cells and notifies me when something changes."],
+  ["Weekly Shopify report", "Every Monday I export Shopify orders to Google Sheets and build a sales summary. I use Claude Desktop, and ChatGPT at work."],
+] as const;
+// Rotating placeholder text, shortened from the same journeys.
+const HINTS = [
+  "I'm creating a calorie and macro tracker app for mobile",
+  "a script that tells me when visible Excel cells change",
+  "a weekly sales summary from Shopify orders in Google Sheets",
+] as const;
+const STEPS = ["Describe your project", "Get 3–5 explained picks", "Set them up in your AI tool"];
 // Copy for these states is not in the plan (wireframe board 6 lists them as unspecified); placeholder wording, REGISTER A-030.
 const ERRORS: Record<string, string> = {
   empty: "Describe what you are working on, or pick an example below.",
@@ -30,28 +39,24 @@ export default async function Counter({ searchParams }: { searchParams: Promise<
         <div className="hero">
           <h1>What are you working on?</h1>
           <p className="lede">You bring the work. We know the menu.</p>
-          <p className="muted">Describe it in your own words. You do not need to know any tool names.</p>
         </div>
 
-        <div className="box">
-          <div className="box-section">
-            <label htmlFor="text" className="legend">Your project</label>
-            <textarea
-              id="text" name="text" className="textarea" maxLength={ENGINE_CONFIG.input.maxChars}
-              placeholder="e.g. I'm creating a calorie and macro tracker app for mobile"
-              aria-describedby="text-help" {...(error === "empty" ? { "aria-invalid": true } : {})}
-            />
-            {error && ERRORS[error] && <p className="small" role="alert">{ERRORS[error]}</p>}
-            <div className="row small muted" id="text-help">
-              <span>Don&apos;t paste secrets; we redact them.</span>
-              <span>Up to {ENGINE_CONFIG.input.maxChars.toLocaleString("en-US")} characters</span>
-            </div>
-          </div>
+        <ol className="steps" aria-label="How it works">
+          {STEPS.map((s, n) => (
+            <li key={s} {...(n === 0 ? { "aria-current": "step" as const } : {})}><span className="step-n" aria-hidden="true">{n + 1}</span>{s}</li>
+          ))}
+        </ol>
 
-          <div className="box-section">
-            <div className="row"><strong>A little more, if you like</strong><span className="small muted">All optional</span></div>
-            <fieldset className="chips">
-              <legend className="legend">AI tools I use</legend>
+        <div className="composer">
+          <label htmlFor="text" className="sr-only">Your project</label>
+          <ProjectInput
+            id="text" name="text" className="textarea" maxLength={ENGINE_CONFIG.input.maxChars} hints={HINTS}
+            aria-describedby="text-help" {...(error === "empty" ? { "aria-invalid": true } : {})}
+          />
+          {error && ERRORS[error] && <p className="small error" role="alert">{ERRORS[error]}</p>}
+          <div className="composer-bar">
+            <fieldset className="chips compact">
+              <legend className="small muted">AI tools I use <span className="sr-only">(optional)</span></legend>
               {CLIENTS.map(([id, label]) => (
                 <label key={id} className="chip">
                   <input type="checkbox" name="clients" value={id} />
@@ -59,33 +64,42 @@ export default async function Counter({ searchParams }: { searchParams: Promise<
                 </label>
               ))}
             </fieldset>
-            <div className="field">
-              <label htmlFor="specific">Something specific in mind?</label>
-              <input id="specific" name="specific" className="input" maxLength={300} placeholder="e.g. something to help me analyze Excel data" />
-              <span className="small muted">Naming a tool works too. It only sharpens the picks; you never have to.</span>
-            </div>
-          </div>
-
-          <div className="hp" aria-hidden="true">
-            <label htmlFor="website">Leave this empty</label>
-            <input id="website" name="website" tabIndex={-1} autoComplete="off" />
-          </div>
-          <div className="box-section row">
-            <span className="muted">No sign-up needed to try it.</span>
-            <button type="submit" className="btn primary">What do you recommend?</button>
+            <button type="submit" className="btn primary send">
+              What do you recommend?
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
+            </button>
           </div>
         </div>
+        <div className="row small muted under" id="text-help">
+          <span>Plain words are fine, no tool names needed. Don&apos;t paste secrets; we redact them.</span>
+          <span>Up to {ENGINE_CONFIG.input.maxChars.toLocaleString("en-US")} characters</span>
+        </div>
 
-        <section aria-labelledby="examples" className="stack">
-          <h2 id="examples" className="legend">Or start from an example</h2>
-          <div className="examples">
-            {EXAMPLES.map((e) => (
-              <button key={e} type="submit" name="example" value={e} className="example" formNoValidate>{e}</button>
+        <details className="more">
+          <summary>Something specific in mind? <span className="muted">Optional</span></summary>
+          <div className="field">
+            <label htmlFor="specific" className="sr-only">Something specific in mind?</label>
+            <input id="specific" name="specific" className="input" maxLength={300} placeholder="e.g. something to help me analyze Excel data" />
+            <span className="small muted">Naming a tool works too. It only sharpens the picks; you never have to.</span>
+          </div>
+        </details>
+
+        <div className="hp" aria-hidden="true">
+          <label htmlFor="website">Leave this empty</label>
+          <input id="website" name="website" tabIndex={-1} autoComplete="off" />
+        </div>
+
+        <section aria-labelledby="examples" className="try">
+          <h2 id="examples" className="small muted">Or try an example</h2>
+          <div className="example-chips">
+            {EXAMPLES.map(([label, text]) => (
+              <button key={label} type="submit" name="example" value={text} className="example-chip" formNoValidate
+                aria-label={`${label}: ${text}`} title={text}>{label}</button>
             ))}
           </div>
         </section>
 
-        <p className="muted small hero">Caf.ai never installs anything for you.</p>
+        <p className="muted small hero">No sign-up needed. Caf.ai never installs anything for you.</p>
       </form>
     </main>
   );
