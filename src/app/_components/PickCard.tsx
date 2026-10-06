@@ -7,6 +7,7 @@ import type { ProfileItem } from "@/engine/types";
 import { sendFeedback } from "../actions";
 import { formatDate } from "./format";
 import { SubmitButton } from "./SubmitButton";
+import { Thanks } from "./Thanks";
 import { CONFIDENCE_DOTS, CONFIDENCE_LABEL, EVIDENCE_LABEL, KIND_LABEL, MATCH_LABEL, MATCH_SEGMENTS, NEED_LABEL, TRUST_LABEL } from "./labels";
 
 function MatchMeter({ band }: { band: string }) {
@@ -124,10 +125,11 @@ export function PickCard(props: {
         <input type="hidden" name="run" value={runId} />
         <input type="hidden" name="rec" value={pick.id} />
         <span className="small muted">Was this useful?</span>
-        <SubmitButton className="btn quiet small" name="kind" value="useful">Useful</SubmitButton>
-        <SubmitButton className="btn quiet small" name="kind" value="not_useful">Not useful</SubmitButton>
-        <SubmitButton className="btn quiet small" name="kind" value="already_knew">I knew this already</SubmitButton>
-        {props.thanks && <span className="small thanks" role="status">Thanks, noted.</span>}
+        {/* Each button is described by the card title, so a list of buttons still says which card it is about. */}
+        <SubmitButton className="btn quiet small" name="kind" value="useful" aria-describedby={`t-${pick.id}`}>Useful</SubmitButton>
+        <SubmitButton className="btn quiet small" name="kind" value="not_useful" aria-describedby={`t-${pick.id}`}>Not useful</SubmitButton>
+        <SubmitButton className="btn quiet small" name="kind" value="already_knew" aria-describedby={`t-${pick.id}`}>I knew this already</SubmitButton>
+        {props.thanks && <Thanks text="Thanks, noted." />}
       </form>
 
       {/* Level 2: parts 4, 9, 11 (setup, access), first prompt */}

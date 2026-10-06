@@ -1,6 +1,7 @@
 // /r/:runId/setup (plan §8 Connection flow and Setup, §13 handoff, wireframe board 7).
 // Caf.ai installs nothing and holds no keys: it hands the user to their own client's official path.
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { isUuid } from "@/db/client";
 import { readFlags } from "@/server/controls";
 import { getRuntime, snapshotFor } from "@/server/runtime";
@@ -9,6 +10,7 @@ import { handoffsFor, pasteMessage } from "@/setup/handoff";
 import { sendFeedback } from "../../../actions";
 import { CopyButton } from "../../../_components/CopyButton";
 import { SubmitButton } from "../../../_components/SubmitButton";
+import { Thanks } from "../../../_components/Thanks";
 import { formatDate } from "../../../_components/format";
 import { ArrowLeftIcon } from "../../../_components/icons";
 
@@ -21,25 +23,32 @@ const hostOf = (url: string) => {
 };
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Set up your order" };
+
+const getRun = cache((id: string) => (isUuid(id) ? loadRun(getRuntime().pool, id) : Promise.resolve(null)));
+
+export async function generateMetadata({ params }: { params: Promise<{ runId: string }> }) {
+  return { title: (await getRun((await params).runId)) ? "Set up your order" : "Order not found" };
+}
 
 export default async function SetupPage({ params, searchParams }: {
   params: Promise<{ runId: string }>;
-  searchParams: Promise<{ pick?: string | string[]; client?: string; thanks?: string; rec?: string }>;
+  searchParams: Promise<{ pick?: string | string[]; client?: string; thanks?: string; rec?: string; order?: string }>;
 }) {
   const { runId } = await params;
   const sp = await searchParams;
   if (!isUuid(runId)) notFound();
-  const run = await loadRun(getRuntime().pool, runId);
+  const run = await getRun(runId);
   if (!run) notFound();
   const snapshot = await snapshotFor(run.catalog_version);
   if (!snapshot) notFound();
 
-  // Only picks from this run; the order form sends the ticked ones (default: the direct picks).
+  // Only picks from this run. The order form sends the ticked ones plus order=1, so ticking nothing sets up nothing;
+  // a bare link to this page (no picks, no order mark) gets the direct picks.
   const requested = new Set([sp.pick ?? []].flat());
+  const chosen = requested.size > 0 || sp.order !== undefined;
   const flags = await readFlags(getRuntime().pool);
   // Revoked offerings never get setup steps (§11 "Setup hidden"); say so rather than dropping them silently.
-  const ordered = run.picks.filter((p) => (requested.size ? requested.has(p.offering_id) : p.lane === "direct"));
+  const ordered = run.picks.filter((p) => (chosen ? requested.has(p.offering_id) : p.lane === "direct"));
   const picks = ordered.filter((p) => !flags.revoked.has(p.offering_id));
   const withdrawn = ordered.length - picks.length;
   // Tabs for declared clients only (§8); with none declared, the three supported clients (REGISTER A-031).
@@ -70,7 +79,7 @@ export default async function SetupPage({ params, searchParams }: {
         )}
         {withdrawn > 0 && (
           <p className="caution" role="note">
-            {withdrawn === 1 ? "One pick you chose is" : `${withdrawn} picks you chose are`} no longer recommended, so {withdrawn === 1 ? "it is" : "they are"} not set up here.
+            {withdrawn === 1 ? "A pick you chose is" : `${withdrawn} picks you chose are`} no longer recommended, so {withdrawn === 1 ? "it is" : "they are"} not set up here.
           </p>
         )}
 
@@ -93,7 +102,7 @@ export default async function SetupPage({ params, searchParams }: {
                 </div>
                 <CopyButton targetId="paste-message" text={message} />
               </div>
-              <pre id="paste-message" className="paste">{message}</pre>
+              <pre id="paste-message" className="paste" translate="no">{message}</pre>
               {client.plan_limits?.map((l) => <p key={l} className="small muted">{l}</p>)}
             </section>
 
@@ -142,7 +151,7 @@ export default async function SetupPage({ params, searchParams }: {
                         </div>
                       )}
                       <p className="small muted source">
-                        Official guide: <a href={d.source_url}>{hostOf(d.source_url)}</a> · Checked <time dateTime={d.verified_on}>{formatDate(d.verified_on)}</time>
+                        Official guide: <a href={d.source_url}>{hostOf(d.source_url)}</a> · Checked <time className="nowrap" dateTime={d.verified_on}>{formatDate(d.verified_on)}</time>
                       </p>
                       {h.hosts.length > 0 && <p className="small muted source">Connects to: {h.hosts.join(", ")}</p>}
                     </>
@@ -158,12 +167,11 @@ export default async function SetupPage({ params, searchParams }: {
                     <input type="hidden" name="client" value={client.id} />
                     {ordered.map((p) => <input key={p.id} type="hidden" name="pick" value={p.offering_id} />)}
                     <span className="small muted">How did it go?</span>
-                    <SubmitButton className="btn quiet small" name="kind" value="it_worked">It worked</SubmitButton>
-                    <SubmitButton className="btn quiet small" name="kind" value="stuck">I&apos;m stuck</SubmitButton>
-                    {/* Always mounted, so screen readers announce the text when it arrives. */}
-                    <span role="status" className="small thanks">
-                      {sp.rec === pick.id && sp.thanks === "it_worked" ? "Great. Thanks for telling us." : sp.rec === pick.id && sp.thanks === "stuck" ? "Thanks. We will re-check this setup step." : ""}
-                    </span>
+                    <SubmitButton className="btn quiet small" name="kind" value="it_worked" aria-describedby={`s-${pick.id}`}>It worked</SubmitButton>
+                    <SubmitButton className="btn quiet small" name="kind" value="stuck" aria-describedby={`s-${pick.id}`}>I’m stuck</SubmitButton>
+                    {sp.rec === pick.id && (sp.thanks === "it_worked" || sp.thanks === "stuck") && (
+                      <Thanks text={sp.thanks === "it_worked" ? "Great. Thanks for telling us." : "Thanks. We will re-check this setup step."} />
+                    )}
                   </form>
                 </section>
               );

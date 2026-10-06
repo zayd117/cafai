@@ -25,7 +25,9 @@ export function proxy(request: NextRequest) {
   headers.set("Content-Security-Policy", csp);
   const res = NextResponse.next({ request: { headers } });
   res.headers.set("Content-Security-Policy", csp);
-  res.headers.set("Referrer-Policy", "no-referrer");
+  // same-origin, not no-referrer: other sites still get nothing, but the browser sends a real Origin on our own form
+  // posts. Under no-referrer it sends "Origin: null", which the server-action check rejects (500 without JavaScript).
+  res.headers.set("Referrer-Policy", "same-origin");
   res.headers.set("X-Content-Type-Options", "nosniff");
   if (https) res.headers.set("Strict-Transport-Security", "max-age=63072000");
   // Runs can hold a project description: never cache them in shared caches (§14).

@@ -30,9 +30,11 @@ a:hover { color: var(--clay-dark); }
 :focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
 h1, h2, h3 { font-family: var(--display); font-weight: 600; letter-spacing: -0.01em; margin: 0; line-height: 1.15; text-wrap: balance; }
 p { margin: 0; }
-p, li { text-wrap: pretty; }
+/* The intake (.counter) keeps the plain wrapping it shipped with; the redesigned pages get the nicer line breaks. */
+:where(.page:not(:has(.counter))) :is(p, li) { text-wrap: pretty; }
 summary { list-style: none; cursor: pointer; }
 summary::-webkit-details-marker { display: none; }
+.nowrap { white-space: nowrap; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* Shell */
@@ -45,6 +47,7 @@ summary::-webkit-details-marker { display: none; }
 .skip-link { position: absolute; left: 16px; top: -100px; z-index: 10; padding: 10px 16px; border-radius: var(--radius-md); background: var(--paper); color: var(--ink); font-weight: 600; box-shadow: var(--shadow-md); }
 .skip-link:focus { top: 12px; }
 .page { padding: 0 clamp(16px, 5vw, 72px) 48px; }
+.page:has(.counter) { padding-bottom: 120px; }
 .banner { margin: 0 clamp(16px, 5vw, 72px) 16px; display: flex; gap: 12px; align-items: flex-start; padding: 10px 16px; border: 1px dashed var(--line-strong); border-radius: 12px; font-size: 14px; }
 .banner.warn { border-style: solid; border-color: var(--color-border-accent); background: var(--color-bg-accent-soft); color: var(--color-text-on-accent-soft); }
 
@@ -109,16 +112,17 @@ summary::-webkit-details-marker { display: none; }
 .textarea { width: 100%; min-height: 150px; border: 0; background: transparent; color: var(--ink); font: inherit; font-size: 20px; resize: vertical; padding: 0; }
 .row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 
-/* Interaction details shared by every page (Vercel web interface guidelines: hover, press, touch, motion) */
-button, a, summary, .chip { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-.btn { transition: background-color .15s, border-color .15s, color .15s, transform .1s; }
-.btn:not(.primary):hover { border-color: var(--ink); }
-.btn:active { transform: translateY(1px); }
-.btn svg { flex: none; }
-.btn.quiet { border-color: var(--line); background: var(--paper); font-weight: 500; }
-.btn.quiet:hover { border-color: var(--line-strong); background: var(--color-bg-canvas); }
+/* Interaction details for the pages after the intake (Vercel web interface guidelines: hover, press, touch, motion).
+   :where() keeps specificity at zero, and the intake (.counter) is left exactly as it shipped. */
+:where(.page:not(:has(.counter))) :is(button, a, summary, .chip) { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+:where(.page:not(:has(.counter))) .btn { transition: background-color .15s, border-color .15s, color .15s, transform .1s; }
+:where(.page:not(:has(.counter))) .btn:not(.primary):hover { border-color: var(--ink); }
+:where(.page:not(:has(.counter))) .btn:active { transform: translateY(1px); }
+:where(.page:not(:has(.counter))) .btn svg { flex: none; }
+.btn.quiet { border-color: var(--line-strong); background: var(--paper); font-weight: 500; }
+.btn.quiet:hover { border-color: var(--ink); background: var(--color-bg-canvas); }
 .btn.wide { width: 100%; }
-.btn:disabled { cursor: progress; opacity: .7; }
+:where(.page:not(:has(.counter))) .btn:disabled { cursor: progress; opacity: .7; }
 .btn.fit { align-self: flex-start; }
 /* Visually 36px on a mouse; a full 44px touch target on touch screens. */
 @media (pointer: fine) { .btn.quiet.small { min-height: 36px; padding: 0 12px; font-size: 14px; } }
@@ -163,7 +167,7 @@ details[open] > summary::after { transform: rotate(180deg); }
 .results.solo { grid-template-columns: minmax(0, 720px); grid-template-areas: "main" "more"; justify-content: center; }
 .results-main { grid-area: main; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 .results-more { grid-area: more; min-width: 0; }
-@media (max-width: 960px) { .results { grid-template-columns: minmax(0, 1fr); grid-template-areas: "main" "aside" "more"; } .order { position: static; } }
+@media (max-width: 960px) { .results { grid-template-columns: minmax(0, 1fr); grid-template-areas: "main" "aside" "more"; } }
 .results-head { display: flex; flex-direction: column; gap: 6px; }
 .results-head h1 { font-size: clamp(30px, 4vw, 40px); line-height: 1.1; letter-spacing: -0.02em; }
 .section-head { display: flex; flex-direction: column; gap: 4px; margin-top: 12px; }
@@ -207,7 +211,7 @@ details[open] > summary::after { transform: rotate(180deg); }
 .meter i.on { background: var(--color-fill-meter-on); }
 .dots i { width: 10px; height: 10px; border-radius: 999px; background: var(--color-fill-dot-off); }
 .dots i.on { background: var(--color-fill-dot-on); }
-.need { display: inline-flex; align-items: center; min-height: 28px; padding: 0 10px; border-radius: 999px; background: var(--moss-soft); color: var(--color-text-on-brand-soft); font-weight: 600; font-size: 14px; }
+.need { display: inline-flex; align-items: center; min-height: 28px; padding: 0 10px; border-radius: 999px; background: var(--moss-soft); color: var(--color-text-on-brand-soft); box-shadow: inset 0 0 0 1px var(--color-border-brand); font-weight: 600; font-size: 14px; }
 .need.later { background: var(--paper); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-strong); }
 .caveats { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: var(--muted); }
 .meta { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 2fr); gap: 12px 24px; margin: 0; padding-top: 16px; border-top: 1px solid var(--line); }
@@ -242,7 +246,9 @@ details[open] > summary::after { transform: rotate(180deg); }
 .disclosure > ul { margin: 0 0 18px; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; }
 
 /* Order panel */
-.order { grid-area: aside; position: sticky; top: 16px; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+.order { grid-area: aside; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+/* Sticky only when it sits beside the cards; on narrow screens it is in the flow and must not cover anything. */
+@media (min-width: 961px) { .order { position: sticky; top: 16px; max-height: calc(100dvh - 32px); overflow-y: auto; } }
 .order h2 { font: var(--type-heading-s); }
 .order-list { list-style: none; margin: 0; padding: 0; }
 .order-list li { display: flex; gap: 12px; align-items: baseline; padding: 10px 0; border-top: 1px solid var(--line); overflow-wrap: anywhere; }
@@ -260,9 +266,9 @@ details[open] > summary::after { transform: rotate(180deg); }
 .tabs { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 16px; background: var(--color-bg-sunken); }
 .tab { min-height: 40px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: var(--radius-md); color: var(--muted); text-decoration: none; font-weight: 600; transition: background-color .15s, color .15s; }
 .tab:hover { color: var(--ink); background: var(--color-bg-canvas); }
-.tab[aria-current="page"] { background: var(--paper); color: var(--ink); box-shadow: var(--shadow-sm), inset 0 0 0 1px var(--line); }
+.tab[aria-current="page"] { background: var(--paper); color: var(--ink); box-shadow: var(--shadow-sm), inset 0 0 0 1.5px var(--ink); }
 @media (pointer: coarse) { .tab { min-height: 44px; } }
-@media (max-width: 480px) { .tabs { flex-wrap: nowrap; max-width: 100%; overflow-x: auto; scrollbar-width: none; } .tab { padding: 0 12px; white-space: nowrap; } }
+@media (max-width: 480px) { .tabs { display: flex; } .tab { flex: 1 1 auto; justify-content: center; padding: 0 12px; } }
 .message-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px 16px; flex-wrap: wrap; }
 .message-head > div { display: flex; flex-direction: column; gap: 4px; flex: 1 1 260px; min-width: 0; }
 .paste { font: inherit; font-size: 15px; line-height: 24px; background: var(--ground); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 14px 16px; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; max-width: none; }
@@ -295,3 +301,14 @@ details[open] > summary::after { transform: rotate(180deg); }
 .footer nav { justify-content: flex-start; gap: 16px; }
 .footer a { min-height: 44px; display: inline-flex; align-items: center; }
 .footer p { max-width: 80ch; }
+
+/* Windows high contrast (forced colors): backgrounds are replaced, so masks, meters, dots and fills need system colors. */
+@media (forced-colors: active) {
+  .level > summary::after, .disclosure > summary::after, .alts > summary::after,
+  :where(.page:not(:has(.counter))) .chip input:checked + span::before { forced-color-adjust: none; background: CanvasText; }
+  .meter i, .dots i { forced-color-adjust: none; background: Canvas; border: 1px solid CanvasText; }
+  .meter i.on, .dots i.on { background: CanvasText; }
+  .rank { border: 1px solid CanvasText; }
+  .tab[aria-current="page"] { outline: 2px solid Highlight; outline-offset: -2px; }
+  :where(.page:not(:has(.counter))) .chip input:checked + span { outline: 2px solid Highlight; outline-offset: 2px; }
+}

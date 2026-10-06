@@ -4,12 +4,16 @@
 import type { ButtonHTMLAttributes } from "react";
 import { useFormStatus } from "react-dom";
 
-/** Without pendingText the label stays put (useful when a form has several buttons) and only the busy state shows. */
+/**
+ * Every submit button of the form is disabled while it works. pendingText replaces the label only on the button that
+ * was pressed: a named button is "pressed" when the submitted data carries its name and value.
+ */
 export function SubmitButton({ pendingText, children, ...rest }: ButtonHTMLAttributes<HTMLButtonElement> & { pendingText?: string }) {
-  const { pending } = useFormStatus();
+  const { pending, data } = useFormStatus();
+  const pressed = pending && (!rest.name || data?.get(String(rest.name)) === String(rest.value ?? ""));
   return (
-    <button {...rest} type="submit" disabled={pending} aria-busy={pending || undefined}>
-      {pending && pendingText ? pendingText : children}
+    <button {...rest} type="submit" disabled={pending} aria-busy={pressed || undefined}>
+      {pressed && pendingText ? pendingText : children}
     </button>
   );
 }

@@ -72,6 +72,16 @@ describe("loadCatalog", () => {
     if (!res.ok) expect(res.errors.map((e) => e.message)).toContain("client claude_code has no install method deeplink");
   });
 
+  it("rejects catalog links that are not https (they become hrefs on the page)", () => {
+    const dir = copyCatalog();
+    const file = join(dir, "fixtures/offerings/fx-payments.yaml");
+    const text = readFileSync(file, "utf8");
+    writeFileSync(file, text.replaceAll("source_url: https://example.com/docs", "source_url: javascript:alert(1)"));
+    const res = loadCatalog({ root: dir, fixtures: true });
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.errors.some((e) => e.message.includes("must start with https://, got javascript:alert(1)"))).toBe(true);
+  });
+
   it("rejects facts without an evidence tag and unknown offering kinds", () => {
     const dir = copyCatalog();
     edit(join(dir, "fixtures/offerings/fx-payments.yaml"), "evidence: claimed", "evidence: guessed");

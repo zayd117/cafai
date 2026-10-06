@@ -6,13 +6,13 @@ export function ModeBanner() {
   const mock = getProviders().mock;
   if (!fixture && !mock) return null;
   return (
-    <div className="banner" role="note">
+    <aside className="banner" aria-label="Sample mode">
       <span className="tag">Sample mode</span>
       <span>
         {fixture && "The tool list is fictional test data. "}
         {mock && "No AI model is connected, so understanding and explanations come from simple rules or scripted test answers. "}
         Nothing here is a real recommendation.
       </span>
-    </div>
+    </aside>
   );
 }

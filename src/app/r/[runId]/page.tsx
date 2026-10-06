@@ -1,5 +1,6 @@
 // /r/:runId (plan §18): read-back, picks, "Not needed now" and the order. Runs are shareable and resumable by URL.
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { isUuid } from "@/db/client";
 import { readFlags } from "@/server/controls";
 import { getRuntime, snapshotFor } from "@/server/runtime";
@@ -12,7 +13,23 @@ import { SubmitButton } from "../../_components/SubmitButton";
 import { ArrowRightIcon, PencilIcon } from "../../_components/icons";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Your picks" };
+
+// One database read per request, shared by the page and its title.
+const getRun = cache((id: string) => (isUuid(id) ? loadRun(getRuntime().pool, id) : Promise.resolve(null)));
+
+// The tab title names what the page shows; a missing order says so (the not-found page cannot set it here).
+const TITLES: Record<string, string> = {
+  needs_confirmation: "Is this right?",
+  needs_clarification: "Tell us a little more",
+  nothing_needed: "Nothing new needed",
+  no_good_pick: "No good pick yet",
+  out_of_scope: "Outside what we do",
+};
+export async function generateMetadata({ params }: { params: Promise<{ runId: string }> }) {
+  const run = await getRun((await params).runId);
+  if (!run) return { title: "Order not found" };
+  return { title: run.picks.length ? "Your picks" : (TITLES[run.outcome] ?? "Your order") };
+}
 
 // Placeholder wording (REGISTER A-030).
 const RUN_ERRORS: Record<string, string> = {
@@ -32,10 +49,13 @@ function ReadBack({ run }: { run: StoredRun }) {
       <summary>
         <span className="readback-text">
           <span className="readback-label">We understood<span className="sr-only">:</span></span>{" "}
-          {items[0]?.text ?? "nothing yet"}
+          {items[0]?.text ?? "Nothing yet"}
           {items.length > 1 && <span className="muted"> and {items.length - 1} more</span>}
         </span>
-        <span className="readback-edit"><span className="if-closed"><PencilIcon />Change this</span><span className="if-open">Hide</span></span>
+        <span className="readback-edit">
+          <span className="if-closed">{run.text === null ? "Show" : <><PencilIcon />Change this</>}</span>
+          <span className="if-open">Hide</span>
+        </span>
       </summary>
       {run.text === null ? (
         <div className="readback-form">
@@ -78,7 +98,12 @@ function ReadBack({ run }: { run: StoredRun }) {
         )}
         <div className="form-actions">
           <span className="small muted">{run.picks.length ? "Editing redoes the picks." : "We look again with your changes."}</span>
-          <SubmitButton className={`btn${run.outcome === "needs_clarification" ? " primary" : ""}`} pendingText="Updating…">Update my picks</SubmitButton>
+          <span className="form-buttons">
+            <SubmitButton className={`btn${run.outcome === "needs_clarification" ? " primary" : ""}`} name="update" value="1" pendingText="Updating…">Update my picks</SubmitButton>
+            {run.outcome === "needs_confirmation" && (
+              <SubmitButton className="btn primary" name="confirm" value="1" pendingText="Checking…">Yes, that’s right</SubmitButton>
+            )}
+          </span>
         </div>
       </form>
       )}
@@ -99,10 +124,16 @@ function Outcome({ run, capName }: { run: StoredRun; capName: (id: string) => st
   switch (run.outcome) {
     case "needs_confirmation":
       return (
-        <section className="state" aria-live="polite">
+        <section className="state">
           <h1>Is this right?</h1>
-          <p>We are not sure we understood. Check what we understood below, then confirm it or change it.</p>
-          {run.text !== null && <button className="btn primary fit" form="readback-form" name="confirm" value="1">Yes, that’s right</button>}
+          {run.text !== null ? (
+            <p>We are not sure we understood. Check what we understood below, then confirm it or change it.</p>
+          ) : (
+            <>
+              <p>We were not sure we understood, and your original wording has expired, so this order can’t be checked again.</p>
+              <Again />
+            </>
+          )}
         </section>
       );
     case "needs_clarification":
@@ -151,7 +182,7 @@ export default async function RunPage({ params, searchParams }: {
   const sp = await searchParams;
   if (!isUuid(runId)) notFound();
   const { pool } = getRuntime();
-  const run = await loadRun(pool, runId);
+  const run = await getRun(runId);
   if (!run) notFound();
   const snapshot = await snapshotFor(run.catalog_version);
   if (!snapshot) notFound();
@@ -168,7 +199,7 @@ export default async function RunPage({ params, searchParams }: {
   );
 
   const flags = await readFlags(pool);
-  const notice = sp.error ? RUN_ERRORS[sp.error] : undefined;
+  const notice = sp.error && Object.hasOwn(RUN_ERRORS, sp.error) ? RUN_ERRORS[sp.error] : undefined;
   return (
     <main className="page" id="top">
       {notice && <div className="banner warn" role="alert"><span>{notice}</span></div>}
@@ -214,12 +245,15 @@ export default async function RunPage({ params, searchParams }: {
         {run.picks.length > 0 && (
           <aside className="order" aria-labelledby="order-title">
             <h2 id="order-title">Your order</h2>
-            <OrderSummary items={[
-              ...direct.map((p, i) => ({ id: p.offering_id, name: offeringName(p.offering_id) ?? p.offering_id, extra: false, rank: i + 1 })),
-              ...(awk ? [{ id: awk.offering_id, name: offeringName(awk.offering_id) ?? awk.offering_id, extra: true }] : []),
+            <OrderSummary runId={run.id} items={[
+              ...direct.map((p, i) => ({ id: p.offering_id, name: offeringName(p.offering_id) ?? p.offering_id, extra: false, rank: i + 1 }))
+                .filter((i) => !flags.revoked.has(i.id)),
+              ...(awk && !flags.revoked.has(awk.offering_id) ? [{ id: awk.offering_id, name: offeringName(awk.offering_id) ?? awk.offering_id, extra: true }] : []),
             ]} />
             <p className="small muted">Tick or untick picks on the cards to change what goes into setup.</p>
             <form id="order" action={`/r/${run.id}/setup`} method="get">
+              {/* Marks a submitted order, so ticking nothing sets up nothing instead of the default picks. */}
+              <input type="hidden" name="order" value="1" />
               <button className="btn primary wide">Set up in {clientNames.length === 1 ? clientNames[0] : "your AI tool"}<ArrowRightIcon /></button>
             </form>
             {run.text !== null && <form action={rerun} className="refine">
