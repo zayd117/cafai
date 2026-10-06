@@ -45,6 +45,9 @@ jobs:
         # Both snapshots: the intake's example buttons answer from the real catalog (catalog/examples).
         run: npm run db:migrate && npx tsx scripts/publish-catalog.ts --fixtures && npx tsx scripts/publish-catalog.ts
       - name: Start the app
+        # The browser checks make about 15 runs from one address, above the default hourly cap of 10.
+        env:
+          CAFAI_RUNS_PER_HOUR: "50"
         run: |
           npx next start -p 3100 > "$RUNNER_TEMP/next.log" 2>&1 &
           for i in $(seq 60); do curl -sf -o /dev/null http://localhost:3100/ && exit 0; sleep 1; done
