@@ -1,0 +1,141 @@
+# REAL entry, written for the intake's saved examples (catalog/examples/). Every fact cites the maker's own page.
+id: supabase-backend
+kind: plugin
+identity:
+  display_name: Save each user's account and food log online
+  vendor: Supabase
+  technical_name: Supabase plugin for Claude Code (Supabase MCP server plus Supabase agent skills)
+  registry_namespace: com.supabase/mcp
+  package_id: "@supabase/mcp-server-supabase"
+  repo_url: https://github.com/supabase/mcp
+capabilities:
+- app-data-storage
+need_signals:
+- text: The app has sign-in or keeps each person's food log and goals
+  need_type: implied
+skip_if:
+- Logs stay only on the phone and you don't need sign-in or syncing between devices.
+- You already chose another backend, such as Firebase.
+resource_profile:
+  provides:
+  - text: The AI can list tables, apply database migrations, run SQL, get security and performance advisors, query project logs, deploy Edge Functions and generate TypeScript types for your Supabase project.
+    evidence: claimed
+    source_url: https://supabase.com/docs/guides/getting-started/mcp
+    as_of: 2026-10-06
+  - text: The plugin bundles the Supabase MCP server with two skills, supabase (product guidance for Database, Auth, Edge Functions, Storage, Realtime) and supabase-postgres-best-practices (schema design and row-level security patterns).
+    evidence: claimed
+    source_url: https://supabase.com/docs/guides/ai-tools/plugins
+    as_of: 2026-10-06
+  - text: The Claude Code plugin's server file points at https://mcp.supabase.com/mcp.
+    evidence: observed
+    source_url: https://github.com/supabase-community/supabase-plugin/blob/main/agents/claude/.mcp.json
+    as_of: 2026-10-06
+  requires:
+  - text: A Supabase account and project; the client opens a browser sign-in during setup, where you pick the organization that holds the project.
+    evidence: claimed
+    source_url: https://supabase.com/docs/guides/getting-started/mcp
+    as_of: 2026-10-06
+  supports:
+  - text: Supabase has an official Expo React Native tutorial covering sign-in with Supabase Auth, profile data in the database with row-level security, and photo upload with Storage.
+    evidence: claimed
+    source_url: https://supabase.com/docs/guides/getting-started/tutorials/with-expo-react-native
+    as_of: 2026-10-06
+  - text: "Server address options: read_only=true runs all queries as a read-only Postgres user, project_ref=<id> limits it to one project and turns off account tools, features=<groups> enables only chosen tool groups."
+    evidence: claimed
+    source_url: https://supabase.com/docs/guides/getting-started/mcp
+    as_of: 2026-10-06
+  - text: Anthropic's connector directory lists Supabase, made by Supabase, for Claude web, desktop, mobile and Claude Code.
+    evidence: claimed
+    source_url: https://claude.com/connectors/supabase
+    as_of: 2026-10-06
+  limits:
+  - text: Supabase warns that connecting an LLM to your projects carries risks such as prompt injection from data in the database, and that the server acts with your developer permissions, so it must not be given to customers.
+    evidence: claimed
+    source_url: https://supabase.com/docs/guides/getting-started/mcp
+    as_of: 2026-10-06
+  - text: Free plan limits include 2 active projects, a 500 MB database and 50,000 monthly active users; free projects are paused after 1 week of inactivity.
+    evidence: claimed
+    source_url: https://supabase.com/pricing
+    as_of: 2026-10-06
+  - text: The branching tools need a paid plan.
+    evidence: claimed
+    source_url: https://supabase.com/docs/guides/getting-started/mcp
+    as_of: 2026-10-06
+  - text: A table in an exposed schema without row-level security is readable and writable by any role with a grant on it, so every table needs it turned on.
+    evidence: claimed
+    source_url: https://supabase.com/docs/guides/database/postgres/row-level-security
+    as_of: 2026-10-06
+distributions:
+- client: claude_code
+  method: plugin_marketplace
+  command: claude plugin install supabase@claude-plugins-official
+  steps:
+  - "If Claude Code says the marketplace is unknown, first run: claude plugin marketplace add anthropics/claude-plugins-official"
+  - Run /reload-plugins inside Claude Code, then /mcp to sign in to Supabase.
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://supabase.com/docs/guides/ai-tools/plugins
+- client: claude_code
+  method: cli_command
+  command: claude mcp add --scope project --transport http supabase "https://mcp.supabase.com/mcp?features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching"
+  steps:
+  - Use this only if you want the live connection without the skills. Then run claude /mcp in a regular terminal and pick the Supabase server to sign in.
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://supabase.com/docs/guides/getting-started/mcp
+- client: cursor
+  method: deeplink
+  link: cursor://anysphere.cursor-deeplink/mcp/install?name=supabase&config=eyJ1cmwiOiJodHRwczovL21jcC5zdXBhYmFzZS5jb20vbWNwIn0%3D
+  steps:
+  - The link carries {"url":"https://mcp.supabase.com/mcp"}, built from the settings in Supabase's README. Cursor then asks you to sign in to Supabase.
+  compatibility: derived
+  verified_on: 2026-10-06
+  source_url: https://github.com/supabase/mcp
+- client: claude_desktop
+  method: connector
+  url: https://claude.com/connectors/supabase
+  steps:
+  - Add Supabase from the Claude connectors directory and sign in, choosing the organization with your test project.
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://claude.com/connectors/supabase
+access:
+  auth: oauth
+  credential_needed: Sign in to Supabase in the browser; there is no key to paste.
+  read_write: read_write
+  data_touched:
+  - Database tables and their rows
+  - Schema migrations
+  - Edge Functions and project logs
+  - Project URL and publishable keys
+  access_plain: Reads and changes the database of the Supabase project you allow, including tables, data and backend functions; in read-only mode it can only read.
+  effort_plain: About 15 minutes; free Supabase account
+  least_privilege_steps:
+  - Make a separate free project for building with the AI (the free plan allows two active projects) and keep real users' logs in the other one.
+  - Limit the connection to that one project by adding project_ref=<your-project-id> to the server address, or copy a ready-made address from the MCP tab of your Supabase dashboard's Connect dialog.
+  - Add read_only=true whenever you only want the AI to look, for example when checking real user data.
+  - Keep Claude Code's approval prompts on and read each execute_sql or apply_migration call before allowing it.
+  - Turn on row-level security for every table, with policies so each person can read only their own food log.
+runtime:
+  location: remote
+cost:
+  model: free
+  plan_required: Free plan $0 (2 active projects, pauses after 1 week without activity); Pro from $25/month for production.
+  source_url: https://supabase.com/pricing
+  as_of: 2026-10-06
+trust:
+  state: reviewed
+  vendor_official: true
+  namespace_verified: true
+  notes: The server is in the official MCP registry as com.supabase/mcp (remote https://mcp.supabase.com/mcp, repo github.com/supabase/mcp); npm @supabase/mcp-server-supabase points to the same repo. The Claude Code plugin comes from github.com/supabase-community/supabase-plugin, which Supabase's docs name as its plugin and which is listed in Anthropic's official marketplace. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
+  third_party_grade:
+    provider: mcp.market
+    grade: A
+    as_of: '2026-10-06'
+editorial:
+  what_it_is: A hosted database with sign-in, plus a connection that lets your AI set up and check its tables for you.
+  could_help_with: Storing each person's meals, calorie and macro goals and weigh-ins so they survive a phone change and sync across devices.
+  first_prompt: In my Supabase test project, propose tables for users' daily food logs, saved foods and calorie and macro goals, with row-level security so each user sees only their own data. Show me the migration before applying it.
+  reviewer: Claude (AI), not yet a person
+  reviewed_on: 2026-10-06
+last_verified_on: 2026-10-06

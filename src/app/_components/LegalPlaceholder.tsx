@@ -1,11 +1,14 @@
 // The plan's minimum legal set (§24) needs counsel review; no legal text is invented here (REGISTER A-038).
+import { ArrowRightIcon } from "./icons";
+
 export function LegalPlaceholder({ title }: { title: string }) {
   return (
     <main className="page">
-      <section className="state counter">
-        <span className="tag">Not written yet</span>
+      <section className="notice">
+        <p className="status-pill">Not written yet</p>
         <h1>{title}</h1>
-        <p>This page will be written with legal counsel before public launch (plan §24).</p>
+        <p>We are writing this page with legal counsel. It will be here before Caf.ai opens to the public.</p>
+        <a className="btn fit" href="/">Start a new order<ArrowRightIcon /></a>
       </section>
     </main>
   );

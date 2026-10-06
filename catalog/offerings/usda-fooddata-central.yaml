@@ -1,0 +1,100 @@
+# REAL entry, written for the intake's saved examples (catalog/examples/). Every fact cites the maker's own page.
+id: usda-fooddata-central
+kind: api
+identity:
+  display_name: Look up calories and macros for everyday foods
+  vendor: U.S. Department of Agriculture, Agricultural Research Service
+  technical_name: FoodData Central API (v1)
+capabilities:
+- food-data-lookup
+need_signals:
+- text: The app tracks calories, protein, carbs or fat for foods people eat
+  need_type: implied
+skip_if:
+- You already pay for a food database that covers your users' countries.
+- Users will only type in their own calorie numbers by hand.
+resource_profile:
+  provides:
+  - text: "Search foods by keyword and fetch nutrient details through four routes under https://api.nal.usda.gov/fdc/v1/: /foods/search, /food/{fdcId}, /foods and /foods/list."
+    evidence: claimed
+    source_url: https://fdc.nal.usda.gov/api-guide
+    as_of: 2026-10-06
+  - text: Covers Foundation Foods, SR Legacy, FNDDS (nutrients and portion weights for foods reported in What We Eat in America, NHANES) and Branded Foods taken from labels of national and international branded foods, updated monthly.
+    evidence: claimed
+    source_url: https://fdc.nal.usda.gov/data-documentation
+    as_of: 2026-10-06
+  - text: Branded food records include a barcode number (gtinUpc), serving size and unit, and label nutrients such as calories, protein, fat and carbohydrates.
+    evidence: observed
+    source_url: https://app.swaggerhub.com/apis/fdcnal/food-data_central_api/1.0.1
+    as_of: 2026-10-06
+  requires:
+  - text: A free data.gov API key, sent with every request as the api_key query parameter.
+    evidence: observed
+    source_url: https://fdc.nal.usda.gov/api-guide
+    as_of: 2026-10-06
+  supports:
+  - text: The data is public domain under CC0 1.0; USDA asks users to list FoodData Central as the source and, when possible, tell USDA about the product that uses it.
+    evidence: claimed
+    source_url: https://fdc.nal.usda.gov/api-guide
+    as_of: 2026-10-06
+  - text: DEMO_KEY can be used to explore the API before signing up.
+    evidence: claimed
+    source_url: https://fdc.nal.usda.gov/api-guide
+    as_of: 2026-10-06
+  limits:
+  - text: Default limit of 1,000 requests per hour per IP address; going over blocks the API key for 1 hour.
+    evidence: claimed
+    source_url: https://fdc.nal.usda.gov/api-guide
+    as_of: 2026-10-06
+  - text: DEMO_KEY is limited to 30 requests per hour and 50 per day per IP address.
+    evidence: claimed
+    source_url: https://fdc.nal.usda.gov/api-guide
+    as_of: 2026-10-06
+  - text: Keeping the key private is the holder's job, and USDA deactivates API keys it finds online, so the key should not ship inside the phone app.
+    evidence: claimed
+    source_url: https://fdc.nal.usda.gov/api-key-signup
+    as_of: 2026-10-06
+  - text: The API guide does not document looking a food up by its barcode, so barcode scanning needs a dedicated barcode source.
+    evidence: inferred
+    source_url: https://fdc.nal.usda.gov/api-guide
+    as_of: 2026-10-06
+distributions:
+- client: any
+  method: signup
+  url: https://fdc.nal.usda.gov/api-key-signup
+  steps:
+  - Sign up for a free key on the FoodData Central page.
+  - Store the key as a server-side secret (for example in your backend's secret settings), then ask your AI to call /foods/search from there.
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://fdc.nal.usda.gov/api-guide
+access:
+  auth: api_key
+  credential_needed: A free data.gov API key from the FoodData Central sign-up page.
+  read_write: read_only
+  data_touched:
+  - Public food and nutrient data only
+  access_plain: Reads public food nutrition data; it cannot see or change anything of yours.
+  effort_plain: 5 minutes for a key; a session with your AI to wire up food search
+  least_privilege_steps:
+  - Keep the key on your server side (for example a backend function's secrets), never inside the phone app's code or in git.
+  - Try requests with DEMO_KEY first, then switch to your own key.
+  - Save the foods your users pick in your own database so repeat lookups don't count against the 1,000-per-hour limit.
+runtime:
+  location: remote
+cost:
+  model: free
+  source_url: https://fdc.nal.usda.gov/api-guide
+  as_of: 2026-10-06
+trust:
+  state: reviewed
+  vendor_official: true
+  namespace_verified: true
+  notes: Run by USDA's Agricultural Research Service and served from usda.gov domains (fdc.nal.usda.gov, api.nal.usda.gov). Not a package; nothing to install. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
+editorial:
+  what_it_is: The U.S. government's free food nutrition database, which your app can search for calories, protein, carbs and fat.
+  could_help_with: Filling in the numbers when someone logs "1 banana" or "150 g chicken breast", so nobody types calories by hand.
+  first_prompt: Plan how my app should search USDA FoodData Central for a food and show calories, protein, carbs and fat per serving, keeping the API key on the server and not in the app. Explain the steps before writing code.
+  reviewer: Claude (AI), not yet a person
+  reviewed_on: 2026-10-06
+last_verified_on: 2026-10-06

@@ -7,8 +7,9 @@ import { addFeedback, type FeedbackKind } from "@/db/runs";
 import type { UserItem } from "@/engine/understand";
 import { DisabledProvider } from "@/engine/providers/mock";
 import { budgetSpent, clientKey, hitQuota, readFlags } from "@/server/controls";
-import { getRuntime, mockProvidersFor } from "@/server/runtime";
+import { getRealSnapshot, getRuntime, isPublished, mockProvidersFor } from "@/server/runtime";
 import { loadRun, startRun, type StartRun } from "@/server/runService";
+import { sameReadback, savedExampleById, savedExampleFor, savedProviders, type SavedExample } from "@/server/savedExamples";
 
 const CLIENTS = new Set(["claude_code", "cursor", "claude_desktop", "other"]);
 const ITEM_KINDS = new Set(["goal", "task", "problem", "environment", "constraint", "current_tool", "interest", "possible_need"]);
@@ -27,9 +28,18 @@ async function guarded(form: FormData, back: string) {
   return { rt, flags, aiOff };
 }
 
-async function run(g: Awaited<ReturnType<typeof guarded>>, input: StartRun) {
+async function run(g: Awaited<ReturnType<typeof guarded>>, input: StartRun, example?: SavedExample | null) {
   const { rt, flags, aiOff } = g;
-  const snapshot = flags.revoked.size ? { ...rt.snapshot, offerings: rt.snapshot.offerings.filter((o) => !flags.revoked.has(o.id)) } : rt.snapshot;
+  // An intake example answers from its saved script on the real catalog: no model call, so the AI switches don't apply.
+  // Until the real snapshot is published (deploys publish it), the example falls back to the normal path.
+  const real = example ? getRealSnapshot() : null;
+  const saved = example && real && (await isPublished(real.version)) ? example : null;
+  const base = saved ? real! : rt.snapshot;
+  const snapshot = flags.revoked.size ? { ...base, offerings: base.offerings.filter((o) => !flags.revoked.has(o.id)) } : base;
+  if (saved) {
+    const p = savedProviders(saved);
+    return startRun({ pool: rt.pool, snapshot, llm: p, decision: p }, { ...input, savedExample: saved.id });
+  }
   const off = aiOff ? new DisabledProvider(aiOff) : null;
   const scripted = !off && rt.mock ? mockProvidersFor(input.text) : null;
   return startRun(
@@ -46,7 +56,10 @@ export async function submitOrder(form: FormData) {
   const declaredClients = form.getAll("clients").map(String).filter((c) => CLIENTS.has(c));
   const specific = String(form.get("specific") || "").trim().slice(0, 300);
   const userItems: UserItem[] = specific ? [{ id: "s1", kind: "interest", text: specific }] : [];
-  const id = await run(g, { text, declaredClients, userItems });
+  // Only the example buttons use saved answers; the same words typed in, or extra detail, go through the normal path.
+  const example = form.get("example") && !specific ? savedExampleFor(text) : null;
+  const clients = example && declaredClients.length === 0 ? example.declared_clients : declaredClients;
+  const id = await run(g, { text, declaredClients: clients, userItems }, example);
   redirect(`/r/${id}`);
 }
 
@@ -71,6 +84,9 @@ export async function rerun(form: FormData) {
   const answer = String(form.get("answer") || "").trim().slice(0, 120);
   if (answer) items.push({ id: `q${items.length + 1}`, kind: "constraint", text: answer });
 
+  // A saved example still applies while the read-back is unchanged (Refine, or Update with no edits).
+  const example = prev.details.saved_example && (items.length === 0 || sameReadback(items, prev.details.readback))
+    ? savedExampleById(prev.details.saved_example) : null;
   const constraints = form.has("refine")
     ? { remote_only: form.has("remote_only"), vendor_official_only: form.has("vendor_official_only"), free_only: form.has("free_only") }
     : prev.details.constraints;
@@ -78,10 +94,10 @@ export async function rerun(form: FormData) {
     text: prev.text,
     declaredClients: prev.declared_clients,
     constraints,
-    userItems: items.length ? items : undefined,
+    userItems: items.length && !example ? items : undefined,
     confirmed: form.has("confirm") || prev.details.confirmed,
     parentRunId: parent,
-  });
+  }, example);
   redirect(`/r/${id}`);
 }
 
@@ -96,5 +112,15 @@ export async function sendFeedback(form: FormData) {
   if (!isUuid(runId) || !FEEDBACK.has(kind) || (recId && !isUuid(recId))) redirect("/");
   await addFeedback(getRuntime().pool, {}, runId, { recommendationId: recId, kind, value: true });
   const path = back === "setup" ? `/r/${runId}/setup` : `/r/${runId}`;
-  redirect(`${path}?thanks=${kind}${recId ? `&rec=${recId}` : ""}#${recId ? `pick-${recId}` : "top"}`);
+  const q = new URLSearchParams();
+  if (back === "setup") {
+    // Keep the setup page as it was: the same ticked picks and the same AI tool tab. Ids only, nothing else.
+    const id = (v: FormDataEntryValue) => (typeof v === "string" && /^[a-z0-9_-]{1,80}$/i.test(v) ? v : null);
+    for (const pick of form.getAll("pick").slice(0, 10).map(id)) if (pick) q.append("pick", pick);
+    const client = form.get("client");
+    if (client && id(client)) q.set("client", String(client));
+  }
+  q.set("thanks", kind);
+  if (recId) q.set("rec", recId);
+  redirect(`${path}?${q}#${recId ? `pick-${recId}` : "top"}`);
 }

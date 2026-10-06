@@ -1,0 +1,144 @@
+# REAL entry, written for the intake's saved examples (catalog/examples/). Every fact cites the maker's own page.
+id: sentry-crash-alerts
+kind: plugin
+identity:
+  display_name: Find out when your app crashes, and why
+  vendor: Sentry
+  technical_name: Sentry plugin for Claude Code (Sentry skills plus the hosted Sentry MCP server)
+  registry_namespace: io.github.getsentry/sentry-mcp
+  package_id: "@sentry/mcp-server"
+  repo_url: https://github.com/getsentry/sentry-mcp
+capabilities:
+- error-alerts
+need_signals:
+- text: The app is heading to testers or real users and no crash or error tracking is mentioned
+  need_type: latent
+skip_if:
+- You already use a crash reporter, such as Firebase Crashlytics or PostHog error tracking.
+- The app is a personal prototype that nobody else uses yet.
+resource_profile:
+  provides:
+  - text: Sentry's React Native SDK for Expo apps adds error monitoring and can also add tracing, profiling, session replay and logs.
+    evidence: claimed
+    source_url: https://docs.sentry.io/platforms/react-native/manual-setup/expo/
+    as_of: 2026-10-06
+  - text: The plugin includes Sentry's skill library (SDK setup that detects your stack, debugging and code-review workflows, feature setup) and the hosted Sentry MCP server.
+    evidence: claimed
+    source_url: https://github.com/getsentry/plugin-claude
+    as_of: 2026-10-06
+  - text: The plugin's manifest points Claude Code at the hosted server https://mcp.sentry.dev/mcp (with a utm_source=plugin tag).
+    evidence: observed
+    source_url: https://github.com/getsentry/plugin-claude/blob/main/.claude-plugin/plugin.json
+    as_of: 2026-10-06
+  - text: With the Inspect permission the AI gets read-only access to issues, events, traces, replays, releases, monitors and project metadata; Seer is Sentry's AI debugger for root cause analysis.
+    evidence: observed
+    source_url: https://github.com/getsentry/sentry-mcp/blob/main/packages/mcp-core/src/skills.ts
+    as_of: 2026-10-06
+  requires:
+  - text: Expo SDK 50 or newer and a Sentry account.
+    evidence: claimed
+    source_url: https://docs.sentry.io/platforms/react-native/manual-setup/expo/
+    as_of: 2026-10-06
+  - text: Setup uses a SENTRY_AUTH_TOKEN, which Sentry says to keep in .env.local for local builds or as an EAS secret for cloud builds, and never commit.
+    evidence: claimed
+    source_url: https://docs.sentry.io/platforms/react-native/manual-setup/expo/
+    as_of: 2026-10-06
+  supports:
+  - text: The connection can be limited to one organization (/mcp/<org>) or one project (/mcp/<org>/<project>); tools then default to that scope and discovery tools are hidden.
+    evidence: claimed
+    source_url: https://mcp.sentry.dev/
+    as_of: 2026-10-06
+  - text: "At sign-in you choose permission groups: Inspect Issues & Events (read-only), Seer, Triage Issues (resolve, assign, update) and Manage Projects & Teams (create and change projects, teams, DSNs, monitors, alert rules)."
+    evidence: observed
+    source_url: https://github.com/getsentry/sentry-mcp/blob/main/packages/mcp-core/src/skills.ts
+    as_of: 2026-10-06
+  - text: Anthropic's connector directory lists Sentry, made by Sentry, for Claude web, desktop, mobile and Claude Code.
+    evidence: claimed
+    source_url: https://claude.com/connectors/sentry
+    as_of: 2026-10-06
+  limits:
+  - text: The free Developer plan covers one user and 5k errors; the Team plan starts at $26/month.
+    evidence: claimed
+    source_url: https://sentry.io/pricing/
+    as_of: 2026-10-06
+  - text: Sentry says its MCP service is built for human-in-the-loop coding agents and debugging, not as a general tool for every Sentry feature.
+    evidence: claimed
+    source_url: https://github.com/getsentry/sentry-mcp
+    as_of: 2026-10-06
+distributions:
+- client: claude_code
+  method: plugin_marketplace
+  command: claude plugin install sentry@claude-plugins-official
+  steps:
+  - Run /mcp in Claude Code and sign in to Sentry when asked.
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://github.com/getsentry/plugin-claude
+- client: claude_code
+  method: cli_command
+  command: claude mcp add --transport http sentry https://mcp.sentry.dev/mcp
+  steps:
+  - To limit it to one project, use https://mcp.sentry.dev/mcp/<org-slug>/<project-slug> as the address instead.
+  - This triggers a browser sign-in; if it doesn't, run /mcp in Claude Code.
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://mcp.sentry.dev/
+- client: cursor
+  method: deeplink
+  link: cursor://anysphere.cursor-deeplink/mcp/install?name=Sentry&config=eyJ1cmwiOiJodHRwczovL21jcC5zZW50cnkuZGV2L21jcCJ9
+  steps:
+  - This is the link behind Sentry's own "Install in Cursor" button; it carries {"url":"https://mcp.sentry.dev/mcp"}.
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://mcp.sentry.dev/
+- client: claude_desktop
+  method: connector
+  url: https://claude.com/connectors/sentry
+  steps:
+  - Add Sentry from the Claude connectors directory and sign in to Sentry.
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://claude.com/connectors/sentry
+access:
+  auth: oauth
+  credential_needed: Sign in to Sentry in the browser for the AI connection; the app's Sentry setup also uses a SENTRY_AUTH_TOKEN kept out of git.
+  scopes:
+  - inspect
+  - seer
+  - triage
+  - project-management
+  read_write: read_write
+  data_touched:
+  - Crash and error reports, traces and session replays from your app
+  - Sentry issues (only with Triage)
+  - Sentry projects, teams and alert rules (only with Manage Projects & Teams)
+  access_plain: Reads your app's crash and error reports; it can change issues or projects only if you tick those permissions when signing in.
+  effort_plain: About 20 minutes; free Sentry account
+  least_privilege_steps:
+  - When Sentry asks which permissions to grant, leave only "Inspect Issues & Events" ticked unless you want the AI to resolve issues or create alerts.
+  - Limit the connection to your app's project with https://mcp.sentry.dev/mcp/<org-slug>/<project-slug>.
+  - Keep SENTRY_AUTH_TOKEN in .env.local or an EAS secret, never in git.
+  - Start on the free Developer plan while testing (one user, 5k errors).
+runtime:
+  location: remote
+cost:
+  model: free
+  plan_required: Developer plan $0 (one user, 5k errors); Team from $26/month.
+  source_url: https://sentry.io/pricing/
+  as_of: 2026-10-06
+trust:
+  state: reviewed
+  vendor_official: true
+  namespace_verified: true
+  notes: Server is in the official MCP registry as io.github.getsentry/sentry-mcp (remote https://mcp.sentry.dev/mcp); npm @sentry/mcp-server is published by sentry-bot from github.com/getsentry/sentry-mcp. The plugin comes from github.com/getsentry/plugin-claude via Anthropic's official marketplace. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
+  third_party_grade:
+    provider: mcp.market
+    grade: A
+    as_of: '2026-10-06'
+editorial:
+  what_it_is: Sentry's official add-on that sets up crash reporting in your app and lets your AI read those crash reports to help fix them.
+  could_help_with: Hearing about crashes on testers' phones before launch, for example when food search fails or the log screen won't open, with the exact line that broke.
+  first_prompt: Add Sentry crash reporting to my Expo app, explain each step in plain words and keep the auth token out of git. Then show me how to trigger a test error and find it in Sentry.
+  reviewer: Claude (AI), not yet a person
+  reviewed_on: 2026-10-06
+last_verified_on: 2026-10-06

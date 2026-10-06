@@ -20,12 +20,13 @@ function edit(file: string, from: string, to: string) {
 }
 
 describe("loadCatalog", () => {
-  it("loads the real catalog (clients only until curation happens)", () => {
+  it("loads the real catalog (so far only the entries behind the intake's saved examples)", () => {
     const res = loadCatalog({ root: ROOT });
     if (!res.ok) throw new Error(JSON.stringify(res.errors, null, 2));
     expect(res.snapshot.mode).toBe("real");
     expect(res.snapshot.clients.map((c) => c.id)).toEqual(["claude_code", "cursor", "claude_desktop"]);
-    expect(res.snapshot.offerings).toHaveLength(0);
+    expect(res.snapshot.offerings.length).toBeGreaterThan(0);
+    expect(res.snapshot.offerings.every((o) => !o.fixture && ["reviewed", "checked"].includes(o.trust.state))).toBe(true);
   });
 
   it("loads fixtures, every record marked fixture", () => {
@@ -70,6 +71,16 @@ describe("loadCatalog", () => {
     const res = loadCatalog({ root: dir, fixtures: true });
     expect(res.ok).toBe(false);
     if (!res.ok) expect(res.errors.map((e) => e.message)).toContain("client claude_code has no install method deeplink");
+  });
+
+  it("rejects catalog links that are not https (they become hrefs on the page)", () => {
+    const dir = copyCatalog();
+    const file = join(dir, "fixtures/offerings/fx-payments.yaml");
+    const text = readFileSync(file, "utf8");
+    writeFileSync(file, text.replaceAll("source_url: https://example.com/docs", "source_url: javascript:alert(1)"));
+    const res = loadCatalog({ root: dir, fixtures: true });
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.errors.some((e) => e.message.includes("must start with https://, got javascript:alert(1)"))).toBe(true);
   });
 
   it("rejects facts without an evidence tag and unknown offering kinds", () => {

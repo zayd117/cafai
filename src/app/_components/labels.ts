@@ -30,4 +30,7 @@ export const NOT_NEEDED_REASON: Record<string, string> = {
   over_cap: "Beyond the five-pick limit.",
 };
 
+// Where a catalog fact comes from (level 2 evidence list).
+export const EVIDENCE_LABEL: Record<string, string> = { claimed: "The maker says", observed: "We checked", inferred: "Not confirmed" };
+
 export const TRUST_LABEL: Record<string, string> = { reviewed: "Reviewed", checked: "Checked" };

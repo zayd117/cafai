@@ -1,0 +1,137 @@
+# REAL entry, written for the intake's saved examples (catalog/examples/). Every fact cites the maker's own page.
+id: chrome-devtools-mcp
+kind: mcp_server
+identity:
+  display_name: Let your AI look at and test the live web page
+  vendor: Google (Chrome DevTools team)
+  technical_name: chrome-devtools-mcp
+  registry_namespace: io.github.ChromeDevTools/chrome-devtools-mcp
+  package_id: npm:chrome-devtools-mcp
+  repo_url: https://github.com/ChromeDevTools/chrome-devtools-mcp
+capabilities:
+- live-page-inspection
+need_signals:
+- text: writes a userscript, browser extension or scraper that reads elements on a live web page
+  need_type: implied
+- text: needs to debug console errors from a script running in the browser
+  need_type: implied
+skip_if:
+- You use Claude Code on a Pro, Max, Team or Enterprise plan with the Claude in Chrome extension; it already reads pages and console logs in your signed-in Chrome or Edge.
+- You use Microsoft Edge or another browser for Excel and will not use Google Chrome; the vendor only supports Chrome and Chrome for Testing.
+- You are not comfortable letting the AI see what is open in a browser window.
+resource_profile:
+  provides:
+  - text: Lets the AI client control and inspect a live Chrome browser through Chrome DevTools.
+    evidence: claimed
+    source_url: https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/README.md
+    as_of: 2026-10-06
+  - text: Takes a text snapshot of the page (from the accessibility tree) listing page elements, so the AI can find which elements hold the values it needs.
+    evidence: observed
+    source_url: https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/tool-reference.md
+    as_of: 2026-10-06
+  - text: Runs JavaScript inside the open page and returns the result (evaluate_script), so a cell-reading function can be tried before it goes into the userscript.
+    evidence: observed
+    source_url: https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/tool-reference.md
+    as_of: 2026-10-06
+  - text: Lists the page's console messages, with optional stack traces, so the AI can read errors your script logs.
+    evidence: observed
+    source_url: https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/tool-reference.md
+    as_of: 2026-10-06
+  requires:
+  - text: Node.js (LTS), npm and a current stable Google Chrome.
+    evidence: claimed
+    source_url: https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/README.md
+    as_of: 2026-10-06
+  supports:
+  - text: Can attach to the Chrome you already have open (Chrome 144 or newer, --autoConnect after allowing it at chrome://inspect/#remote-debugging), useful when a site needs your sign-in; it then has access to all open windows of that profile.
+    evidence: claimed
+    source_url: https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/advanced-usage.md
+    as_of: 2026-10-06
+  - text: By default it starts its own Chrome with a separate, reused profile; --isolated uses a temporary profile that is wiped after the browser closes.
+    evidence: claimed
+    source_url: https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/advanced-usage.md
+    as_of: 2026-10-06
+  limits:
+  - text: Officially supports Google Chrome and Chrome for Testing only; other Chromium browsers such as Edge may work but are not guaranteed.
+    evidence: claimed
+    source_url: https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/README.md
+    as_of: 2026-10-06
+  - text: Exposes everything in the browser instance to the AI client, which can inspect and change any data there.
+    evidence: claimed
+    source_url: https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/README.md
+    as_of: 2026-10-06
+  - text: Google collects usage statistics by default; opt out with the --no-usage-statistics flag.
+    evidence: claimed
+    source_url: https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/README.md
+    as_of: 2026-10-06
+  - text: Some accounts may block sign-in when the browser is controlled through WebDriver (the default launch mode); the vendor suggests connecting to a Chrome you started yourself instead.
+    evidence: claimed
+    source_url: https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/advanced-usage.md
+    as_of: 2026-10-06
+  - text: The remote-debugging-port method lets any app on the computer control the browser while the port is open.
+    evidence: claimed
+    source_url: https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/advanced-usage.md
+    as_of: 2026-10-06
+distributions:
+- client: claude_code
+  method: cli_command
+  command: claude mcp add chrome-devtools --scope user npx chrome-devtools-mcp@latest
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/client-configurations.md
+- client: claude_code
+  method: plugin_marketplace
+  steps:
+  - If you added it earlier with claude mcp add, remove that first.
+  - /plugin marketplace add ChromeDevTools/chrome-devtools-mcp
+  - /plugin install chrome-devtools-mcp@chrome-devtools-plugins
+  - Restart Claude Code; check the skills loaded with /skills.
+  version_pin: 1.10.1
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/client-configurations.md
+- client: cursor
+  method: deeplink
+  link: cursor://anysphere.cursor-deeplink/mcp/install?name=chrome-devtools&config=eyJjb21tYW5kIjoibnB4IC15IGNocm9tZS1kZXZ0b29scy1tY3BAbGF0ZXN0In0%3D
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/client-configurations.md
+access:
+  auth: none
+  read_write: read_write
+  data_touched:
+  - Pages open in the controlled Chrome profile, including signed-in sites
+  - Console messages and network requests of those pages
+  access_plain: Controls a Chrome window. It can open pages, read what is on them, click, type, run code in them and read console messages. It sees whatever that browser profile is signed in to.
+  effort_plain: About 5 minutes; needs Node.js and Chrome
+  least_privilege_steps:
+  - Use the separate browser profile the tool starts by default, not your everyday Chrome, and sign in there only to the Microsoft account that holds the workbook.
+  - Practise on a copy of the workbook or a test sheet with no sensitive data.
+  - Add --no-usage-statistics to the server arguments to turn off Google's usage statistics.
+  - Only use --autoConnect if you need your own Chrome (for example to watch Tampermonkey run); close unrelated tabs first, since it can reach every open window of that profile.
+  - Avoid starting Chrome with a remote debugging port while signed in to sensitive sites.
+runtime:
+  location: local
+  requires:
+  - Node.js LTS
+  - Google Chrome (stable)
+cost:
+  model: free
+  source_url: https://registry.npmjs.org/chrome-devtools-mcp
+  as_of: 2026-10-06
+trust:
+  state: reviewed
+  vendor_official: true
+  namespace_verified: true
+  notes: Published by Google's Chrome DevTools team; the npm package chrome-devtools-mcp (Apache-2.0, v1.10.1 on 2026-09-23) lists google-wombot among maintainers and is published from GitHub Actions with npm trusted publishing; the MCP registry entry io.github.ChromeDevTools/chrome-devtools-mcp is active. A look-alike fork exists (io.github.Async23/chrome-devtools-mcp, npm @async23/chrome-devtools-mcp); use the unscoped package only. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
+  third_party_grade:
+    provider: mcp.market
+    grade: B
+    as_of: '2026-10-06'
+editorial:
+  what_it_is: A free tool from Google's Chrome team that lets your AI open a Chrome window, look at a page, run small tests in it and read its error messages.
+  could_help_with: Your AI can open your Excel sheet in the browser, see how the cells are built on the page, and test the code that reads them before you paste it into Tampermonkey.
+  first_prompt: Open my test Excel workbook at <link> in Chrome, take a snapshot, and tell me which page elements hold the visible cell values. Then run a small test script that prints the values you can read.
+  reviewer: Claude (AI), not yet a person
+  reviewed_on: 2026-10-06
+last_verified_on: 2026-10-06

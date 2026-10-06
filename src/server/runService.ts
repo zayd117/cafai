@@ -2,7 +2,7 @@
 import { randomUUID } from "node:crypto";
 import type pg from "pg";
 import type { CatalogSnapshot } from "@/catalog/types";
-import { costMicros } from "@/config/pricing";
+import { budgetMicros } from "@/config/pricing";
 import { ANONYMOUS_RUN_DAYS } from "@/config/retention";
 import { withAccess } from "@/db/client";
 import { ENGINE_CONFIG } from "@/engine/config";
@@ -20,6 +20,8 @@ export interface StartRun {
   userItems?: UserItem[];
   confirmed?: boolean;
   parentRunId?: string;
+  /** Id of the intake example whose saved answer produced this run (catalog/examples). */
+  savedExample?: string;
 }
 
 /** Everything a results page needs besides catalog facts. */
@@ -32,6 +34,7 @@ export interface RunDetails {
   flags: RunResult["flags"];
   constraints: Constraints;
   confirmed: boolean;
+  saved_example?: string;
 }
 
 export interface StoredPick {
@@ -96,6 +99,7 @@ export async function startRun(
     flags: result.flags,
     constraints,
     confirmed: !!input.confirmed,
+    ...(input.savedExample ? { saved_example: input.savedExample } : {}),
   };
   await withAccess(pool, { runId: id }, async (c) => {
     await c.query(
@@ -122,7 +126,7 @@ export async function startRun(
     for (const u of result.usage) {
       await c.query(
         "INSERT INTO usage_events (run_id, kind, stage, model, input_tokens, output_tokens, cost_usd_micros) VALUES ($1, 'model_call', $2, $3, $4, $5, $6)",
-        [id, u.stage, u.model, u.input_tokens, u.output_tokens, costMicros(u)],
+        [id, u.stage, u.model, u.input_tokens, u.output_tokens, budgetMicros(u)],
       );
     }
   });
@@ -130,6 +134,7 @@ export async function startRun(
   console.log(JSON.stringify({
     event: "run_completed", run_id: id, outcome: result.outcome, degraded: result.degraded, picks: result.picks.length,
     input_tokens: result.usage.reduce((a, u) => a + u.input_tokens, 0), output_tokens: result.usage.reduce((a, u) => a + u.output_tokens, 0),
+    cost_usd: result.usage.reduce((a, u) => a + budgetMicros(u), 0) / 1e6,
     injection_suspected: result.flags.injection_suspected, redactions: result.flags.redactions,
   }));
   return id;

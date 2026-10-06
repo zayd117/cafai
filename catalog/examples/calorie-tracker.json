@@ -1,0 +1,195 @@
+{
+  "id": "calorie-tracker",
+  "label": "Calorie tracker app",
+  "text": "I'm making a calorie and macro tracker app for phones. I use Claude Code. I don't really know what I need.",
+  "prepared_on": "2026-10-06",
+  "declared_clients": [
+    "claude_code"
+  ],
+  "understand": {
+    "in_scope": true,
+    "confidence": "high",
+    "items": [
+      {
+        "id": "u1",
+        "kind": "goal",
+        "text": "A phone app where people log meals and track calories and macros",
+        "quote": "calorie and macro tracker app for phones"
+      },
+      {
+        "id": "u2",
+        "kind": "environment",
+        "text": "You use Claude Code",
+        "quote": "I use Claude Code"
+      },
+      {
+        "id": "u3",
+        "kind": "problem",
+        "text": "You're not sure yet what you need",
+        "quote": "I don't really know what I need"
+      }
+    ],
+    "concepts": [
+      {
+        "term": "phone app for iPhone and Android",
+        "capability_id": "mobile-app-build"
+      },
+      {
+        "term": "calorie and macro numbers",
+        "capability_id": "food-data-lookup"
+      },
+      {
+        "term": "barcode scanning",
+        "capability_id": "barcode-food-lookup"
+      },
+      {
+        "term": "accounts and syncing food logs",
+        "capability_id": "app-data-storage"
+      },
+      {
+        "term": "crash reports from testers",
+        "capability_id": "error-alerts"
+      },
+      {
+        "term": "keeping Claude Code on track between sessions",
+        "capability_id": "project-notes"
+      },
+      {
+        "term": "in-app subscriptions",
+        "capability_id": null
+      }
+    ],
+    "needs": [
+      {
+        "capability_id": "mobile-app-build",
+        "need_type": "stated",
+        "evidence_ids": [
+          "u1"
+        ]
+      },
+      {
+        "capability_id": "food-data-lookup",
+        "need_type": "implied",
+        "evidence_ids": [
+          "u1"
+        ]
+      },
+      {
+        "capability_id": "app-data-storage",
+        "need_type": "implied",
+        "evidence_ids": [
+          "u1"
+        ]
+      },
+      {
+        "capability_id": "barcode-food-lookup",
+        "need_type": "not_relevant",
+        "evidence_ids": [
+          "u1"
+        ],
+        "reason": "Only if you add barcode scanning, which you didn't mention: Open Food Facts is a free database of packaged foods your app can look up by barcode."
+      },
+      {
+        "capability_id": "error-alerts",
+        "need_type": "latent",
+        "evidence_ids": [
+          "u1"
+        ],
+        "signal_id": "error-alerts#0"
+      },
+      {
+        "capability_id": "project-notes",
+        "need_type": "not_relevant",
+        "evidence_ids": [
+          "u2"
+        ],
+        "reason": "Claude Code already covers this: it reads a CLAUDE.md notes file at the start of every session, and /init writes a starter one. Nothing to add."
+      }
+    ],
+    "clarifying_question": null
+  },
+  "judgments": {
+    "expo-app-toolkit": {
+      "capability_id": "mobile-app-build",
+      "intent_fit": "direct",
+      "intent_quote": "tracker app for phones",
+      "requirements_met": "yes",
+      "fired_signal_ids": [
+        "o:expo-app-toolkit#0"
+      ],
+      "evidence_enough": true
+    },
+    "usda-fooddata-central": {
+      "capability_id": "food-data-lookup",
+      "intent_fit": "direct",
+      "intent_quote": "calorie and macro tracker",
+      "requirements_met": "yes",
+      "fired_signal_ids": [
+        "o:usda-fooddata-central#0"
+      ],
+      "evidence_enough": true
+    },
+    "supabase-backend": {
+      "capability_id": "app-data-storage",
+      "intent_fit": "partial",
+      "intent_quote": "calorie and macro tracker app",
+      "requirements_met": "yes",
+      "fired_signal_ids": [
+        "o:supabase-backend#0"
+      ],
+      "evidence_enough": true
+    },
+    "sentry-crash-alerts": {
+      "capability_id": "error-alerts",
+      "intent_fit": "partial",
+      "intent_quote": "",
+      "requirements_met": "yes",
+      "fired_signal_ids": [
+        "o:sentry-crash-alerts#0"
+      ],
+      "evidence_enough": true
+    }
+  },
+  "explanations": {
+    "expo-app-toolkit": {
+      "why": "You're making a tracker app for phones and aren't sure what you need. Expo is the usual way to build one app that runs on both iPhone and Android.",
+      "evidence_ids": [
+        "u1"
+      ],
+      "how_it_helps": "Claude Code gets Expo's own setup guides and can start test builds, so you can try the app on your phone early without learning native code.",
+      "do_you_need_it": "It's the first step, unless you have already picked another way to build the app. The other picks plug into it.",
+      "skip_if": "Skip it if the app is already written natively in Swift or Kotlin, or in Flutter.",
+      "summary": "Expo's official add-on for Claude Code: guides, test builds and app store help for phone apps."
+    },
+    "usda-fooddata-central": {
+      "why": "A calorie and macro tracker needs nutrition numbers for every food people log, and typing them in by hand doesn't scale.",
+      "evidence_ids": [
+        "u1"
+      ],
+      "how_it_helps": "Your app can search a free government food database and fill in calories, protein, carbs and fat as people log meals.",
+      "do_you_need_it": "You need it unless people will type in their own numbers.",
+      "skip_if": "Skip it if you already have a food database, or people will enter their own numbers.",
+      "summary": "The US Department of Agriculture's FoodData Central: a free food and nutrient database with a free sign-up key."
+    },
+    "supabase-backend": {
+      "why": "A tracker keeps each person's meals and goals. If people sign in or switch phones, that log has to live somewhere online.",
+      "evidence_ids": [
+        "u1"
+      ],
+      "how_it_helps": "Claude Code can set up sign-in and a database for food logs and goals, and check them for you, through Supabase's own add-on.",
+      "do_you_need_it": "If the log stays only on the phone, it can wait.",
+      "skip_if": "Skip it if the data stays on the phone, or you already use another online database.",
+      "summary": "Supabase's official add-on for Claude Code: a hosted database with sign-in, managed from your AI tool."
+    },
+    "sentry-crash-alerts": {
+      "why": "You didn't mention crash reports. Once testers or real users have the app, it helps to hear when it breaks on their phones.",
+      "evidence_ids": [
+        "u1"
+      ],
+      "how_it_helps": "Crashes on testers' phones show up with the line that failed, and Claude Code can read those reports to help fix them.",
+      "do_you_need_it": "Useful later, once other people start using the app. The free plan covers one person.",
+      "skip_if": "Skip it if you already use a crash reporter, or nobody else uses the app yet.",
+      "summary": "Sentry's official add-on: crash reporting for your app, plus a way for Claude Code to read the reports."
+    }
+  }
+}

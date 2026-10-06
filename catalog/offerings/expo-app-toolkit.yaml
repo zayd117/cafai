@@ -1,0 +1,159 @@
+# REAL entry, written for the intake's saved examples (catalog/examples/). Every fact cites the maker's own page.
+id: expo-app-toolkit
+kind: plugin
+identity:
+  display_name: Build, test and ship your phone app with Expo's own help
+  vendor: Expo
+  technical_name: Expo plugin for Claude Code (Expo agent skills plus the hosted Expo MCP server)
+  registry_namespace: expo@claude-plugins-official
+  package_id: expo-mcp
+  repo_url: https://github.com/expo/skills
+capabilities:
+- mobile-app-build
+need_signals:
+- text: Building an app for iPhone and Android without native coding experience
+  need_type: implied
+skip_if:
+- The app is not built with Expo or React Native (for example Swift-only, Kotlin-only or Flutter).
+- You are building a website, not a phone app.
+resource_profile:
+  provides:
+  - text: Official Expo skills that teach the AI how to build, deploy, upgrade and debug Expo apps, including starting a new app, screens and navigation with Expo Router, styling, animations and data fetching.
+    evidence: claimed
+    source_url: https://github.com/expo/skills/blob/main/plugins/expo/README.md
+    as_of: 2026-10-06
+  - text: The plugin also connects Claude Code to Expo's hosted server at https://mcp.expo.dev/mcp; the plugin's own server file declares it.
+    evidence: observed
+    source_url: https://github.com/expo/skills/blob/main/plugins/expo/.mcp.json
+    as_of: 2026-10-06
+  - text: Through the hosted server the AI can read current Expo docs, add compatible libraries (add_library), start and check cloud builds (build_run, build_info, build_logs), run workflows, submit builds to the stores (build_submit), and read TestFlight and Google Play crash data and store reviews.
+    evidence: claimed
+    source_url: https://docs.expo.dev/eas/ai/mcp/
+    as_of: 2026-10-06
+  - text: While a local dev server is running, the AI can take screenshots of the running app, tap on views and collect device logs.
+    evidence: claimed
+    source_url: https://docs.expo.dev/eas/ai/mcp/
+    as_of: 2026-10-06
+  requires:
+  - text: An Expo account and an Expo project on the latest Expo SDK.
+    evidence: claimed
+    source_url: https://docs.expo.dev/eas/ai/mcp/
+    as_of: 2026-10-06
+  - text: The screenshot and tap features need SDK 54 or later, the expo-mcp dev dependency (npx expo install expo-mcp --dev), and starting the dev server with EXPO_UNSTABLE_MCP_SERVER=1 npx expo start.
+    evidence: claimed
+    source_url: https://docs.expo.dev/eas/ai/mcp/
+    as_of: 2026-10-06
+  - text: Publishing to Apple's App Store needs an Apple Developer Program membership, 99 USD per membership year.
+    evidence: claimed
+    source_url: https://developer.apple.com/support/compare-memberships/
+    as_of: 2026-10-06
+  - text: Publishing on Google Play needs a Google Play developer account, with a US$25 one-time registration fee.
+    evidence: claimed
+    source_url: https://support.google.com/googleplay/android-developer/answer/6112435
+    as_of: 2026-10-06
+  supports:
+  - text: Claude web, desktop and mobile can add the same hosted server from the Claude connectors directory, where Anthropic lists it as made by Expo.
+    evidence: claimed
+    source_url: https://claude.com/connectors/expo
+    as_of: 2026-10-06
+  - text: For Cursor, Expo documents installing the same skills with the skills command-line tool (npx skills add expo/skills).
+    evidence: claimed
+    source_url: https://docs.expo.dev/skills/
+    as_of: 2026-10-06
+  - text: Expo Go lets you open the project on a real phone by scanning a QR code; Expo calls it a playground that is not meant for production apps, which use a development build instead.
+    evidence: claimed
+    source_url: https://docs.expo.dev/get-started/set-up-your-environment/
+    as_of: 2026-10-06
+  limits:
+  - text: Only one development server connection at a time; on-device features for iOS work only in simulators on a Mac.
+    evidence: claimed
+    source_url: https://docs.expo.dev/eas/ai/mcp/
+    as_of: 2026-10-06
+  - text: The documentation search tool (search_documentation) needs a paid EAS plan.
+    evidence: claimed
+    source_url: https://docs.expo.dev/eas/ai/mcp/
+    as_of: 2026-10-06
+  - text: On the free plan, Expo's pricing page lists the MCP server as fair-use limited.
+    evidence: claimed
+    source_url: https://expo.dev/pricing
+    as_of: 2026-10-06
+  - text: Some skills (store submission, over-the-air updates, hosting, cloud simulators) rely on Expo's paid EAS services beyond the free plan's allowance.
+    evidence: claimed
+    source_url: https://github.com/expo/skills/blob/main/README.md
+    as_of: 2026-10-06
+  - text: In Cursor and Claude Desktop you get the live Expo connection only; the Expo skills are a separate install there.
+    evidence: inferred
+    source_url: https://docs.expo.dev/skills/
+    as_of: 2026-10-06
+distributions:
+- client: claude_code
+  method: plugin_marketplace
+  command: claude plugin install expo@claude-plugins-official
+  steps:
+  - "Or, inside Claude Code, run: /plugin install expo@claude-plugins-official"
+  - Run /mcp in Claude Code and sign in to your Expo account when asked.
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://docs.expo.dev/skills/
+- client: claude_code
+  method: cli_command
+  command: claude mcp add --transport http expo https://mcp.expo.dev/mcp
+  steps:
+  - Use this only if you want the live Expo connection without the skills. Then run /mcp in Claude Code to sign in.
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://docs.expo.dev/eas/ai/mcp/
+- client: cursor
+  method: deeplink
+  link: cursor://anysphere.cursor-deeplink/mcp/install?name=expo&config=eyJ1cmwiOiJodHRwczovL21jcC5leHBvLmRldi9tY3AifQ%3D%3D
+  steps:
+  - The link carries {"url":"https://mcp.expo.dev/mcp"}, built from the server address in Expo's own plugin file. Cursor then asks you to sign in to Expo.
+  compatibility: derived
+  verified_on: 2026-10-06
+  source_url: https://github.com/expo/skills/blob/main/plugins/expo/.mcp.json
+- client: claude_desktop
+  method: connector
+  url: https://claude.ai/directory/expo
+  steps:
+  - Open the Expo entry in the Claude connectors directory, add it, and sign in to Expo.
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://docs.expo.dev/eas/ai/mcp/
+access:
+  auth: oauth
+  credential_needed: Sign in to your Expo account in the browser; there is no key to copy.
+  read_write: read_write
+  data_touched:
+  - Expo projects, cloud builds and workflows
+  - TestFlight and Google Play crash reports and tester feedback
+  - App Store and Google Play reviews
+  - The running app on your simulator or phone (local features only)
+  access_plain: Reads your Expo projects, builds, crash reports and store reviews; when you approve, it can start builds, submit to the app stores and post public replies to reviews.
+  effort_plain: About 10 minutes; free Expo account
+  least_privilege_steps:
+  - Install it for this app's folder only (choose "Install for you, in this repo only" in the plugin panel).
+  - Keep Claude Code's approval prompts on, and decline build_submit, appstore_reply_review and playstore_reply_review unless you asked for that exact action.
+  - Use a development or internal build profile while testing; run store submission only when you are ready to publish.
+  - Turn on the local screenshot and tap features only while testing, by starting the dev server with EXPO_UNSTABLE_MCP_SERVER=1.
+runtime:
+  location: remote
+  requires:
+  - Expo account
+  - "Local features: an Expo SDK 54+ dev server running on your computer"
+cost:
+  model: free
+  plan_required: Free plan ($0) lists 15 Android and 15 iOS builds; Starter from $19/month; the documentation search tool needs a paid EAS plan.
+  source_url: https://expo.dev/pricing
+  as_of: 2026-10-06
+trust:
+  state: reviewed
+  vendor_official: true
+  namespace_verified: true
+  notes: Plugin is listed in Anthropic's official marketplace (claude-plugins-official) and pulled from github.com/expo/skills at a pinned commit, author Expo Team. The npm package expo-mcp is maintained by Expo's accounts (expoadmin). Anthropic's connector directory lists the server as made by Expo. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
+editorial:
+  what_it_is: Expo's official add-on that teaches your AI how to build Expo phone apps and lets it check builds, crashes and store reviews in your Expo account.
+  could_help_with: Setting up the tracker's screens (today's log, add food, progress), trying it on your own phone, and later getting it into the App Store and Google Play.
+  first_prompt: Using the Expo skills, create a new Expo app for a calorie and macro tracker with three tabs (Today, Add food, Progress), then tell me step by step how to open it on my phone.
+  reviewer: Claude (AI), not yet a person
+  reviewed_on: 2026-10-06
+last_verified_on: 2026-10-06

@@ -1,6 +1,7 @@
 // Stub-client tests: prove the request shape and response handling. No network, no live model (REGISTER A-017).
 import { describe, expect, it } from "vitest";
-import { AnthropicProvider, toApiSchema } from "./anthropic";
+import { AnthropicProvider, takesEffort, toApiSchema } from "./anthropic";
+import { BilledError } from "./types";
 import { understandingSchema } from "../schemas";
 
 type Req = Record<string, unknown>;
@@ -56,11 +57,33 @@ describe("AnthropicProvider (stub client)", () => {
     expect(s.calls[0]!.req.fallbacks).toBeUndefined();
   });
 
-  it("treats a refusal or a cut-off answer as invalid output", async () => {
-    for (const stop_reason of ["refusal", "max_tokens"]) {
-      const s = stub({ stop_reason, text: "{}" });
-      await expect(new AnthropicProvider({ client: s.client }).understand(understandReq)).rejects.toThrow(`model stopped: ${stop_reason}`);
+  it("treats a refusal, a cut-off answer or non-JSON text as invalid output, keeping the billed usage", async () => {
+    for (const [stop_reason, text, message] of [["refusal", "{}", "model stopped: refusal"], ["max_tokens", "{}", "model stopped: max_tokens"], ["end_turn", "not json", "model answer is not JSON"]]) {
+      const s = stub({ stop_reason: stop_reason!, text: text! });
+      const err = await new AnthropicProvider({ client: s.client }).understand(understandReq).catch((e: unknown) => e);
+      expect(err).toBeInstanceOf(BilledError);
+      expect((err as BilledError).message).toBe(message);
+      expect((err as BilledError).usage).toEqual({ model: "claude-sonnet-5-5", input_tokens: 123, output_tokens: 45 });
     }
+  });
+
+  it("sets effort per call (medium to understand and judge, low to explain), overridable, and names it in the id", async () => {
+    const s = stub({ stop_reason: "end_turn", text: "{}" });
+    const p = new AnthropicProvider({ client: s.client, effort: { judgment: "low" } });
+    await p.understand(understandReq);
+    await p.judge({ text: "t", items: [], candidates: [] });
+    await p.explain({ items: [], picks: [] });
+    expect(s.calls.map((c) => (c.req.output_config as { effort?: string }).effort)).toEqual(["medium", "low", "low"]);
+    expect(p.id).toBe("anthropic:claude-sonnet-5-5@medium/claude-sonnet-5-5@low/claude-sonnet-5-5@low");
+  });
+
+  it("sends no effort to models that reject it", async () => {
+    const s = stub({ stop_reason: "end_turn", text: "{}" });
+    const p = new AnthropicProvider({ client: s.client, models: { explanation: "claude-haiku-4-5" } });
+    await p.explain({ items: [], picks: [] });
+    expect(s.calls[0]!.req.output_config).not.toHaveProperty("effort");
+    expect(p.id).toMatch(/claude-haiku-4-5@default$/);
+    expect([takesEffort("claude-opus-5-5"), takesEffort("claude-sonnet-4-5"), takesEffort("claude-opus-4-1")]).toEqual([true, false, false]);
   });
 
   it("records the model that actually served the answer", async () => {

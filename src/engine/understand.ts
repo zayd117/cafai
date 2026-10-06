@@ -2,7 +2,7 @@
 // (rules first, model fills gaps). Everything the model returns is checked against the user's text and the taxonomy.
 import type { Capability } from "@/catalog/types";
 import { ENGINE_CONFIG } from "./config";
-import type { LlmProvider, TaxonomyEntryForModel, Usage } from "./providers/types";
+import { BilledError, type LlmProvider, type TaxonomyEntryForModel, type Usage } from "./providers/types";
 import { validateUnderstanding } from "./schemas";
 import type { CapabilityNeed, NeedType, ProfileItem, UnderstandingOutput } from "./types";
 
@@ -39,7 +39,8 @@ async function callWithRetry(llm: LlmProvider, req: Parameters<LlmProvider["unde
       const res = await llm.understand(req);
       usage.push(res.usage);
       if (validateUnderstanding(res.json)) return res.json as unknown as UnderstandingOutput;
-    } catch {
+    } catch (e) {
+      if (e instanceof BilledError) usage.push(e.usage);
       // provider error: fall through to retry, then deterministic-only (§9 failure table)
     }
   }

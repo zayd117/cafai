@@ -42,8 +42,9 @@ for (const [label, width, height] of [["desktop", 1440, 1000], ["mobile", 390, 8
   await page.waitForURL(/error=empty/);
   expect(`${label}: empty input error`, await page.getByRole("alert").filter({ hasText: "Describe what you are working on" }).isVisible());
 
-  // Journey D example (scripted MOCK answer in sample mode).
-  await page.getByRole("button", { name: /calorie and macro tracker/ }).click();
+  // Journey D typed in (scripted MOCK answer in sample mode). The example button gives the saved answer, checked below.
+  await page.getByLabel("Your project").fill("I'm making a calorie and macro tracker app for phones. I use Claude Code. I don't really know what I need.");
+  await page.getByRole("button", { name: "What do you recommend?" }).click();
   await page.waitForURL(/\/r\/[0-9a-f-]{36}$/);
   await page.waitForLoadState("networkidle");
   const picks = await page.locator("article.card").count();
@@ -124,7 +125,8 @@ for (const [label, width, height] of [["desktop", 1440, 1000], ["mobile", 390, 8
     await page.screenshot({ path: `${out}/04-not-needed-${label}.png`, fullPage: false });
     const miss = await page.goto(`${base}/r/00000000-0000-4000-8000-000000000000`);
     expect("unknown run returns 404 page", miss?.status() === 404 && (await page.getByText("We can't find that order.").isVisible()));
-    problems.splice(0, problems.length, ...problems.filter((p) => !p.includes("00000000-0000-4000-8000-000000000000") && !p.includes("404 (Not Found)")));
+    // The expected 404 above; over HTTP/2 (Vercel) the browser logs it as "404 ()" with no reason phrase.
+    problems.splice(0, problems.length, ...problems.filter((p) => !p.includes("00000000-0000-4000-8000-000000000000") && !/404 \((Not Found)?\)/.test(p)));
     // Nothing-needed and out-of-scope outcomes from fixture scripts.
     await page.goto(`${base}/`);
     await page.getByLabel("Your project").fill("I already keep a project notes file so Claude Code knows what the app is for.");
@@ -138,6 +140,25 @@ for (const [label, width, height] of [["desktop", 1440, 1000], ["mobile", 390, 8
     await page.waitForURL(/\/r\//);
     expect("out-of-scope outcome", await page.getByRole("heading", { name: "That is outside what we do." }).isVisible());
     await page.screenshot({ path: `${out}/06-out-of-scope-${label}.png`, fullPage: true });
+  }
+  // The three example buttons answer from their saved answers: real tools, their own note instead of the sample one.
+  for (const [chip, cards, name] of [["Calorie tracker app", 4, /Expo/], ["Excel change alerts", 3, /phone/], ["Weekly Shopify report", 3, /Shopify/]]) {
+    await page.goto(`${base}/`, { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: new RegExp(`^${chip}:`) }).click();
+    await page.waitForURL(/\/r\/[0-9a-f-]{36}$/);
+    await page.waitForLoadState("networkidle");
+    const tag = `${label}: ${chip} example`;
+    expect(`${tag} shows the saved-example note, not the sample one`,
+      (await page.getByRole("complementary", { name: "Saved example" }).isVisible()) && !(await page.getByText("Nothing here is a real recommendation.").isVisible()));
+    const n = await page.locator("article.card").count();
+    expect(`${tag} has ${cards} real picks (got ${n})`, n === cards && (await page.locator("article.card h2, article.card h3").filter({ hasText: name }).count()) > 0);
+    expect(`${tag} has no horizontal scroll`, !(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)));
+    if (label === "desktop") await page.screenshot({ path: `${out}/13-saved-example-${chip.toLowerCase().replace(/\W+/g, "-")}-${label}.png`, fullPage: true });
+    if (chip === "Calorie tracker app") {
+      await page.getByRole("button", { name: /^Set up in/ }).click();
+      await page.waitForURL(/\/setup\?/);
+      expect(`${tag} setup keeps the saved-example note`, await page.getByRole("complementary", { name: "Saved example" }).isVisible());
+    }
   }
   await page.close();
 }

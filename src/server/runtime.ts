@@ -20,12 +20,34 @@ export function getSnapshot(): CatalogSnapshot {
   return snapshot;
 }
 
+let real: CatalogSnapshot | null | undefined;
+
+/** The real catalog, loaded in sample mode too: the intake's saved examples are built on it. */
+export function getRealSnapshot(): CatalogSnapshot | null {
+  if (process.env.CAFAI_CATALOG !== "fixture") return getSnapshot();
+  if (real === undefined) {
+    const res = loadCatalog({ root: join(process.cwd(), "catalog") });
+    real = res.ok ? res.snapshot : null;
+  }
+  return real;
+}
+
 const byVersion = new Map<string, CatalogSnapshot>();
+const published = new Set<string>();
+
+/** Runs reference catalog_snapshots, so a snapshot must be published before a run can use it. */
+export async function isPublished(version: string): Promise<boolean> {
+  if (published.has(version)) return true;
+  const r = await getPool().query("SELECT 1 FROM catalog_snapshots WHERE version = $1", [version]);
+  if (r.rowCount) published.add(version);
+  return !!r.rowCount;
+}
 
 /** Old runs re-render from the snapshot they were made with (plan §19), read from catalog_snapshots. */
 export async function snapshotFor(version: string): Promise<CatalogSnapshot | null> {
   const current = getSnapshot();
   if (current.version === version) return current;
+  if (getRealSnapshot()?.version === version) return getRealSnapshot();
   const hit = byVersion.get(version);
   if (hit) return hit;
   const r = await getPool().query<{ mode: "real" | "fixture"; content: Omit<CatalogSnapshot, "version" | "mode"> }>(

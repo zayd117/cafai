@@ -6,13 +6,15 @@ import "./globals.css";
 
 // Faces from the design system (docs/design); self-hosted by next/font at build (no runtime font host, CSP font-src 'self').
 const sans = Instrument_Sans({ subsets: ["latin"], variable: "--font-instrument-sans" });
-const mono = JetBrains_Mono({ weight: ["400", "500", "700"], subsets: ["latin"], variable: "--font-jetbrains-mono" });
+const mono = JetBrains_Mono({ weight: ["400"], subsets: ["latin"], variable: "--font-jetbrains-mono" });
 
 export const metadata = {
-  title: "Caf.ai",
-  // PLACEHOLDER: no brand icon exists in the plan or wireframes yet (REGISTER A-016).
-  icons: { icon: "data:," },
+  title: { default: "Caf.ai", template: "%s | Caf.ai" },
+  description: "Describe what you are working on and get a few explained picks of AI tools to add, set up by your own AI tool.",
+  // PLACEHOLDER icon (src/app/icon.svg): the header's cup mark until a brand icon exists (REGISTER A-016).
 };
+
+export const viewport = { themeColor: "#F7F5F0" }; // --color-bg-canvas
 
 function CupIcon() {
   return (
@@ -30,17 +32,21 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable}`}>
       <body>
+        <a className="skip-link" href="#main">Skip to content</a>
         <header className="topbar">
           <a href="/" className="brand" aria-label="Caf.ai home">
             <span className="brand-mark" aria-hidden="true"><CupIcon /></span>
-            Caf.ai
+            <span translate="no">Caf.ai</span>
           </a>
           <nav className="nav" aria-label="Main">
             <a href="/">New order</a>
           </nav>
         </header>
-        <ModeBanner />
-        {children}
+        {/* The sample-mode note sits inside main, so "Skip to content" never skips it. */}
+        <div id="main" className="main" tabIndex={-1}>
+          <ModeBanner />
+          {children}
+        </div>
         <footer className="footer">
           {/* Disclaimers the plan requires (§14 self-audit: "the UI says so plainly"; §24 legal set; §5 principles 6 and 10). */}
           <p>Picks and explanations are written with AI help and can be wrong. Check a tool before you add it.</p>

@@ -4,7 +4,7 @@ import { loadCatalog } from "@/catalog/load";
 import type { CatalogSnapshot } from "@/catalog/types";
 import { runPipeline } from "./pipeline";
 import { ScriptedProvider } from "./providers/mock";
-import type { ExplanationRequest, JudgmentRequest, UnderstandingRequest } from "./providers/types";
+import { BilledError, type ExplanationRequest, type JudgmentRequest, type UnderstandingRequest } from "./providers/types";
 
 const res = loadCatalog({ root: fileURLToPath(new URL("../../catalog", import.meta.url)), fixtures: true });
 if (!res.ok) throw new Error("fixture catalog invalid");
@@ -220,6 +220,18 @@ describe("runPipeline (MOCK providers, FIXTURE catalog)", () => {
     expect(r.picks.map((x) => x.offering_id)).toEqual(["fx-browser-check"]);
     expect(r.picks[0]!.explanation.why).toBe('You said: "Before launch I test signup flow by hand every day."');
     expect(p.requests.filter((q) => q.kind === "understand")).toHaveLength(2); // retried once
+  });
+
+  it("still counts the spend of billed calls whose answer was unusable (budget breaker, §14)", async () => {
+    const billed = { model: "claude-sonnet-5-5", input_tokens: 1500, output_tokens: 16000 };
+    const p = provider({
+      understand: () => {
+        throw new BilledError("model stopped: max_tokens", billed);
+      },
+    });
+    const r = await run(p, { text: "Before launch I test signup flow by hand every day.", confirmed: true });
+    expect(r.degraded).toBe("deterministic_only");
+    expect(r.usage.filter((u) => u.stage === "understanding")).toEqual([{ ...billed, stage: "understanding" }, { ...billed, stage: "understanding" }]);
   });
 
   it("keeps Checked-trust picks out of the top three", async () => {

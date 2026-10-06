@@ -100,7 +100,20 @@ export function loadCatalog(opts: LoadOptions): LoadResult {
     for (const cap of o.capabilities) {
       if (!capIds.has(cap)) issues.push({ file, message: `unknown capability "${cap}"` });
     }
+    // Catalog addresses become links on the page: web pages over https only, plus Cursor's own install scheme for
+    // deeplinks. Anything else (javascript:, data:, http:) is refused here rather than escaped later.
+    const https = (k: string, v: string | undefined) => {
+      if (v && !v.startsWith("https://")) issues.push({ file, message: `${k} must start with https://, got ${v}` });
+    };
+    https("identity.repo_url", o.identity.repo_url);
+    https("cost.source_url", o.cost.source_url);
+    for (const f of [...o.resource_profile.provides, ...o.resource_profile.requires, ...o.resource_profile.supports, ...o.resource_profile.limits]) https("fact source_url", f.source_url);
     for (const d of o.distributions) {
+      https("distribution source_url", d.source_url);
+      https("distribution url", d.url);
+      if (d.link && !d.link.startsWith("https://") && !d.link.startsWith("cursor://anysphere.cursor-deeplink/")) {
+        issues.push({ file, message: `distribution link must be https:// or a Cursor install link, got ${d.link}` });
+      }
       if (d.client === "any") {
         if (!ALLOWED_ANY_CLIENT_METHODS.includes(d.method)) issues.push({ file, message: `client "any" only allows ${ALLOWED_ANY_CLIENT_METHODS.join(", ")}, got ${d.method}` });
         continue;

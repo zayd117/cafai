@@ -1,0 +1,57 @@
+# Checks the AI keys and what searches cost (docs/DEPLOY.md "First, test your keys cheaply"). Nothing here touches the live site.
+# free (the default) generates nothing, so it costs $0: key checks, then the site's requests sent to Anthropic's token
+# counter. paid runs real test searches under a hard dollar cap and one Jev call.
+name: check AI
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "free costs nothing; paid runs real searches (a few cents each)"
+        type: choice
+        options: [free, paid]
+        default: free
+      searches:
+        description: "paid only: test searches to run (0 to 4)"
+        default: "1"
+      max_usd:
+        description: "paid only: no new search starts once this many dollars are spent (at most 1)"
+        default: "0.25"
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+      # Optional repository variables, set to match the site's Vercel settings (docs/DEPLOY.md); unset means the default.
+      CAFAI_MODEL_UNDERSTANDING: ${{ vars.CAFAI_MODEL_UNDERSTANDING }}
+      CAFAI_MODEL_JUDGMENT: ${{ vars.CAFAI_MODEL_JUDGMENT }}
+      CAFAI_MODEL_EXPLANATION: ${{ vars.CAFAI_MODEL_EXPLANATION }}
+      CAFAI_EFFORT_UNDERSTANDING: ${{ vars.CAFAI_EFFORT_UNDERSTANDING }}
+      CAFAI_EFFORT_JUDGMENT: ${{ vars.CAFAI_EFFORT_JUDGMENT }}
+      CAFAI_EFFORT_EXPLANATION: ${{ vars.CAFAI_EFFORT_EXPLANATION }}
+    steps:
+      - name: Check secrets
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ] && [ -z "$TYPESAFE_API_KEY" ]; then
+            echo "::error::Add ANTHROPIC_API_KEY and TYPESAFE_API_KEY as repository secrets first (docs/DEPLOY.md)"; exit 1
+          fi
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Check keys, then count the site's requests (free)
+        if: inputs.mode != 'paid'
+        run: npx tsx scripts/ai-check.ts --free
+      - name: Check keys, then run capped test searches
+        if: inputs.mode == 'paid'
+        env:
+          SEARCHES: ${{ inputs.searches }}
+          MAX_USD: ${{ inputs.max_usd }}
+        run: npx tsx scripts/ai-check.ts --searches "$SEARCHES" --max-usd "$MAX_USD"
+      - name: One live Jev judgment (costs about $0.0001)
+        if: inputs.mode == 'paid' && env.TYPESAFE_API_KEY != ''
+        run: npm run jev:smoke

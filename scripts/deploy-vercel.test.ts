@@ -89,7 +89,7 @@ describe("deployMain and waitReady", () => {
     expect((await waitReady(ctx, d.id, { everyMs: 0 })).alias).toEqual(["cafai.vercel.app"]);
   });
   it("stops on a failed build", async () => {
-    const { f } = fake({ "GET /v13/deployments/dpl_2": [200, { id: "dpl_2", url: "x.vercel.app", readyState: "ERROR", inspectorUrl: "vercel.com/i" }] });
+    const { f } = fake({ "GET /v13/deployments/dpl_2": [200, { id: "dpl_2", url: "x.vercel.app", readyState: "ERROR", inspectorUrl: "https://vercel.com/i" }] });
     await expect(waitReady({ f, token: "t" }, "dpl_2", { everyMs: 0 })).rejects.toThrow("deployment error: https://vercel.com/i");
   });
 });

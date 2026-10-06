@@ -1,0 +1,112 @@
+# REAL entry, written for the intake's saved examples (catalog/examples/). Every fact cites the maker's own page.
+id: healthchecks-io
+kind: api
+identity:
+  display_name: Get told when your watcher script stops running
+  vendor: Healthchecks.io
+  technical_name: Healthchecks.io pinging API
+  repo_url: https://github.com/healthchecks/healthchecks
+capabilities:
+- stopped-script-alerts
+need_signals:
+- text: a script, watcher or scheduled job runs unattended and could stop without anyone noticing
+  need_type: latent
+- text: the script depends on a page layout or sign-in that can change or expire
+  need_type: latent
+skip_if:
+- You check on the script by hand every day and a silent stop would cost you nothing.
+- You already use a heartbeat or cron monitor.
+resource_profile:
+  provides:
+  - text: Listens for HTTP requests ("pings") from your jobs, stays silent while they arrive on time and raises an alert as soon as one is late; it works as a dead man's switch for processes that run continuously.
+    evidence: claimed
+    source_url: https://healthchecks.io/docs/
+    as_of: 2026-10-06
+  - text: Pings can be sent from a browser; the service sets the Access-Control-Allow-Origin:* header so cross-domain requests work.
+    evidence: claimed
+    source_url: https://healthchecks.io/docs/javascript/
+    as_of: 2026-10-06
+  - text: A separate /fail address (https://hc-ping.com/<uuid>/fail) reports a failure right away instead of waiting for a missed ping.
+    evidence: claimed
+    source_url: https://healthchecks.io/docs/http_api/
+    as_of: 2026-10-06
+  - text: Alerts can go to email and to other channels, including ntfy, Telegram, Microsoft Teams, Slack and Pushover.
+    evidence: claimed
+    source_url: https://healthchecks.io/
+    as_of: 2026-10-06
+  requires:
+  - text: A free account and one check; each check has its own ping address, an expected time between pings (Period) and extra waiting time before alerting (Grace Time).
+    evidence: claimed
+    source_url: https://healthchecks.io/docs/configuring_checks/
+    as_of: 2026-10-06
+  supports:
+  - text: The software is open source (BSD 3-clause) and can be self-hosted.
+    evidence: claimed
+    source_url: https://github.com/healthchecks/healthchecks
+    as_of: 2026-10-06
+  limits:
+  - text: The free Hobbyist plan covers 20 monitored jobs with 100 log entries per job.
+    evidence: claimed
+    source_url: https://healthchecks.io/pricing/
+    as_of: 2026-10-06
+  - text: Pinging one check more than 5 times a minute may get requests rate limited.
+    evidence: claimed
+    source_url: https://healthchecks.io/docs/http_api/
+    as_of: 2026-10-06
+  - text: It only knows whether your script pinged; it cannot tell whether the values your script read are correct.
+    evidence: inferred
+    source_url: https://healthchecks.io/docs/
+    as_of: 2026-10-06
+  - text: POST request bodies are stored (up to 100 kB per ping), so anything sent in a ping body is kept on the service.
+    evidence: claimed
+    source_url: https://healthchecks.io/docs/http_api/
+    as_of: 2026-10-06
+distributions:
+- client: any
+  method: signup
+  url: https://healthchecks.io/
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://healthchecks.io/pricing/
+- client: any
+  method: manual_steps
+  steps:
+  - Create a check and set its Period (how often your script should check in) and Grace Time.
+  - Copy the check's ping address (https://hc-ping.com/<uuid>).
+  - Have the script request that address each time it successfully reads the cells.
+  - Have the script request the address with /fail added when it cannot find the cells.
+  - Choose where alerts go (email by default, or another channel such as ntfy).
+  compatibility: declared
+  verified_on: 2026-10-06
+  source_url: https://healthchecks.io/docs/http_api/
+access:
+  auth: none
+  credential_needed: The check's ping address; anyone who has it can send pings to that check
+  read_write: not_applicable
+  data_touched:
+  - The time of each ping and anything you put in a ping's body
+  access_plain: Gets nothing from your computer or Excel. It only notices when your script checks in, and emails you when it stops.
+  effort_plain: About 10 minutes; free account
+  least_privilege_steps:
+  - Send plain GET pings with no body, so no spreadsheet data reaches the service.
+  - Keep the ping address out of code you share publicly.
+  - Set Period a little longer than your script's check interval, and no more than a few pings a minute.
+runtime:
+  location: remote
+cost:
+  model: free
+  plan_required: Hobbyist (free, 20 jobs); paid plans from $5 a month
+  source_url: https://healthchecks.io/pricing/
+  as_of: 2026-10-06
+trust:
+  state: reviewed
+  vendor_official: true
+  namespace_verified: false
+  notes: First-party service and API; the same company publishes the open-source code (github.com/healthchecks/healthchecks, BSD 3-clause). No credentials to your other accounts are involved. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
+editorial:
+  what_it_is: A free "dead man's switch" service that emails you when a script that should check in regularly goes quiet.
+  could_help_with: If the Excel tab closes, you get signed out, or Excel changes its page so your script finds no cells, you hear about it instead of silently missing changes.
+  first_prompt: Make my Tampermonkey script ping my Healthchecks.io address every 5 minutes when it successfully reads the cells, and ping the /fail address if it cannot find them. Use GM_xmlhttpRequest and add the @connect line for hc-ping.com.
+  reviewer: Claude (AI), not yet a person
+  reviewed_on: 2026-10-06
+last_verified_on: 2026-10-06

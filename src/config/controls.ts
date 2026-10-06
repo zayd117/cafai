@@ -4,7 +4,7 @@
 const num = (v: string | undefined, d: number) => (v && Number.isFinite(Number(v)) ? Number(v) : d);
 export const CONTROLS = {
   runsPerHourPerClient: num(process.env.CAFAI_RUNS_PER_HOUR, 10),
-  dailyAiBudgetUsd: num(process.env.CAFAI_DAILY_AI_BUDGET_USD, 5),
+  dailyAiBudgetUsd: num(process.env.CAFAI_DAILY_AI_BUDGET_USD, 1),
 } as const;
 
 // Kill switches (plan §14 incident response, §17 flag rows read on each request).

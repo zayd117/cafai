@@ -66,3 +66,28 @@ The engineering session commits to `src/app/**` (including `globals.css`, `PickC
 ## 6. Carried-over unknowns that affect design
 
 The 21 items on the wireframe canvas note "UNKNOWN / NEEDS CONFIRMATION" still stand (project-type chip values, effort and access wording, reasons for "not useful", copy for expired/quota/outage states, retention, sign-in for returning users, and so on). Copy for those states is drawn as placeholder wording and flagged, never as final.
+
+## 7. Page redesign after the intake (2026-10-06)
+
+The user asked to redesign every page except the intake using four named sources: TasteSkill (redesign audit and AI-tell rules), Vercel's web interface guidelines (audit), awesome-design-md (reference: its Intercom file, chosen because it shares the warm canvas, white hairline cards and single accent), and Playwright CLI (before and after screenshots at 1440 and 390). Information architecture, routes, form field names and the labels `scripts/flow.mjs` checks are unchanged.
+
+| Area | Was | Now | Why |
+|---|---|---|---|
+| Labels | Mono, uppercase, tracked (`WHY WE SHOWED IT`, `YOUR ORDER`) | Sentence case, sans, 13px/600 | Reference and TasteSkill both reject all-caps eyebrows; one type voice |
+| Order panel | Receipt (mono caps heading, dashed perforation) | Plain panel; list follows the card ticks live; numbers match the card ranks | The receipt read as decoration; the stale list was a bug |
+| Results layout | Read-back above the h1; outcome under an open edit form; empty aside column on outcomes | h1 first; outcome is the h1 when there are no picks; single centred column without picks | The answer comes first |
+| Disclosures | Bare bold lines, no affordance | Chevron that turns; extra details grouped in one panel | Vercel: visible state for collapsibles |
+| Setup | Mono paste block, red boxes for routine advice, run-on message lines | Readable message (one line per step), amber "Check this" list per tool, segmented tool picker, feedback keeps the chosen tab and picks | Beginners read the message; red stays for real problems (revoked, unreadable link) |
+| Dates, states | ISO dates; no pending state | `Intl` dates; "Updating…" while a rerun runs | Vercel rules |
+
+Deliberate deviations: sentence case everywhere (Vercel suggests Title Case); radii stay 16 for cards and 12 for controls (the reference uses 12 and 8) to match the intake; the "Also worth knowing" card keeps its amber dashed border because the token set assigns amber to it; no dark theme (plan defines none).
+
+Audit follow-up (same day): a review against the same four sources plus a pixel diff of the intake found that global rules
+from this redesign (`text-wrap: pretty`, button press and icon rules, a shorter footer gap) had changed the intake on phones.
+They now apply only to the pages after the intake, and the intake is pixel-identical to the live version again. Other fixes:
+ticking nothing sets up nothing (the order form sends `order=1`); the order panel is sticky only beside the cards; "Yes,
+that's right" sits in the form it submits so it gets the busy state; ticks survive the reload after card feedback (per tab);
+feedback thanks take focus so screen readers read them; tab titles name the outcome or "Order not found"; the chosen setup
+tab has a strong outline and the tabs wrap on phones; high-contrast mode keeps chevrons, meters and ticks visible; and
+`Referrer-Policy: same-origin` (was `no-referrer`, which made browsers send `Origin: null`, so every form failed without
+JavaScript).
