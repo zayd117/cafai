@@ -141,6 +141,7 @@ summary::-webkit-details-marker { display: none; }
    sentence-case labels, one accent). Radii: cards 16, controls 12, pills full. */
 .part { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .part-label { font-size: 13px; line-height: 18px; font-weight: 600; color: var(--muted); }
+.part > p + p { margin-top: 4px; }
 .said { margin: 0; padding: 2px 0 2px 14px; border-left: 3px solid var(--color-border-default); color: var(--muted); font-style: italic; overflow-wrap: anywhere; }
 .card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 24px 28px; display: flex; flex-direction: column; gap: 16px; min-width: 0; scroll-margin-top: 16px; }
 .card h2, .card h3 { font: var(--type-heading-m); letter-spacing: -0.01em; }

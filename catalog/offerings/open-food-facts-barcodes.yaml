@@ -13,23 +13,23 @@ need_signals:
   need_type: implied
 skip_if:
 - The app will not scan barcodes.
-- You cannot credit Open Food Facts in the app or accept its share-alike data licence.
+- You can't credit Open Food Facts in the app. Or you can't share changed versions of its data on the same terms.
 resource_profile:
   provides:
-  - text: Fetch one product by its barcode, for example https://world.openfoodfacts.net/api/v3.6/product/3274080005003.json; v3 (latest v3.6) is the current version and v2 is deprecated.
+  - text: Look up one product by its barcode number. The current version of these lookups is 3 (latest 3.6). Version 2 is being retired.
     evidence: observed
     source_url: https://openfoodfacts.github.io/openfoodfacts-server/api/
     as_of: 2026-10-06
-  - text: An open food products database made by its community that anyone can reuse for any purpose.
+  - text: An open list of food products, made by its community, that anyone can reuse for any purpose.
     evidence: claimed
     source_url: https://openfoodfacts.github.io/openfoodfacts-server/api/
     as_of: 2026-10-06
   requires:
-  - text: Every request must carry a custom User-Agent naming your app, in the form AppName/Version (ContactEmail).
+  - text: Every lookup must name your app, its version and a contact email, like CalorieApp/0.1 (your email). This is called a custom User-Agent. Ask your AI to add it.
     evidence: claimed
     source_url: https://openfoodfacts.github.io/openfoodfacts-server/api/
     as_of: 2026-10-06
-  - text: A barcode scanner in your app; Expo's camera component can detect barcodes, including EAN-13, EAN-8, UPC-A and UPC-E.
+  - text: A barcode scanner in your app. Expo's camera can read barcodes, including the usual shop kinds (EAN-13, EAN-8, UPC-A and UPC-E).
     evidence: claimed
     source_url: https://docs.expo.dev/versions/latest/sdk/camera/
     as_of: 2026-10-06
@@ -43,19 +43,19 @@ resource_profile:
     source_url: https://openfoodfacts.github.io/openfoodfacts-server/api/
     as_of: 2026-10-06
   limits:
-  - text: 15 requests per minute per IP address for product reads and 10 per minute for searches; search must not be used for search-as-you-type. When requests come straight from users' phones, the limits apply per user.
+  - text: Up to 15 product lookups and 10 searches a minute from each internet address. Don't run a search on every letter someone types. When lookups come straight from people's phones, the limits count per person.
     evidence: claimed
     source_url: https://openfoodfacts.github.io/openfoodfacts-server/api/
     as_of: 2026-10-06
-  - text: Data is added by volunteers, with no assurance that it is accurate, complete or reliable; the user assumes the risk.
+  - text: Volunteers add the data. Nobody promises it is right, complete or reliable, and you use it at your own risk.
     evidence: claimed
     source_url: https://openfoodfacts.github.io/openfoodfacts-server/api/
     as_of: 2026-10-06
-  - text: The database is under the Open Database License and product images under CC BY-SA; reusers must credit Open Food Facts with a link to openfoodfacts.org and share derivative works under the same terms.
+  - text: The food data uses one open license (Open Database License), and the photos another (CC BY-SA). If you use them, credit Open Food Facts with a link to openfoodfacts.org. Share any changed version of the data or photos on the same terms, so others can reuse it too.
     evidence: claimed
     source_url: https://world.openfoodfacts.org/terms-of-use
     as_of: 2026-10-06
-  - text: For more than a few hundred products, or heavy app traffic, Open Food Facts asks you to use its CSV or JSONL data downloads and strongly encourages running your own copy.
+  - text: Need more than a few hundred products, or lots of lookups? Open Food Facts asks you to download its whole list instead. It strongly encourages keeping your own copy.
     evidence: claimed
     source_url: https://openfoodfacts.github.io/openfoodfacts-server/api/
     as_of: 2026-10-06
@@ -63,10 +63,10 @@ distributions:
 - client: any
   method: manual_steps
   steps:
-  - Ask your AI to call GET /api/v3.6/product/<barcode>.json when the camera reads a barcode.
-  - Send a User-Agent header like CalorieApp/0.1 (you@example.com) on every request.
-  - While building and testing, use https://world.openfoodfacts.net with basic auth off / off; switch to https://world.openfoodfacts.org for release.
-  - Show a credit line such as "Food data from Open Food Facts" with a link to openfoodfacts.org.
+  - "Ask your AI to make your app look up each scanned barcode with: GET /api/v3.6/product/<barcode>.json"
+  - Ask your AI to make the app name itself in every lookup, like CalorieApp/0.1 (you@example.com). This is called a User-Agent.
+  - Ask your AI to use the practice copy at https://world.openfoodfacts.net while you make and test the app. Its shared practice login is in the official guide. When you launch, have it switch to https://world.openfoodfacts.org.
+  - Show a credit line such as "Food data from Open Food Facts", with a link to openfoodfacts.org.
   compatibility: declared
   verified_on: 2026-10-06
   source_url: https://openfoodfacts.github.io/openfoodfacts-server/api/
@@ -75,12 +75,12 @@ access:
   read_write: read_only
   data_touched:
   - Public product data only
-  access_plain: Reads public product and nutrition data; it cannot see or change anything of yours.
-  effort_plain: No sign-up; a session with your AI to add a scan screen
+  access_plain: Can see only public food data. Can't see or change anything of yours.
+  effort_plain: No sign-up needed. Then one chat with your AI to add a scan screen.
   least_privilege_steps:
-  - Point the app at the staging server while building and testing, and switch to the production server only for release.
-  - Never put an Open Food Facts username or password in the app; reading needs neither.
-  - Let users check and correct the numbers after a scan, since the data is community-entered.
+  - While making and testing the app, use the practice copy (the staging server). Switch to the real one (the production server) only when you launch.
+  - Never put your own Open Food Facts username or password in the app. Looking up foods needs neither.
+  - Let people check and fix the numbers after a scan. Volunteers type in this data, so it can be wrong.
 runtime:
   location: remote
 cost:
@@ -93,9 +93,9 @@ trust:
   namespace_verified: true
   notes: Open Food Facts runs both the database and this API (openfoodfacts.org domains; server code at github.com/openfoodfacts). No package to install. There is no official Open Food Facts MCP server; community ones were not considered. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
 editorial:
-  what_it_is: A free, open database of packaged foods that your app can query with the barcode from a food label.
-  could_help_with: Letting someone scan a cereal box or yogurt and get its calories and macros without typing.
-  first_prompt: Add a barcode scan screen to my Expo app that looks the product up on the Open Food Facts staging server with a proper User-Agent, shows calories, protein, carbs and fat per 100 g, and lets me edit the numbers before saving.
+  what_it_is: Open Food Facts is a free list of packaged foods, made by volunteers. Your app can look up a food by the barcode on its label.
+  could_help_with: Letting someone scan a cereal box or a yogurt and get its calories and macros, with no typing.
+  first_prompt: Add a barcode scan screen to my Expo app. Look the food up on the Open Food Facts practice server (staging). Name my app in each lookup with a proper User-Agent. Show calories, protein, carbs and fat per 100 g, and let me edit the numbers before saving.
   reviewer: Claude (AI), not yet a person
   reviewed_on: 2026-10-06
 last_verified_on: 2026-10-06

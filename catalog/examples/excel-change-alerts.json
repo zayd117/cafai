@@ -11,13 +11,13 @@
       {
         "id": "u1",
         "kind": "task",
-        "text": "A Tampermonkey script that reads the Excel cells shown on screen",
+        "text": "You're writing a Tampermonkey script that reads the Excel cells you can see on screen",
         "quote": "Tampermonkey script that reads visible Excel cells"
       },
       {
         "id": "u2",
         "kind": "goal",
-        "text": "Get a notification when a value changes",
+        "text": "You want it to tell you when something in those cells changes",
         "quote": "notifies me when something changes"
       }
     ],
@@ -68,7 +68,7 @@
         "evidence_ids": [
           "u1"
         ],
-        "reason": "Only for work accounts with the workbook in OneDrive for Business or SharePoint: Microsoft's Office Scripts with Power Automate can check it on a schedule, even with the browser closed."
+        "reason": "Only if you use a work Microsoft account, and the file is saved in OneDrive for Business or SharePoint. Then Microsoft's own tools, Office Scripts and Power Automate, can check it on a schedule, even with your browser closed."
       }
     ],
     "clarifying_question": null
@@ -108,34 +108,34 @@
   },
   "explanations": {
     "ntfy-push-alerts": {
-      "why": "You want the script to tell you when a cell changes. This gets that alert to your phone, not just the computer running Excel.",
+      "why": "You want to know when a cell changes. This lets your script send that news to your phone.",
       "evidence_ids": [
         "u2"
       ],
-      "how_it_helps": "When the script spots a change, it sends a short message and your phone buzzes, even when you're away from the computer.",
-      "do_you_need_it": "Only if you want alerts on your phone. Tampermonkey can already show a desktop pop-up by itself.",
-      "skip_if": "Skip it if a pop-up on the same computer is enough, or alerts already go to a chat app you use.",
-      "summary": "ntfy: a free service that turns a simple web request from your script into a phone notification."
+      "how_it_helps": "Your script is what spots each change. Your AI can add the part that sends ntfy a short note about it.",
+      "do_you_need_it": "Add it now if you want to hear about changes while away from your computer.",
+      "skip_if": "Skip it if a pop-up on your computer is enough. Tampermonkey can show one by itself. Also skip it if your alerts already go to a chat app.",
+      "summary": "ntfy: a free alert service with a phone app. Your script sends it a short message, and your phone buzzes."
     },
     "chrome-devtools-mcp": {
-      "why": "Your script reads cells from the Excel web page. The hard part is finding where Excel keeps those values on the page and seeing why the script misses them.",
+      "why": "Your script has to find the right cells on the Excel page. With this, your AI can look at that page itself.",
       "evidence_ids": [
         "u1"
       ],
-      "how_it_helps": "Your AI can open the real Excel page, look at how the cells are built, try the reading code there and read the script's error messages.",
-      "do_you_need_it": "Helpful while you write and debug the script. Without it, you copy the page's details to your AI by hand.",
-      "skip_if": "Skip it if your AI tool can already open and read pages in your browser.",
-      "summary": "The Chrome DevTools team's official add-on that lets your AI tool open, inspect and test pages in Chrome."
+      "how_it_helps": "Your AI sees exactly where each cell value sits on the Excel page. It can try your cell-reading code there and read any error messages it causes.",
+      "do_you_need_it": "Add it now if you're still writing and fixing your script. Without it, you copy bits of the page to your AI by hand.",
+      "skip_if": "Skip it if you use Excel in Edge and won't switch to Chrome. Also skip it if your AI can already read your browser tabs, as the Claude in Chrome add-on can.",
+      "summary": "A free add-on from Google's Chrome team. It lets your AI open, check and test web pages in Chrome."
     },
     "healthchecks-io": {
-      "why": "A watcher in a browser tab can stop quietly: the tab closes, the Microsoft sign-in expires, or Excel changes its page and the script finds no cells.",
+      "why": "A script in a browser tab can stop without telling you. The tab closes, Microsoft signs you out, or Excel changes and your script can't find the cells.",
       "evidence_ids": [
         "u1"
       ],
-      "how_it_helps": "The script checks in every few minutes. If the check-ins stop, you get an email, so silence never passes for nothing changing.",
-      "do_you_need_it": "Useful later, once you rely on the alerts. The free plan covers up to 20 checks.",
-      "skip_if": "Skip it if a silent stop costs you nothing.",
-      "summary": "Healthchecks: a free monitor that tells you when the regular check-ins from your script stop arriving."
+      "how_it_helps": "Your script checks in each time it reads the cells, every few minutes. Warnings can come by email, or to your ntfy app.",
+      "do_you_need_it": "Add it later, once you rely on your script to tell you about changes. The free plan can watch up to 20 scripts or other tasks.",
+      "skip_if": "Skip it if you check the script yourself every day, and a missed change wouldn't matter.",
+      "summary": "Healthchecks: a free service that emails you when your script stops checking in."
     }
   }
 }

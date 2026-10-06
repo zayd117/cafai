@@ -8,6 +8,15 @@ export interface CommandWarning {
   text: string;
 }
 
+/** A page in Claude's own list of add-ons (a web page to open), as opposed to an address to paste into a custom connector. */
+export function isDirectoryPage(url: string): boolean {
+  try {
+    return ["claude.ai", "claude.com"].includes(new URL(url).hostname);
+  } catch {
+    return false;
+  }
+}
+
 export function analyzeCommand(cmd: string): CommandWarning[] {
   const w: CommandWarning[] = [];
   if (/(^|[\s;&|])sudo\s/.test(cmd)) w.push({ kind: "sudo", text: "Runs with administrator rights (sudo)." });
@@ -96,7 +105,7 @@ export function pasteMessage(clientName: string, handoffs: Handoff[]): string {
     }
     const parts: string[] = [];
     if (d.command) parts.push(`Run: ${d.command}`);
-    if (d.url && d.method === "connector") parts.push(`Connector URL: ${d.url}`);
+    if (d.url && d.method === "connector" && !isDirectoryPage(d.url)) parts.push(`Connector URL: ${d.url}`);
     else if (d.url) parts.push(`Start here: ${d.url}`);
     // Only when the setup page actually offers the link (it withholds links it cannot decode).
     if (d.link && !(h.decoded && "error" in h.decoded)) parts.push("I will open its install link from the Caf.ai setup page after reading what it adds.");

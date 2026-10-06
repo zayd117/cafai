@@ -10,6 +10,9 @@ import { SubmitButton } from "./SubmitButton";
 import { Thanks } from "./Thanks";
 import { CONFIDENCE_DOTS, CONFIDENCE_LABEL, EVIDENCE_LABEL, KIND_LABEL, MATCH_LABEL, MATCH_SEGMENTS, NEED_LABEL, TRUST_LABEL } from "./labels";
 
+/** Catalog text with exactly one closing full stop, whether or not the entry ends with one. */
+const sentence = (s: string) => (/[.!?]$/.test(s.trim()) ? s.trim() : `${s.trim()}.`);
+
 function MatchMeter({ band }: { band: string }) {
   const on = MATCH_SEGMENTS[band] ?? 0;
   return (
@@ -99,7 +102,8 @@ export function PickCard(props: {
       <div className="part">
         <span className="part-label">{awk ? "Why it is here" : "Why we showed it"}</span>
         {evidence && <blockquote className="said">{evidence.quote}</blockquote>}
-        <p>{ex.why} {ex.do_you_need_it}</p>
+        <p>{ex.why}</p>
+        {ex.do_you_need_it && <p>{ex.do_you_need_it}</p>}
       </div>
       <div className="part">
         <span className="part-label">What it could help with</span>
@@ -146,7 +150,9 @@ export function PickCard(props: {
           </div>
           <div className="part">
             <span className="part-label">Access and keys</span>
-            <p>What it can reach: {o.access.access_plain}.{o.access.credential_needed ? ` You will need: ${o.access.credential_needed}.` : ""} Never paste keys into Caf.ai.</p>
+            <p>{sentence(o.access.access_plain)}</p>
+            {o.access.credential_needed && <p>You will need: {sentence(o.access.credential_needed)}</p>}
+            <p>Never paste keys into Caf.ai.</p>
             {o.access.least_privilege_steps?.map((s) => <p key={s} className="caution">{s}</p>)}
           </div>
           <div className="part">
