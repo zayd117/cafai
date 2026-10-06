@@ -1,4 +1,4 @@
-import { AnthropicProvider } from "./anthropic";
+import { AnthropicProvider, isEffort } from "./anthropic";
 import { HeuristicMockProvider } from "./mock";
 import type { DecisionProvider, LlmProvider } from "./types";
 
@@ -15,6 +15,12 @@ export function getProviders(env = process.env): { llm: LlmProvider; decision: D
         understanding: env.CAFAI_MODEL_UNDERSTANDING,
         judgment: env.CAFAI_MODEL_JUDGMENT,
         explanation: env.CAFAI_MODEL_EXPLANATION,
+      },
+      // low | medium | high | xhigh | max; anything else keeps the default (REGISTER A-025).
+      effort: {
+        understanding: isEffort(env.CAFAI_EFFORT_UNDERSTANDING) ? env.CAFAI_EFFORT_UNDERSTANDING : undefined,
+        judgment: isEffort(env.CAFAI_EFFORT_JUDGMENT) ? env.CAFAI_EFFORT_JUDGMENT : undefined,
+        explanation: isEffort(env.CAFAI_EFFORT_EXPLANATION) ? env.CAFAI_EFFORT_EXPLANATION : undefined,
       },
     });
     return { llm: p, decision: p, mock: false };

@@ -3,7 +3,7 @@
 import type { CatalogSnapshot } from "@/catalog/types";
 import { ENGINE_CONFIG as C } from "./config";
 import type { Placed } from "./assemble";
-import type { LlmProvider, Usage } from "./providers/types";
+import { BilledError, type LlmProvider, type Usage } from "./providers/types";
 import { validateExplanation } from "./schemas";
 import type { Explanation, ProfileItem } from "./types";
 
@@ -100,7 +100,8 @@ export async function explain(args: {
         if (problems.length) rejected[e.offering_id] = problems;
         else out.set(pick.offering_id, { ...e, evidence_ids: e.evidence_ids.filter((id) => pick.evidence_ids.includes(id)) });
       }
-    } catch {
+    } catch (e) {
+      if (e instanceof BilledError) usage.push(e.usage);
       // provider error or timeout: retry once, then template explanations with a banner
     }
   }

@@ -3,7 +3,7 @@
 // output, and code re-checks meaning after shape.
 import Anthropic from "@anthropic-ai/sdk";
 import { fence } from "@/engine/prompts";
-import { toApiSchema } from "@/engine/providers/anthropic";
+import { takesEffort, toApiSchema, type Effort } from "@/engine/providers/anthropic";
 import type { Interpretation, Ranked, Usage } from "./types";
 
 const DEFAULT_MODEL = "claude-sonnet-5-5";
@@ -88,9 +88,15 @@ export function validateInterpretation(raw: unknown): Interpretation | null {
   return { items, queries: queries.map((q, i) => ({ id: `q${i}`, ...q })) };
 }
 
+type Job = "interpret" | "explain" | "rate";
+/** Thinking is billed as output; interpreting reasons about needs, explaining only rewrites given facts (REGISTER A-025).
+ * Rating (the Claude arm of the discovery bake-off) keeps Sonnet 5.5's own default, high, so its measured results stand. */
+const DEFAULT_EFFORT: Record<Job, Effort> = { interpret: "medium", explain: "low", rate: "high" };
+
 export interface ClaudeOptions {
   client?: Pick<Anthropic, "beta">;
   model?: string;
+  effort?: Partial<Record<Job, Effort>>;
   timeoutMs?: number;
 }
 
@@ -99,16 +105,23 @@ export class DiscoverClaude {
   readonly usage: Usage[] = [];
   private client: Pick<Anthropic, "beta">;
   private model: string;
+  private effort: Record<Job, Effort>;
   private timeoutMs: number;
 
   constructor(opts: ClaudeOptions = {}) {
     this.client = opts.client ?? new Anthropic({ maxRetries: 0 });
     this.model = opts.model ?? DEFAULT_MODEL;
+    this.effort = {
+      interpret: opts.effort?.interpret ?? DEFAULT_EFFORT.interpret,
+      explain: opts.effort?.explain ?? DEFAULT_EFFORT.explain,
+      rate: opts.effort?.rate ?? DEFAULT_EFFORT.rate,
+    };
     this.timeoutMs = opts.timeoutMs ?? 30_000;
     this.id = `anthropic:${this.model}`;
   }
 
-  async call(system: string, user: string, schema: unknown): Promise<unknown> {
+  /** `job` picks the effort; rating calls (the bake-off's Claude arm) leave it out. */
+  async call(system: string, user: string, schema: unknown, job: Job = "rate"): Promise<unknown> {
     const fallback = this.model === "claude-sonnet-5-5" ? { betas: ["server-side-fallback-2026-07-01"], fallbacks: "default" as const } : {};
     const res = await this.client.beta.messages.create(
       {
@@ -116,13 +129,17 @@ export class DiscoverClaude {
         max_tokens: 8000,
         system,
         messages: [{ role: "user", content: user }],
-        output_config: { format: { type: "json_schema", schema: toApiSchema(schema) as Record<string, unknown> } },
+        output_config: {
+          format: { type: "json_schema", schema: toApiSchema(schema) as Record<string, unknown> },
+          ...(takesEffort(this.model) ? { effort: this.effort[job] } : {}),
+        },
         ...fallback,
       },
       { timeout: this.timeoutMs },
     );
-    if (res.stop_reason !== "end_turn") throw new Error(`model stopped: ${res.stop_reason}`);
+    // Counted before any check: a refused or cut-off answer is billed too.
     this.usage.push({ model: res.model, input_tokens: res.usage.input_tokens, output_tokens: res.usage.output_tokens });
+    if (res.stop_reason !== "end_turn") throw new Error(`model stopped: ${res.stop_reason}`);
     return JSON.parse(res.content.flatMap((b) => (b.type === "text" ? [b.text] : [])).join(""));
   }
 
@@ -130,7 +147,7 @@ export class DiscoverClaude {
   async interpret(text: string): Promise<Interpretation> {
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
-        const ok = validateInterpretation(await this.call(INTERPRET_SYSTEM, fence("description", text), interpretSchema));
+        const ok = validateInterpretation(await this.call(INTERPRET_SYSTEM, fence("description", text), interpretSchema, "interpret"));
         if (ok) return ok;
       } catch (e) {
         if (attempt === 1) throw e;
@@ -146,7 +163,7 @@ export class DiscoverClaude {
       fence("project_needs", items.map((it) => it.text)),
       fence("results", picks.map((p) => ({ slug: p.listing.slug, name: p.listing.title ?? p.listing.name, description: p.listing.description }))),
     ].join("\n");
-    const out = (await this.call(EXPLAIN_SYSTEM, user, explainSchema)) as { explanations?: { slug: string; text: string }[] };
+    const out = (await this.call(EXPLAIN_SYSTEM, user, explainSchema, "explain")) as { explanations?: { slug: string; text: string }[] };
     const known = new Set(picks.map((p) => p.listing.slug));
     return new Map((out.explanations ?? []).filter((e) => known.has(e.slug) && typeof e.text === "string").map((e) => [e.slug, e.text.trim()]));
   }

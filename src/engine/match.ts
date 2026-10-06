@@ -2,7 +2,7 @@
 // Match and Confidence scoring (never merged), evidence check.
 import type { CatalogSnapshot, Offering } from "@/catalog/types";
 import { ENGINE_CONFIG as C } from "./config";
-import type { CandidateForModel, DecisionProvider, Usage } from "./providers/types";
+import { BilledError, type CandidateForModel, type DecisionProvider, type Usage } from "./providers/types";
 import { validateJudgment } from "./schemas";
 import { quoteIsInText } from "./understand";
 import type { CapabilityNeed, ConfidenceBand, Judgment, MatchBand, NotNeeded, ProfileItem, ScoredCandidate, UnderstandingOutput } from "./types";
@@ -124,7 +124,8 @@ export async function judge(args: {
         out.set(key, quoteOk ? { ...j, fired_signal_ids } : { ...j, fired_signal_ids, intent_fit: "none", intent_quote: "" });
       }
       return { judgments: out, usage, failed: false };
-    } catch {
+    } catch (e) {
+      if (e instanceof BilledError) usage.push(e.usage);
       // retry, then deterministic-only
     }
   }

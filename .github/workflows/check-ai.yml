@@ -1,0 +1,40 @@
+# Checks the AI keys and what searches really cost, with a hard spending cap (docs/DEPLOY.md "Test your keys").
+# The key checks are free; each test search costs a few cents. Nothing here touches the live site.
+name: check AI
+on:
+  workflow_dispatch:
+    inputs:
+      searches:
+        description: "Test searches to run (0 to 4; 0 checks the keys only, for free)"
+        default: "2"
+      max_usd:
+        description: "No new search starts once this many dollars are spent (at most 1)"
+        default: "0.25"
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+    steps:
+      - name: Check secrets
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ] && [ -z "$TYPESAFE_API_KEY" ]; then
+            echo "::error::Add ANTHROPIC_API_KEY and TYPESAFE_API_KEY as repository secrets first (docs/DEPLOY.md)"; exit 1
+          fi
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Check keys, then run capped test searches
+        env:
+          SEARCHES: ${{ inputs.searches }}
+          MAX_USD: ${{ inputs.max_usd }}
+        run: npx tsx scripts/ai-check.ts --searches "$SEARCHES" --max-usd "$MAX_USD"
+      - name: One live Jev judgment (costs about $0.0001)
+        if: env.TYPESAFE_API_KEY != ''
+        run: npm run jev:smoke

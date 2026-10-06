@@ -14,6 +14,14 @@ export interface ModelResponse {
   usage: Usage;
 }
 
+/** A call that was billed but whose answer is unusable (refusal, cut off, not JSON). Carries the usage so the engine still
+ * counts the spend against the daily budget (plan §14) when it retries or degrades. */
+export class BilledError extends Error {
+  constructor(message: string, readonly usage: Usage) {
+    super(message);
+  }
+}
+
 export interface TaxonomyEntryForModel {
   id: string;
   plain_name: string;
