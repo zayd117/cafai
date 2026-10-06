@@ -25,7 +25,7 @@ describe("setup handoff", () => {
       config: { url: "https://mcp.example.com" },
     });
     expect(decodeCursorDeeplink("cursor://anysphere.cursor-deeplink/mcp/install?name=x&config=%%%")).toEqual({
-      error: "The link's config could not be read, so it is not offered.",
+      error: "We could not read what this install link would add, so we are not offering it. Follow the official guide instead.",
     });
     expect(decodeCursorDeeplink("https://example.com/install")).toBeNull();
   });
@@ -40,7 +40,7 @@ describe("setup handoff", () => {
     expect(h.map((x) => x.distribution?.client ?? null)).toEqual(["cursor", "any", null]);
     const msg = pasteMessage("Cursor", h);
     expect(msg).toContain("Ask me before each step");
-    expect(msg).toContain("no setup route for Cursor in our catalog yet");
+    expect(msg).toContain("Skip this one for now: Caf.ai has no setup steps for Cursor yet.");
     expect(msg).toContain("Use a development project and read-only access.");
   });
 });

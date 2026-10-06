@@ -96,5 +96,15 @@ export async function sendFeedback(form: FormData) {
   if (!isUuid(runId) || !FEEDBACK.has(kind) || (recId && !isUuid(recId))) redirect("/");
   await addFeedback(getRuntime().pool, {}, runId, { recommendationId: recId, kind, value: true });
   const path = back === "setup" ? `/r/${runId}/setup` : `/r/${runId}`;
-  redirect(`${path}?thanks=${kind}${recId ? `&rec=${recId}` : ""}#${recId ? `pick-${recId}` : "top"}`);
+  const q = new URLSearchParams();
+  if (back === "setup") {
+    // Keep the setup page as it was: the same ticked picks and the same AI tool tab. Ids only, nothing else.
+    const id = (v: FormDataEntryValue) => (typeof v === "string" && /^[a-z0-9_-]{1,80}$/i.test(v) ? v : null);
+    for (const pick of form.getAll("pick").slice(0, 10).map(id)) if (pick) q.append("pick", pick);
+    const client = form.get("client");
+    if (client && id(client)) q.set("client", String(client));
+  }
+  q.set("thanks", kind);
+  if (recId) q.set("rec", recId);
+  redirect(`${path}?${q}#${recId ? `pick-${recId}` : "top"}`);
 }
