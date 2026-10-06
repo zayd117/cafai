@@ -36,14 +36,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <header className="topbar">
           <a href="/" className="brand" aria-label="Caf.ai home">
             <span className="brand-mark" aria-hidden="true"><CupIcon /></span>
-            Caf.ai
+            <span translate="no">Caf.ai</span>
           </a>
           <nav className="nav" aria-label="Main">
             <a href="/">New order</a>
           </nav>
         </header>
-        <ModeBanner />
-        <div id="main" className="main" tabIndex={-1}>{children}</div>
+        {/* The sample-mode note sits inside main, so "Skip to content" never skips it. */}
+        <div id="main" className="main" tabIndex={-1}>
+          <ModeBanner />
+          {children}
+        </div>
         <footer className="footer">
           {/* Disclaimers the plan requires (§14 self-audit: "the UI says so plainly"; §24 legal set; §5 principles 6 and 10). */}
           <p>Picks and explanations are written with AI help and can be wrong. Check a tool before you add it.</p>

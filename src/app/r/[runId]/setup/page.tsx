@@ -8,6 +8,7 @@ import { loadRun } from "@/server/runService";
 import { handoffsFor, pasteMessage } from "@/setup/handoff";
 import { sendFeedback } from "../../../actions";
 import { CopyButton } from "../../../_components/CopyButton";
+import { SubmitButton } from "../../../_components/SubmitButton";
 import { formatDate } from "../../../_components/format";
 import { ArrowLeftIcon } from "../../../_components/icons";
 
@@ -47,29 +48,33 @@ export default async function SetupPage({ params, searchParams }: {
   const client = clients.find((c) => c.id === sp.client) ?? clients[0]!;
   const handoffs = handoffsFor(snapshot, picks.map((p) => p.offering_id), client.id);
   const headlessNote = client.id === "claude_code" && handoffs.some((h) => h.distribution?.client === "claude_code");
-  const query = (clientId: string) => `?${[...picks.map((p) => `pick=${encodeURIComponent(p.offering_id)}`), `client=${clientId}`].join("&")}`;
+  // Links and feedback carry the whole order (revoked ones too), so the "no longer recommended" note stays.
+  const query = (clientId: string) => `?${[...ordered.map((p) => `pick=${encodeURIComponent(p.offering_id)}`), `client=${clientId}`].join("&")}`;
+  const message = pasteMessage(client.name, handoffs);
 
   return (
     <main className="page">
       <div className="setup">
         <a className="back" href={`/r/${run.id}`}><ArrowLeftIcon />Back to your picks</a>
-        <header className="results-head">
-          <h1>Your order is ready</h1>
-          <p className="muted">Your own AI tool does the setup, and asks before each step. Caf.ai installs nothing.</p>
-          <p className="small muted setup-desktop-note">Setup works best on a computer.</p>
-        </header>
+        {picks.length === 0 ? (
+          <header className="results-head">
+            <h1>Nothing to set up yet</h1>
+            <p className="muted">{withdrawn ? "Go back and choose another pick." : "Go back and tick at least one pick."}</p>
+          </header>
+        ) : (
+          <header className="results-head">
+            <h1>Your order is ready</h1>
+            <p className="muted">Your own AI tool does the setup, and asks before each step. Caf.ai installs nothing.</p>
+            <p className="small muted setup-desktop-note">Setup works best on a computer.</p>
+          </header>
+        )}
         {withdrawn > 0 && (
           <p className="caution" role="note">
             {withdrawn === 1 ? "One pick you chose is" : `${withdrawn} picks you chose are`} no longer recommended, so {withdrawn === 1 ? "it is" : "they are"} not set up here.
           </p>
         )}
 
-        {picks.length === 0 ? (
-          <section className="state">
-            <h2>Nothing to set up</h2>
-            <p>{withdrawn ? "Go back and choose another pick." : "Go back and tick at least one pick."}</p>
-          </section>
-        ) : (
+        {picks.length > 0 && (
           <>
             <div className="setup-tool">
               <span className="legend" id="tool-label">Your AI tool</span>
@@ -86,9 +91,9 @@ export default async function SetupPage({ params, searchParams }: {
                   <h2 id="msg-title">Message for {client.name}</h2>
                   <p className="small muted">Paste this into {client.name}. If it asks for a key, give it to {client.name}, never to Caf.ai.</p>
                 </div>
-                <CopyButton targetId="paste-message" />
+                <CopyButton targetId="paste-message" text={message} />
               </div>
-              <pre id="paste-message" className="paste">{pasteMessage(client.name, handoffs)}</pre>
+              <pre id="paste-message" className="paste">{message}</pre>
               {client.plan_limits?.map((l) => <p key={l} className="small muted">{l}</p>)}
             </section>
 
@@ -151,10 +156,10 @@ export default async function SetupPage({ params, searchParams }: {
                     <input type="hidden" name="rec" value={pick.id} />
                     <input type="hidden" name="back" value="setup" />
                     <input type="hidden" name="client" value={client.id} />
-                    {picks.map((p) => <input key={p.id} type="hidden" name="pick" value={p.offering_id} />)}
+                    {ordered.map((p) => <input key={p.id} type="hidden" name="pick" value={p.offering_id} />)}
                     <span className="small muted">How did it go?</span>
-                    <button className="btn quiet small" name="kind" value="it_worked">It worked</button>
-                    <button className="btn quiet small" name="kind" value="stuck">I&apos;m stuck</button>
+                    <SubmitButton className="btn quiet small" name="kind" value="it_worked">It worked</SubmitButton>
+                    <SubmitButton className="btn quiet small" name="kind" value="stuck">I&apos;m stuck</SubmitButton>
                     {/* Always mounted, so screen readers announce the text when it arrives. */}
                     <span role="status" className="small thanks">
                       {sp.rec === pick.id && sp.thanks === "it_worked" ? "Great. Thanks for telling us." : sp.rec === pick.id && sp.thanks === "stuck" ? "Thanks. We will re-check this setup step." : ""}

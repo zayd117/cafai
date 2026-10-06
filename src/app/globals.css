@@ -176,7 +176,7 @@ details[open] > summary::after { transform: rotate(180deg); }
 .readback-text { flex: 1 1 260px; min-width: 0; overflow-wrap: anywhere; }
 .readback-label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); }
 .readback-edit { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border-radius: var(--radius-full); color: var(--color-text-brand); font-weight: 600; font-size: 15px; transition: background-color .15s; }
-.readback > summary:hover .readback-edit { background: var(--color-bg-brand-soft); }
+@media (hover: hover) { .readback > summary:hover .readback-edit { background: var(--color-bg-brand-soft); } }
 .readback-edit > span { display: inline-flex; align-items: center; gap: 6px; }
 .readback:not([open]) .if-open, .readback[open] .if-closed { display: none; }
 .readback[open] > summary { border-bottom: 1px solid var(--line); border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
@@ -193,6 +193,7 @@ details[open] > summary::after { transform: rotate(180deg); }
 .card-title { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .card-lead { font-size: 17px; line-height: 26px; }
 .card p, .state p, .notice p { max-width: 70ch; }
+.card .prompt, .card .caution, .card .danger { max-width: none; }
 .rank { display: inline-grid; place-items: center; width: 28px; height: 28px; margin-right: 10px; border-radius: var(--radius-full); background: var(--color-bg-inverse); color: var(--color-text-inverse); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; vertical-align: 3px; }
 .order-toggle span span { display: inline; min-height: 0; padding: 0; border: 0; border-radius: 0; font: inherit; }
 .order-toggle input:checked + span .if-off, .order-toggle input:not(:checked) + span .if-on { display: none; }
@@ -218,7 +219,7 @@ details[open] > summary::after { transform: rotate(180deg); }
 .level { border-top: 1px solid var(--line); }
 .level + .level { margin-top: -16px; }
 .level > summary { display: flex; align-items: center; gap: 12px; min-height: 52px; font-weight: 600; }
-.level > summary:hover, .disclosure > summary:hover, .alts > summary:hover { color: var(--color-text-brand); }
+@media (hover: hover) { .level > summary:hover, .disclosure > summary:hover, .alts > summary:hover { color: var(--color-text-brand); } }
 .level-body { display: flex; flex-direction: column; gap: 16px; padding: 4px 0 20px; }
 .evidence { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
 .evidence li { display: flex; gap: 6px 10px; align-items: baseline; flex-wrap: wrap; }

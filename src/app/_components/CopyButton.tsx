@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { CheckIcon, CopyIcon } from "./icons";
 
-export function CopyButton({ targetId, label = "Copy message", className = "btn primary" }: { targetId: string; label?: string; className?: string }) {
+/** `text`, when given, is what gets copied (the server-built string, safe from in-page translation); otherwise the target's text. */
+export function CopyButton({ targetId, text: source, label = "Copy message", className = "btn primary" }: { targetId: string; text?: string; label?: string; className?: string }) {
   const [state, setState] = useState<"idle" | "copied" | "select">("idle");
   const [shortcut, setShortcut] = useState("Ctrl+C");
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -24,7 +25,7 @@ export function CopyButton({ targetId, label = "Copy message", className = "btn 
           const el = document.getElementById(targetId);
           if (!el) return;
           try {
-            await navigator.clipboard.writeText(el.textContent ?? "");
+            await navigator.clipboard.writeText(source ?? el.textContent ?? "");
             show("copied");
           } catch {
             const range = document.createRange();

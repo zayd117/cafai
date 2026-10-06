@@ -6,6 +6,7 @@ import type { StoredPick } from "@/server/runService";
 import type { ProfileItem } from "@/engine/types";
 import { sendFeedback } from "../actions";
 import { formatDate } from "./format";
+import { SubmitButton } from "./SubmitButton";
 import { CONFIDENCE_DOTS, CONFIDENCE_LABEL, EVIDENCE_LABEL, KIND_LABEL, MATCH_LABEL, MATCH_SEGMENTS, NEED_LABEL, TRUST_LABEL } from "./labels";
 
 function MatchMeter({ band }: { band: string }) {
@@ -123,9 +124,9 @@ export function PickCard(props: {
         <input type="hidden" name="run" value={runId} />
         <input type="hidden" name="rec" value={pick.id} />
         <span className="small muted">Was this useful?</span>
-        <button className="btn quiet small" name="kind" value="useful">Useful</button>
-        <button className="btn quiet small" name="kind" value="not_useful">Not useful</button>
-        <button className="btn quiet small" name="kind" value="already_knew">I knew this already</button>
+        <SubmitButton className="btn quiet small" name="kind" value="useful">Useful</SubmitButton>
+        <SubmitButton className="btn quiet small" name="kind" value="not_useful">Not useful</SubmitButton>
+        <SubmitButton className="btn quiet small" name="kind" value="already_knew">I knew this already</SubmitButton>
         {props.thanks && <span className="small thanks" role="status">Thanks, noted.</span>}
       </form>
 

@@ -4,11 +4,12 @@
 import type { ButtonHTMLAttributes } from "react";
 import { useFormStatus } from "react-dom";
 
-export function SubmitButton({ pendingText, children, ...rest }: ButtonHTMLAttributes<HTMLButtonElement> & { pendingText: string }) {
+/** Without pendingText the label stays put (useful when a form has several buttons) and only the busy state shows. */
+export function SubmitButton({ pendingText, children, ...rest }: ButtonHTMLAttributes<HTMLButtonElement> & { pendingText?: string }) {
   const { pending } = useFormStatus();
   return (
     <button {...rest} type="submit" disabled={pending} aria-busy={pending || undefined}>
-      {pending ? pendingText : children}
+      {pending && pendingText ? pendingText : children}
     </button>
   );
 }
