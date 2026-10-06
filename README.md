@@ -50,7 +50,7 @@ DATABASE_OWNER_URL=... node scripts/controls-flow.mjs http://localhost:3101   # 
 
 ## Deploy
 
-Vercel Hobby + Neon Free, set up and maintained by GitHub Actions. Steps and details: `docs/DEPLOY.md`.
+Live at https://cafai-xi.vercel.app. Vercel Hobby + Neon Free, set up and maintained by GitHub Actions. Steps and details: `docs/DEPLOY.md`.
 
 ## Kill switches (plan §14)
 

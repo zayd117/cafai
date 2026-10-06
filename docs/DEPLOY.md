@@ -2,6 +2,7 @@
 
 Caf.ai runs live on free plans: **Vercel Hobby** hosts the Next.js app and **Neon Free** hosts Postgres. GitHub Actions
 (free for public repos) sets up the database and runs the hourly retention purge. Decided 2026-10-06 (REGISTER A-039).
+Live at **https://cafai-xi.vercel.app**.
 
 After the one-time setup below, every merge to `main` goes live by itself, and every pull request gets a Vercel
 preview link.
@@ -23,7 +24,8 @@ Only the account owner can do steps 1 to 4. They create accounts and secrets in 
    If you named the Vercel project something other than `cafai`, also add a repository *variable* `VERCEL_PROJECT`
    with that name.
 5. **Go live.** Open **Actions → set up production → Run workflow**, or ask Claude to run it. When it finishes, its
-   summary shows the live address, usually `https://cafai.vercel.app`.
+   summary shows the live address. Vercel adds a suffix such as `-xi` when `cafai.vercel.app` is taken; you can
+   pick another free `.vercel.app` name under **Project → Settings → Domains**.
 
 ## What setup does
 

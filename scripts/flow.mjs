@@ -124,7 +124,8 @@ for (const [label, width, height] of [["desktop", 1440, 1000], ["mobile", 390, 8
     await page.screenshot({ path: `${out}/04-not-needed-${label}.png`, fullPage: false });
     const miss = await page.goto(`${base}/r/00000000-0000-4000-8000-000000000000`);
     expect("unknown run returns 404 page", miss?.status() === 404 && (await page.getByText("We can't find that order.").isVisible()));
-    problems.splice(0, problems.length, ...problems.filter((p) => !p.includes("00000000-0000-4000-8000-000000000000") && !p.includes("404 (Not Found)")));
+    // The expected 404 above; over HTTP/2 (Vercel) the browser logs it as "404 ()" with no reason phrase.
+    problems.splice(0, problems.length, ...problems.filter((p) => !p.includes("00000000-0000-4000-8000-000000000000") && !/404 \((Not Found)?\)/.test(p)));
     // Nothing-needed and out-of-scope outcomes from fixture scripts.
     await page.goto(`${base}/`);
     await page.getByLabel("Your project").fill("I already keep a project notes file so Claude Code knows what the app is for.");

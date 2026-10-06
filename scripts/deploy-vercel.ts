@@ -20,6 +20,8 @@ export class VercelError extends Error {
 export interface Project { id: string; name: string }
 export interface Deployment { id: string; url: string; readyState?: string; alias?: string[]; aliasAssigned?: unknown; inspectorUrl?: string }
 interface Ctx { f: Fetch; token: string; teamId?: string }
+/** Vercel's inspector link is a full URL; the deployment's own url is a bare host. */
+const link = (d: Deployment) => d.inspectorUrl ?? `https://${d.url}`;
 
 export async function api<T>(ctx: Ctx, method: string, path: string, opts: { query?: Record<string, string>; body?: unknown } = {}): Promise<T> {
   const url = new URL(path, API);
@@ -79,7 +81,7 @@ export async function waitReady(ctx: Ctx, id: string, opts: { everyMs?: number; 
     // Production domains are attached just after READY; give that a few polls before settling for the bare URL.
     if (d.readyState === "READY") readySince ??= Date.now();
     if (d.readyState === "READY" && (d.aliasAssigned || Date.now() - readySince! >= 6 * everyMs)) return d;
-    if (d.readyState === "ERROR" || d.readyState === "CANCELED") throw new Error(`deployment ${d.readyState.toLowerCase()}: https://${d.inspectorUrl ?? d.url}`);
+    if (d.readyState === "ERROR" || d.readyState === "CANCELED") throw new Error(`deployment ${d.readyState.toLowerCase()}: ${link(d)}`);
     if (Date.now() > end) throw new Error(`deployment not ready after ${timeoutMs / 60_000} minutes (state ${d.readyState})`);
   }
 }
@@ -112,7 +114,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
       if (!file || !repository) throw new Error("APP_DATABASE_URL_FILE and GITHUB_REPOSITORY are required");
       console.log(`environment set: ${(await setEnv(ctx, project, readFileSync(file, "utf8").trim())).join(", ")}`);
       const started = await deployMain(ctx, project, repository);
-      console.log(`deploying main: https://${started.inspectorUrl ?? started.url}`);
+      console.log(`deploying main: ${link(started)}`);
       const done = await waitReady(ctx, started.id);
       const domain = [...(done.alias ?? [])].sort((a, b) => a.length - b.length)[0] ?? done.url;
       console.log(await smoke(fetch, `https://${domain}`));

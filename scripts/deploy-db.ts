@@ -23,7 +23,9 @@ export function adminUrl(admin: string, database?: string): string {
   const u = new URL(admin);
   u.hostname = u.hostname.replace(/^([^.]+)-pooler\./, "$1.");
   if (database) u.pathname = `/${database}`;
-  if (!u.searchParams.has("sslmode") && !isLocal(u.hostname)) u.searchParams.set("sslmode", "require");
+  // node-pg reads require as verify-full today, but pg 9 will drop certificate checks for it; ask for them outright.
+  const ssl = u.searchParams.get("sslmode");
+  if (!isLocal(u.hostname) && (!ssl || ["prefer", "require", "verify-ca"].includes(ssl))) u.searchParams.set("sslmode", "verify-full");
   return u.toString();
 }
 
