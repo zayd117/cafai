@@ -28,6 +28,8 @@ npm run flow -- http://localhost:3100 docs/figma-handoff/screens
 | `src/eval/metrics.test.ts` | 5 | Metrics, release gate, pricing, blind pairs |
 | `src/server/controls.db.test.ts` | 4 | Quota hashing and cap, budget breaker, app-role purge, flag audit and grants |
 | `src/setup/handoff.test.ts` | 6 | Danger detection, Cursor link decoding (incl. "+"), hostnames, route choice, paste message |
+| `scripts/deploy-db.test.ts` | 5 | Production database URLs: Neon pooled → direct for admin steps, app on the pooler as `cafai_app` in `cafai`, sslmode for remote hosts |
+| `scripts/deploy-vercel.test.ts` | 10 | Vercel setup against a scripted API: project lookup (own scope, team fallback, missing project, bad token), env upsert (DATABASE_URL always, CAFAI_CATALOG and QUOTA_SALT only when missing, refusals reported), production deploy of main, failed build, smoke test (live, DB error, behind login) |
 | `npm run eval` | 4 fixture cases × arms × repeats | Release gate: harmful picks 0, invalid ids 0, no regression vs baseline; bake-off pass lines from `eval/bakeoff.json` |
 | `npm run flow` (Chromium) | 47 checks | See below |
 | `scripts/a11y.mjs` (Chromium + axe) | 6 checks | WCAG 2.2 AA scans (counter, results with every level open, setup, legal page), keyboard reach, visible focus ring |
@@ -55,3 +57,5 @@ copy button works (client JS under CSP) · Cursor config decoded before link · 
 | T-14 | Real model | Set `CAFAI_MODEL_PROVIDER=anthropic` with a key | Same flow with live understanding and explanations | BLOCKED: no API key (REGISTER A-017) |
 | T-16 | Jev live smoke | Set `TYPESAFE_API_KEY`, new session, `npm run jev:smoke`, then `npm run eval -- --arms llm,llm+jev --repeats 3` | One OK call with model `jev-1.13.0`, tokens and cost printed; A2 column filled (fixture = smoke only) | BLOCKED: key not set in this session (A-040) |
 | T-15 | Blind comparison | 60–100 real cases with assistant answers | Win rate from judges | BLOCKED: needs concierge data (A-008) |
+| T-17 | Production setup on a Neon-like admin | Postgres 16 cluster with a non-superuser `CREATEROLE CREATEDB` admin; `deploy-db.ts setup` twice, then `migrate` and `purge`; serve the app on the written URL; `npm run flow` | Roles, database and grants created once; tables owned by `cafai_owner`; `cafai_app` cannot write the catalog or `SET ROLE` to the owner; flow passes | Passed 2026-10-06 (local cluster) |
+| T-18 | First live setup | Owner runs **set up production** after `docs/DEPLOY.md` steps 1–4 | Summary shows the live URL; smoke test passes | BLOCKED: needs the owner's Vercel and Neon accounts (A-039) |
