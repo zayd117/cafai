@@ -134,7 +134,7 @@ Format: MD section → requirement → engineering task → files → test. Kind
 | §14 | Our own supply chain: lockfile, dependency review | CONFIRMED (SBOM not generated yet) | `package-lock.json` | `npm audit --omit=dev`: 0 vulnerabilities |
 | §14 self-audit, §24 | Disclaimers for AI output and third-party tools; the UI says plainly Caf.ai cannot prevent harm after install | CONFIRMED | `layout.tsx` footer | screenshot 05 |
 | §24 | Terms, privacy, takedown and security contacts | BLOCKED on counsel (A-038) | `terms`, `privacy`, `security` placeholder pages | axe |
-| §17 | Deploy to a managed host | BLOCKED (A-039) | — | `npm run build` passes |
+| §17 | Deploy to a managed host | BUILT; NOT LIVE until the owner's accounts exist (A-039) | `docs/DEPLOY.md`, `scripts/deploy-db.ts`, `scripts/deploy-vercel.ts`, `.github/workflows/setup-production.yml`, `deploy-database.yml`, `retention-purge.yml` | `deploy-db.test.ts`, `deploy-vercel.test.ts`; setup, rerun, migrate and purge run against a Postgres 16 cluster with a Neon-like non-superuser admin, then `npm run flow` on the result |
 
 ## Phase 0 bake-off harness
 

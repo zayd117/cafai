@@ -1,0 +1,37 @@
+# Retention purge every hour (plan §17 background worker; scripts/worker.ts does the same on a long-lived host).
+# GitHub pauses scheduled workflows in public repos after 60 days without commits; re-enable it on the Actions tab.
+name: retention purge
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: retention-purge
+  cancel-in-progress: false
+jobs:
+  ready:
+    runs-on: ubuntu-latest
+    outputs:
+      ok: ${{ steps.check.outputs.ok }}
+    steps:
+      - id: check
+        env:
+          DATABASE_ADMIN_URL: ${{ secrets.DATABASE_ADMIN_URL }}
+        run: |
+          if [ -n "$DATABASE_ADMIN_URL" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"; else echo "::notice::Production is not set up yet (docs/DEPLOY.md); nothing to do."; fi
+  purge:
+    needs: ready
+    if: needs.ready.outputs.ok == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx tsx scripts/deploy-db.ts purge
+        env:
+          DATABASE_ADMIN_URL: ${{ secrets.DATABASE_ADMIN_URL }}

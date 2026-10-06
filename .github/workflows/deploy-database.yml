@@ -1,0 +1,38 @@
+# Keeps the production database in step with main (docs/DEPLOY.md): new migrations and catalog snapshots on each push
+# that touches them. Vercel deploys the app itself. Does nothing until production is set up.
+name: deploy database
+on:
+  push:
+    branches: [main]
+    paths: ["db/migrations/**", "catalog/**"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: production-database
+  cancel-in-progress: false
+jobs:
+  ready:
+    runs-on: ubuntu-latest
+    outputs:
+      ok: ${{ steps.check.outputs.ok }}
+    steps:
+      - id: check
+        env:
+          DATABASE_ADMIN_URL: ${{ secrets.DATABASE_ADMIN_URL }}
+        run: |
+          if [ -n "$DATABASE_ADMIN_URL" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"; else echo "::notice::Production is not set up yet (docs/DEPLOY.md); nothing to do."; fi
+  migrate:
+    needs: ready
+    if: needs.ready.outputs.ok == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx tsx scripts/deploy-db.ts migrate
+        env:
+          DATABASE_ADMIN_URL: ${{ secrets.DATABASE_ADMIN_URL }}

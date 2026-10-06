@@ -1,0 +1,36 @@
+# First-time production setup (docs/DEPLOY.md): roles and schema on the managed Postgres, the Vercel project's
+# environment, then a production deploy of main. Safe to run again; each run gives the app a new database password.
+name: set up production
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: production-database
+  cancel-in-progress: false
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_ADMIN_URL: ${{ secrets.DATABASE_ADMIN_URL }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_PROJECT: ${{ vars.VERCEL_PROJECT || 'cafai' }}
+    steps:
+      - name: Check secrets
+        run: |
+          missing=""
+          [ -n "$DATABASE_ADMIN_URL" ] || missing="$missing DATABASE_ADMIN_URL"
+          [ -n "$VERCEL_TOKEN" ] || missing="$missing VERCEL_TOKEN"
+          if [ -n "$missing" ]; then echo "::error::Add these repository secrets first (docs/DEPLOY.md):$missing"; exit 1; fi
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Find the Vercel project
+        run: npx tsx scripts/deploy-vercel.ts check
+      - name: Set up the database
+        run: APP_DATABASE_URL_FILE="$RUNNER_TEMP/app-database-url" npx tsx scripts/deploy-db.ts setup
+      - name: Configure Vercel and deploy main
+        run: APP_DATABASE_URL_FILE="$RUNNER_TEMP/app-database-url" npx tsx scripts/deploy-vercel.ts apply

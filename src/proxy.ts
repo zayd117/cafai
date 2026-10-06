@@ -5,6 +5,8 @@ import { NextResponse, type NextRequest } from "next/server";
 export function proxy(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const isDev = process.env.NODE_ENV === "development";
+  // Served over HTTPS (the managed host): pin HTTPS and upgrade stray http:// requests. Local http runs stay as they are.
+  const https = request.nextUrl.protocol === "https:" || request.headers.get("x-forwarded-proto") === "https";
   const csp = [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ""}`,
@@ -16,6 +18,7 @@ export function proxy(request: NextRequest) {
     "base-uri 'self'",
     "form-action 'self'",
     "frame-ancestors 'none'",
+    ...(https ? ["upgrade-insecure-requests"] : []),
   ].join("; ");
   const headers = new Headers(request.headers);
   headers.set("x-nonce", nonce);
@@ -24,6 +27,7 @@ export function proxy(request: NextRequest) {
   res.headers.set("Content-Security-Policy", csp);
   res.headers.set("Referrer-Policy", "no-referrer");
   res.headers.set("X-Content-Type-Options", "nosniff");
+  if (https) res.headers.set("Strict-Transport-Security", "max-age=63072000");
   // Runs can hold a project description: never cache them in shared caches (§14).
   if (request.nextUrl.pathname.startsWith("/r/")) res.headers.set("Cache-Control", "private, no-store");
   return res;

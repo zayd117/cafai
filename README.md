@@ -16,6 +16,7 @@ model. The site says so on every page. Nothing in sample mode is a real recommen
 | `docs/TEST_CASES.md` | Every automated suite and the manual cases still open |
 | `docs/FIGMA_HANDOFF.md` | Tokens, components, screens and steps to rebuild the UI in Figma |
 | `docs/DISCOVER_BAKEOFF.md` | Comparing Claude alone against Claude + Jev in the discovery loop: accuracy, time, tokens, cost |
+| `docs/DEPLOY.md` | Going live on Vercel + Neon (free plans): one-time setup, day-to-day deploys, adding an API key later |
 | `docs/PHASE0_INTAKE.md` | Turning interviews and concierge runs into test cases, capabilities and tools; running the bake-off |
 | `docs/figma-handoff/screens/` | Real Chromium screenshots, desktop and mobile |
 
@@ -46,6 +47,10 @@ npm run flow -- http://localhost:3100 docs/figma-handoff/screens     # 47 Chromi
 npm run a11y -- http://localhost:3100                                # axe WCAG 2.2 AA + keyboard
 DATABASE_OWNER_URL=... node scripts/controls-flow.mjs http://localhost:3101   # server with CAFAI_RUNS_PER_HOUR=3
 ```
+
+## Deploy
+
+Vercel Hobby + Neon Free, set up and maintained by GitHub Actions. Steps and details: `docs/DEPLOY.md`.
 
 ## Kill switches (plan §14)
 
