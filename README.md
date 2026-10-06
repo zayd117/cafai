@@ -43,8 +43,8 @@ Real model calls: set `ANTHROPIC_API_KEY` (and optionally `CAFAI_MODEL_*`); see 
 
 ```
 npm run typecheck && npm run catalog:check && npm run cases:check && npm test && npm run eval
-npm run flow -- http://localhost:3100 docs/figma-handoff/screens     # 47 Chromium checks
-npm run a11y -- http://localhost:3100                                # axe WCAG 2.2 AA + keyboard
+npm run flow -- http://localhost:3100 docs/figma-handoff/screens     # 47 Chromium checks (CI runs it too)
+npm run a11y -- http://localhost:3100                                # axe WCAG 2.2 AA + keyboard (CI runs it too)
 DATABASE_OWNER_URL=... node scripts/controls-flow.mjs http://localhost:3101   # server with CAFAI_RUNS_PER_HOUR=3
 ```
 

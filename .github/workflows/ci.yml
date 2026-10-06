@@ -20,6 +20,12 @@ jobs:
     env:
       PSQL_SUPERUSER_URL: postgres://postgres:ci_superuser_only@localhost:5432/postgres
       CAFAI_DEV_DB_PASSWORD: ci_only
+      # The browser checks below serve the app the way production runs today: fixture catalog, no AI key (mock model).
+      DATABASE_OWNER_URL: postgres://cafai_owner:ci_only@localhost:5432/cafai_dev
+      DATABASE_CATALOG_URL: postgres://cafai_catalog:ci_only@localhost:5432/cafai_dev
+      DATABASE_URL: postgres://cafai_app:ci_only@localhost:5432/cafai_dev
+      CAFAI_CATALOG: fixture
+      QUOTA_SALT: ci-only-salt
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -34,3 +40,21 @@ jobs:
       - run: npm test
       - run: npm run eval
       - run: npm run build
+      # Browser checks (plan §18) on every change, free: the mock model makes no paid calls.
+      - name: Prepare the app database
+        run: npm run db:migrate && npx tsx scripts/publish-catalog.ts --fixtures
+      - name: Start the app
+        run: |
+          npx next start -p 3100 > "$RUNNER_TEMP/next.log" 2>&1 &
+          for i in $(seq 60); do curl -sf -o /dev/null http://localhost:3100/ && exit 0; sleep 1; done
+          cat "$RUNNER_TEMP/next.log"; exit 1
+      - name: Browser flow (47 checks)
+        run: CHROMIUM_PATH=$(command -v google-chrome) npm run flow -- http://localhost:3100 "$RUNNER_TEMP/screens"
+      - name: Accessibility (6 checks)
+        run: CHROMIUM_PATH=$(command -v google-chrome) npm run a11y -- http://localhost:3100
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-check-screens
+          path: ${{ runner.temp }}/screens
+          if-no-files-found: ignore

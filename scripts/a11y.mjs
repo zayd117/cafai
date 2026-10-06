@@ -4,7 +4,7 @@ import { chromium } from "playwright-core";
 import AxeBuilder from "@axe-core/playwright";
 
 const base = process.argv[2] ?? "http://localhost:3100";
-const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--no-sandbox"] });
+const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH ?? "/opt/pw-browsers/chromium", args: ["--no-sandbox"] });
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
 const page = await ctx.newPage();
 const results = [];

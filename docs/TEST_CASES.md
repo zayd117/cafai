@@ -31,8 +31,8 @@ npm run flow -- http://localhost:3100 docs/figma-handoff/screens
 | `scripts/deploy-db.test.ts` | 5 | Production database URLs: Neon pooled → direct for admin steps, app on the pooler as `cafai_app` in `cafai`, sslmode for remote hosts |
 | `scripts/deploy-vercel.test.ts` | 10 | Vercel setup against a scripted API: project lookup (own scope, team fallback, missing project, bad token), env upsert (DATABASE_URL always, CAFAI_CATALOG and QUOTA_SALT only when missing, refusals reported), production deploy of main, failed build, smoke test (live, DB error, behind login) |
 | `npm run eval` | 4 fixture cases × arms × repeats | Release gate: harmful picks 0, invalid ids 0, no regression vs baseline; bake-off pass lines from `eval/bakeoff.json` |
-| `npm run flow` (Chromium) | 47 checks | See below |
-| `scripts/a11y.mjs` (Chromium + axe) | 6 checks | WCAG 2.2 AA scans (counter, results with every level open, setup, legal page), keyboard reach, visible focus ring |
+| `npm run flow` (Chromium) | 47 checks | See below. CI runs it on every change, in sample mode (fixture catalog, mock model) |
+| `scripts/a11y.mjs` (Chromium + axe) | 6 checks | CI runs it on every change. WCAG 2.2 AA scans (counter, results with every level open, setup, legal page), keyboard reach, visible focus ring |
 | `scripts/controls-flow.mjs` (Chromium + DB) | 9 checks | Revoked pick annotated and setup hidden, AI off → degraded banner and read-back first, runs off → paused, quota cap, honeypot, flag audit |
 
 ### Browser checks (`scripts/flow.mjs`, desktop 1440 and mobile 390)
