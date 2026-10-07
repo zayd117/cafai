@@ -35,11 +35,15 @@ access:
   auth: none
   read_write: not_applicable
   access_plain: "SAMPLE: no access needed"
+  access_short: "SAMPLE: no access needed"
   effort_plain: "[effort placeholder]"
+  effort_short: "[time placeholder]"
+  first_step: "SAMPLE: nothing to sign up for."
 runtime:
   location: not_applicable
 cost:
   model: free
+  label: Free
   source_url: https://example.com/docs
   as_of: 2026-09-29
 trust:

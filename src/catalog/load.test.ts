@@ -92,6 +92,21 @@ describe("loadCatalog", () => {
     if (!res.ok) expect(res.errors.length).toBeGreaterThanOrEqual(2);
   });
 
+  it("keeps card copy within its word limits and needs a short maker name for long ones", () => {
+    const dir = copyCatalog();
+    const usda = join(dir, "offerings/usda-fooddata-central.yaml");
+    edit(usda, "  vendor_short: USDA\n", "");
+    edit(usda, "access_short: Only public food data. Nothing of yours.", "access_short: Only public food data, nothing of yours, and nothing at all from your phone, your computer or your account.");
+    edit(usda, "- You already pay for a list of foods that covers your users' countries.", "- You already pay for a list of foods that covers every country your users live in today.");
+    const res = loadCatalog({ root: dir });
+    expect(res.ok).toBe(false);
+    if (!res.ok) {
+      expect(res.errors.some((e) => e.message.includes("access.access_short has 19 words; the card allows 14"))).toBe(true);
+      expect(res.errors.some((e) => e.message.includes("identity.vendor_short is required"))).toBe(true);
+      expect(res.errors.some((e) => e.message.includes("skip_if[0] has 17 words; the card allows 14"))).toBe(true);
+    }
+  });
+
   it("rejects Reviewed trust without vendor-official or namespace verification", () => {
     const dir = copyCatalog();
     edit(join(dir, "fixtures/offerings/fx-payments.yaml"), "vendor_official: true\n  namespace_verified: true", "vendor_official: false\n  namespace_verified: false");

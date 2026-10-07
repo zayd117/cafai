@@ -35,11 +35,15 @@ access:
   credential_needed: a restricted key from the vendor
   read_write: read_write
   access_plain: "SAMPLE: can create test charges"
+  access_short: "SAMPLE: can create test charges"
   effort_plain: "[effort placeholder]"
+  effort_short: "[time placeholder]"
+  first_step: "SAMPLE: get a restricted key from the vendor."
 runtime:
   location: remote
 cost:
   model: free
+  label: Free
   source_url: https://example.com/docs
   as_of: 2026-09-29
 trust:

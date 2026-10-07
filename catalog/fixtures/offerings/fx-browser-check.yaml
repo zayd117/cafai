@@ -43,13 +43,17 @@ access:
   read_write: read_only
   data_touched: []
   access_plain: "SAMPLE: reads sample data; cannot change anything"
+  access_short: "SAMPLE: reads sample data; cannot change anything"
   effort_plain: "[effort placeholder]"
+  effort_short: "[time placeholder]"
+  first_step: "SAMPLE: nothing to sign up for."
 runtime:
   location: local
   requires:
     - Node
 cost:
   model: free
+  label: Free
   source_url: https://example.com/docs
   as_of: 2026-09-29
 trust:

@@ -14,7 +14,7 @@ need_signals:
 - text: The app is heading to testers or real users and no crash or error tracking is mentioned
   need_type: latent
 skip_if:
-- You already get crash reports from another tool, such as Firebase Crashlytics or PostHog error tracking.
+- You already get crash reports from another tool, such as Crashlytics or PostHog.
 - The app is an early version that nobody else uses yet.
 resource_profile:
   provides:
@@ -113,7 +113,10 @@ access:
   - Sentry issues (only with Triage)
   - Sentry projects, teams and alert rules (only with Manage Projects & Teams)
   access_plain: Can see your app's crash and error reports. Can mark problems fixed or change your Sentry setup only if you tick those boxes at sign-in.
+  access_short: Crash reports and replays from your app. Changes things only if you allow it.
   effort_plain: About 20 minutes. Needs a free Sentry account.
+  effort_short: About 20 min
+  first_step: Make a free Sentry account. Setup also uses a secret key; keep it private.
   least_privilege_steps:
   - When Sentry asks what to allow, make sure only "Inspect Issues & Events" (look, don't change) is ticked. Tick more only if you want your AI to mark problems fixed or set up alerts.
   - "Want your AI to see only this app's crash reports? Ask it to use this Sentry address: https://mcp.sentry.dev/mcp/<org-slug>/<project-slug>. Fill in the short names of your Sentry organization and app, or ask your AI to."
@@ -123,6 +126,7 @@ runtime:
   location: remote
 cost:
   model: free
+  label: Free plan
   plan_required: Developer plan $0 (one user, 5k errors); Team from $26/month.
   source_url: https://sentry.io/pricing/
   as_of: 2026-10-06
@@ -136,7 +140,7 @@ trust:
     grade: A
     as_of: '2026-10-06'
 editorial:
-  what_it_is: Sentry collects a report each time your app crashes. This add-on sets Sentry up in your app and lets your AI read the reports.
+  what_it_is: Get a report each time your app crashes. Your AI reads it and helps you fix it.
   could_help_with: Hearing about crashes on testers' phones before launch. For example, when food search fails or the log screen won't open.
   first_prompt: Add Sentry crash reports to my Expo app. Explain each step in plain words, and keep the secret key (SENTRY_AUTH_TOKEN) out of git. Then help me cause a test crash and find it in Sentry.
   reviewer: Claude (AI), not yet a person

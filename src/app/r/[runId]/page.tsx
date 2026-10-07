@@ -9,6 +9,7 @@ import { rerun } from "../../actions";
 import { MATCH_LABEL, NOT_NEEDED_REASON } from "../../_components/labels";
 import { OrderSummary } from "../../_components/OrderSummary";
 import { PickCard } from "../../_components/PickCard";
+import { startsInOrder } from "../../_components/cardCopy";
 import { ReadBackTags } from "../../_components/ReadBackTags";
 import { SubmitButton } from "../../_components/SubmitButton";
 import { tagOf } from "@/engine/tags";
@@ -197,9 +198,9 @@ export default async function RunPage({ params, searchParams }: {
           <aside className="order" aria-labelledby="order-title">
             <h2 id="order-title">Your order</h2>
             <OrderSummary runId={run.id} items={[
-              ...direct.map((p, i) => ({ id: p.offering_id, name: offeringName(p.offering_id) ?? p.offering_id, extra: false, rank: i + 1 }))
+              ...direct.map((p, i) => ({ id: p.offering_id, name: offeringName(p.offering_id) ?? p.offering_id, extra: false, rank: i + 1, ticked: startsInOrder(p) }))
                 .filter((i) => !flags.revoked.has(i.id)),
-              ...(awk && !flags.revoked.has(awk.offering_id) ? [{ id: awk.offering_id, name: offeringName(awk.offering_id) ?? awk.offering_id, extra: true }] : []),
+              ...(awk && !flags.revoked.has(awk.offering_id) ? [{ id: awk.offering_id, name: offeringName(awk.offering_id) ?? awk.offering_id, extra: true, ticked: startsInOrder(awk) }] : []),
             ]} />
             <p className="small muted">Tick or untick picks on the cards to change what goes into setup.</p>
             <form id="order" action={`/r/${run.id}/setup`} method="get">

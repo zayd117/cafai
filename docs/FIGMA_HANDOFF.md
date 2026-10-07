@@ -107,7 +107,8 @@ Faces are self-hosted by `next/font/google`: **Young Serif** (display), **Figtre
 | State panel | `.state` | nothing needed · no good pick · needs confirmation · needs clarification · out of scope · not found |
 
 Rules the design must keep (plan §8, §9, §18): no MCP / OAuth / API / SDK / stdio words at card level 1; Match and
-Confidence always shown as two separate indicators with words; score numbers only at level 3; never colour alone;
+Confidence always shown as two separate indicators with words (under "More details" since 2026-10-07, REGISTER A-042,
+with the decision pill at level 1); score numbers only at level 3; never colour alone;
 44px touch targets; text contrast 4.5:1 or better.
 
 ## 4. How to convert this into Figma

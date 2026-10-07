@@ -14,7 +14,7 @@ need_signals:
 - text: Building an app for iPhone and Android without native coding experience
   need_type: implied
 skip_if:
-- Your app was started with a tool other than Expo or React Native, such as Flutter. Or it was made just for iPhone or just for Android. Ask your AI if you're not sure.
+- Your app was started without Expo or React Native, or is iPhone-only or Android-only.
 - You are making a website, not a phone app.
 resource_profile:
   provides:
@@ -129,7 +129,10 @@ access:
   - App Store and Google Play reviews
   - The running app on your simulator or phone (local features only)
   access_plain: Can see your Expo apps, app versions, crash reports and store reviews. If you say yes, it can also make new versions, send your app to the stores and reply to reviews in public.
+  access_short: Your apps, crash reports and reviews. Can build, publish and reply if you agree.
   effort_plain: About 10 minutes. Needs a free Expo account.
+  effort_short: About 10 min
+  first_step: Make a free Expo account.
   least_privilege_steps:
   - In Claude Code, add it for this app only. Repo means your app's folder. If you type /plugin install yourself, pick "Install for you, in this repo only" when asked. If Claude Code runs the command, ask it to install for this repo only.
   - Leave your AI asking you before it acts. If it asks to use build_submit (send to the stores), say no unless you asked for exactly that. Do the same for appstore_reply_review and playstore_reply_review (public replies to reviews).
@@ -142,6 +145,7 @@ runtime:
   - "Local features: an Expo SDK 54+ dev server running on your computer"
 cost:
   model: free
+  label: Free plan
   plan_required: Free plan ($0) lists 15 Android and 15 iOS builds; Starter from $19/month; the documentation search tool needs a paid EAS plan.
   source_url: https://expo.dev/pricing
   as_of: 2026-10-06
@@ -151,7 +155,7 @@ trust:
   namespace_verified: true
   notes: Plugin is listed in Anthropic's official marketplace (claude-plugins-official) and pulled from github.com/expo/skills at a pinned commit, author Expo Team. The npm package expo-mcp is maintained by Expo's accounts (expoadmin). Anthropic's connector directory lists the server as made by Expo. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
 editorial:
-  what_it_is: Expo is a way to make one app for both iPhone and Android. This add-on teaches your AI how to use it.
+  what_it_is: One app that works on iPhone and Android. Your AI follows Expo's own guides to build it.
   could_help_with: "Making your tracker's screens: today's log, add food, and progress. Trying it on your own phone. Later, putting it in the App Store and Google Play."
   first_prompt: Use Expo's how-to guides to start a new calorie and macro tracker app. Give it three tabs called Today, Add food and Progress. Then tell me step by step, in plain words, how to open it on my phone.
   reviewer: Claude (AI), not yet a person

@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { parse } from "yaml";
 import type { ErrorObject, ValidateFunction } from "ajv";
 import { createAjv } from "../lib/ajv";
+import { CATALOG_WORD_LIMITS, wordCount } from "../lib/words";
 import type { Capability, CatalogIssue, CatalogSnapshot, ClientRecord, LoadResult, Offering } from "./types";
 
 export interface LoadOptions {
@@ -122,6 +123,21 @@ export function loadCatalog(opts: LoadOptions): LoadResult {
       if (!c) issues.push({ file, message: `unknown client "${d.client}"` });
       else if (!c.install_methods.includes(d.method)) issues.push({ file, message: `client ${d.client} has no install method ${d.method}` });
     }
+    // Card copy stays short (2026-10-07 card redesign): each card field has a word limit.
+    const cardFields: Record<keyof typeof CATALOG_WORD_LIMITS, string | undefined> = {
+      "identity.vendor_short": o.identity.vendor_short,
+      "editorial.what_it_is": o.editorial.what_it_is,
+      "editorial.could_help_with": o.editorial.could_help_with,
+      "skip_if[0]": o.skip_if[0],
+      "access.access_short": o.access.access_short,
+      "access.effort_short": o.access.effort_short,
+      "access.first_step": o.access.first_step,
+      "cost.label": o.cost.label,
+    };
+    for (const [k, v] of Object.entries(cardFields) as [keyof typeof CATALOG_WORD_LIMITS, string | undefined][]) {
+      if (v && wordCount(v) > CATALOG_WORD_LIMITS[k]) issues.push({ file, message: `${k} has ${wordCount(v)} words; the card allows ${CATALOG_WORD_LIMITS[k]}` });
+    }
+    if (o.identity.vendor.length > 24 && !o.identity.vendor_short) issues.push({ file, message: "identity.vendor is longer than 24 characters, so identity.vendor_short is required" });
     // Plan §11: Reviewed = curator-checked, vendor-official or namespace-verified.
     if (o.trust.state === "reviewed" && !(o.trust.vendor_official || o.trust.namespace_verified)) {
       issues.push({ file, message: "trust.state reviewed requires vendor_official or namespace_verified (plan §11)" });

@@ -47,6 +47,8 @@ export interface Offering {
   identity: {
     display_name: string;
     vendor: string;
+    /** Facts-line maker name; required by the loader when vendor is longer than 24 characters. */
+    vendor_short?: string;
     technical_name?: string;
     registry_namespace?: string;
     package_id?: string;
@@ -65,10 +67,16 @@ export interface Offering {
     data_touched?: string[];
     access_plain: string;
     effort_plain: string;
+    // Card fields added 2026-10-07. Required by the schema; optional here because runs saved before then keep catalog
+    // snapshots without them, and the card falls back to the longer fields.
+    access_short?: string;
+    effort_short?: string;
+    first_step?: string;
     least_privilege_steps?: string[];
   };
   runtime: { location: "local" | "remote" | "not_applicable"; os?: string[]; requires?: string[] };
-  cost: { model: "free" | "paid" | "usage_based"; plan_required?: string; source_url: string; as_of: string };
+  /** label: required by the schema, optional for snapshots saved before 2026-10-07 (see access above). */
+  cost: { model: "free" | "paid" | "usage_based"; label?: string; plan_required?: string; source_url: string; as_of: string };
   trust: {
     state: TrustState;
     vendor_official: boolean;

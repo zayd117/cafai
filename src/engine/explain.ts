@@ -5,6 +5,7 @@ import { ENGINE_CONFIG as C } from "./config";
 import type { Placed } from "./assemble";
 import { BilledError, type LlmProvider, type Usage } from "./providers/types";
 import { validateExplanation } from "./schemas";
+import { wordCount } from "@/lib/words";
 import type { Explanation, ProfileItem } from "./types";
 
 const FIELDS = ["why", "how_it_helps", "do_you_need_it", "skip_if", "summary"] as const;
@@ -23,7 +24,7 @@ export function checkExplanation(e: Explanation, pick: Placed, knownOfferingIds:
   if (e.evidence_ids.some((id) => !itemIds.has(id))) problems.push("unknown_evidence_id");
   for (const f of FIELDS) {
     const text = e[f];
-    if (text.length > C.explanation.maxFieldChars) problems.push(`${f}:too_long`);
+    if (text.length > C.explanation.maxFieldChars || wordCount(text) > C.explanation.maxWords[f]) problems.push(`${f}:too_long`);
     for (const r of RULES) if (r.re.test(text)) problems.push(`${f}:${r.name}`);
     for (const tok of text.match(/\b[a-z0-9]+(?:-[a-z0-9]+)+\b/g) ?? []) {
       if (knownOfferingIds.has(tok) && tok !== pick.offering_id) problems.push(`${f}:other_offering_id`);
@@ -33,27 +34,34 @@ export function checkExplanation(e: Explanation, pick: Placed, knownOfferingIds:
   return problems;
 }
 
-const clip = (s: string, n: number) => (s.length <= n ? s : s.slice(0, n - 1).trimEnd() + "…");
+/** The first n words, with "…" when cut, so a long quote still fits the card's "Why it fits" line. */
+const clipWords = (s: string, n: number) => {
+  const words = s.trim().split(/\s+/);
+  return words.length <= n ? s.trim() : words.slice(0, n).join(" ") + "…";
+};
 
 /** Template fallback: catalog facts plus the user's own words (§9 failure table). */
 export function templateExplanation(pick: Placed, snapshot: CatalogSnapshot, items: ProfileItem[]): Explanation {
   const o = snapshot.offerings.find((x) => x.id === pick.offering_id)!;
   const cap = snapshot.taxonomy.find((c) => c.id === pick.capability_id);
   const ev = items.find((i) => pick.evidence_ids.includes(i.id));
-  const quote = ev ? clip(ev.quote, 160) : "";
-  const skip = o.skip_if[0] ?? cap?.skip_conditions[0] ?? "";
+  // "You said" takes two of the line's words.
+  const quote = ev ? clipWords(ev.quote, C.explanation.maxWords.why - 2) : "";
+  // The first skip condition short enough for the card; the loader keeps the catalog's first one within the limit.
+  const skip = [...o.skip_if, ...(cap?.skip_conditions ?? [])].find((s) => wordCount(s) <= C.explanation.maxWords.skip_if) ?? "";
+  // Card lines (2026-10-07): "Why it fits", "When" (no "Add it" prefix), "Skip if" (the condition only).
   return {
     offering_id: o.id,
     evidence_ids: ev ? [ev.id] : pick.evidence_ids.slice(0, 1),
-    why: pick.need_type === "latent" ? `Projects like the one you described often need this: "${quote}"` : `You said: "${quote}"`,
+    why: pick.need_type === "latent" ? "Projects like yours often need this." : `You said “${quote}”`,
     how_it_helps: o.editorial.could_help_with,
     do_you_need_it:
       pick.do_you_need_it === "needed_now"
-        ? "It serves something you described."
+        ? "Now. It serves something you described."
         : pick.do_you_need_it === "useful_later"
-          ? "You did not ask for this, but it fits your project."
+          ? "Later. You didn't ask for it, but it fits your project."
           : "",
-    skip_if: skip ? `Skip it if: ${skip}` : "",
+    skip_if: skip,
     summary: o.editorial.what_it_is,
   };
 }

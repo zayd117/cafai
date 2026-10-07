@@ -4,6 +4,7 @@ kind: api
 identity:
   display_name: Look up calories and macros for everyday foods
   vendor: U.S. Department of Agriculture (USDA), Agricultural Research Service
+  vendor_short: USDA
   technical_name: FoodData Central API (v1)
 capabilities:
 - food-data-lookup
@@ -75,7 +76,10 @@ access:
   data_touched:
   - Public food and nutrient data only
   access_plain: Can see only public food data. Can't see or change anything of yours.
+  access_short: Only public food data. Nothing of yours.
   effort_plain: About 5 minutes to get a free access key. Then one chat with your AI to add food search.
+  effort_short: About 5 min
+  first_step: Get a free access key from USDA. It takes about 5 minutes.
   least_privilege_steps:
   - Never put the key inside the phone app, or in git (your saved code history). Ask your AI where to save it privately online, then save it there yourself.
   - Try it first with the practice key, DEMO_KEY. Then switch to your own key.
@@ -84,6 +88,7 @@ runtime:
   location: remote
 cost:
   model: free
+  label: Free
   source_url: https://fdc.nal.usda.gov/api-guide
   as_of: 2026-10-06
 trust:
@@ -92,7 +97,7 @@ trust:
   namespace_verified: true
   notes: Run by USDA's Agricultural Research Service and served from usda.gov domains (fdc.nal.usda.gov, api.nal.usda.gov). Not a package; nothing to install. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
 editorial:
-  what_it_is: FoodData Central is a free list of foods and their nutrition. Your app can look up calories, protein, carbs and fat in it.
+  what_it_is: A free list of foods with their calories, protein, carbs and fat. Your app can search it.
   could_help_with: Filling in the numbers when someone logs "1 banana" or "150 g chicken breast".
   first_prompt: Plan how my app can look up a food in USDA FoodData Central. Show its calories, protein, carbs and fat per serving. Keep the access key in a private place online, never inside the app. Explain the plan in plain words before you write any code.
   reviewer: Claude (AI), not yet a person

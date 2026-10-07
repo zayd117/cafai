@@ -112,7 +112,7 @@ describe("runPipeline (MOCK providers, FIXTURE catalog)", () => {
       expect(p.confidence.band).toMatch(/high|medium|low/);
       expect(Object.keys(p.match.components).sort()).toEqual(["capability", "intent", "project", "specificity", "technical", "usefulness"]);
     }
-    expect(r.versions).toEqual({ catalog: snapshot.version, config: "v0-placeholder", prompts: "prompts-v1", llm: "mock:scripted", decision: "mock:scripted" });
+    expect(r.versions).toEqual({ catalog: snapshot.version, config: "v0-placeholder", prompts: "prompts-v2", llm: "mock:scripted", decision: "mock:scripted" });
   });
 
   it("drops read-back items whose quote is not in the user's words, and needs that cite only them", async () => {
@@ -218,7 +218,7 @@ describe("runPipeline (MOCK providers, FIXTURE catalog)", () => {
     const r = await run(p, { text: "Before launch I test signup flow by hand every day.", confirmed: true });
     expect(r.degraded).toBe("deterministic_only");
     expect(r.picks.map((x) => x.offering_id)).toEqual(["fx-browser-check"]);
-    expect(r.picks[0]!.explanation.why).toBe('You said: "Before launch I test signup flow by hand every day."');
+    expect(r.picks[0]!.explanation.why).toBe("You said “Before launch I test signup flow by hand every day.”");
     expect(p.requests.filter((q) => q.kind === "understand")).toHaveLength(2); // retried once
   });
 

@@ -14,7 +14,7 @@ need_signals:
 - text: notification should reach a phone or another device, not only the computer running the script
   need_type: latent
 skip_if:
-- A pop-up on the same computer is enough. Tampermonkey can already show one by itself.
+- You only need a pop-up on the same computer; Tampermonkey can show one.
 - Your employer doesn't allow work data in outside services, and your alerts would need what's in the sheet.
 resource_profile:
   provides:
@@ -83,7 +83,10 @@ access:
   data_touched:
   - The text of each alert you send
   access_plain: Can't see anything on your computer or in Excel. Can see only the alert text your script sends. Anyone who knows your alert name can read it too.
+  access_short: Only your script's alert text. Anyone with your alert name can read it too.
   effort_plain: About 5 minutes. Needs only the ntfy phone app, with no sign-up.
+  effort_short: About 5 min
+  first_step: Install the ntfy phone app. Make up a long, random alert name.
   least_privilege_steps:
   - Use a long, random alert name, and keep it out of any script you share with others.
   - Send only a short note, like "Something changed in your sheet, open Excel". Never send the cell values.
@@ -93,6 +96,7 @@ runtime:
   location: remote
 cost:
   model: free
+  label: Free plan
   plan_required: Paid plans from $5 a month (billed yearly) add more messages and reserved topics
   source_url: https://ntfy.sh/#pricing
   as_of: 2026-10-06
@@ -102,7 +106,7 @@ trust:
   namespace_verified: false
   notes: The ntfy.sh service and its HTTP API are run by the ntfy project itself (open source, maintainer binwiederhier on GitHub; server v2.28.0 released 2026-08-27). Widely used; no broad credentials needed. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
 editorial:
-  what_it_is: ntfy is a free alert service with a phone app. Your script sends it a short message, and your phone buzzes.
+  what_it_is: A free alert service with a phone app. Your script sends a short note, and your phone buzzes.
   could_help_with: Buzzing your phone with a short note, like "Something changed, open Excel", each time a cell you watch changes.
   first_prompt: Add a phone alert to my Tampermonkey script. When a cell I watch changes, send a short note to https://ntfy.sh/[paste your alert name here]. Leave the cell values out of the note. Use Tampermonkey's own way of sending (GM_xmlhttpRequest), and add the @connect line it needs. Explain each change in plain words.
   reviewer: Claude (AI), not yet a person

@@ -19,6 +19,7 @@
       "properties": {
         "display_name": { "type": "string", "minLength": 1, "description": "Outcome in plain words (plan §8 part 1); no protocol terms." },
         "vendor": { "type": "string", "minLength": 1 },
+        "vendor_short": { "type": "string", "minLength": 1, "maxLength": 24, "description": "Maker name for the card's facts line (at most 3 words). Required when vendor is longer than 24 characters." },
         "technical_name": { "type": "string" },
         "registry_namespace": { "type": "string" },
         "package_id": { "type": "string" },
@@ -66,7 +67,7 @@
     "access": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["auth", "read_write", "access_plain", "effort_plain"],
+      "required": ["auth", "read_write", "access_plain", "access_short", "effort_plain", "effort_short", "first_step"],
       "properties": {
         "auth": { "enum": ["oauth", "api_key", "none"] },
         "credential_needed": { "type": "string" },
@@ -74,7 +75,10 @@
         "read_write": { "enum": ["read_only", "read_write", "not_applicable"] },
         "data_touched": { "type": "array", "items": { "type": "string" } },
         "access_plain": { "type": "string", "minLength": 1, "description": "Plain-language access, e.g. 'reads error events; cannot change code' (plan §8). Wording format is an open question." },
+        "access_short": { "type": "string", "minLength": 1, "maxLength": 120, "description": "The card's 'It can see' line (at most 14 words). Never understates access: say what it can change, and when." },
         "effort_plain": { "type": "string", "minLength": 1, "description": "Effort in a few words (plan §8 part 11). Units are an open question." },
+        "effort_short": { "type": "string", "minLength": 1, "maxLength": 24, "description": "Setup time for the card's facts line (at most 4 words), e.g. 'About 20 min'." },
+        "first_step": { "type": "string", "minLength": 1, "maxLength": 120, "description": "Step 1 of the card's setup steps (at most 14 words), e.g. 'Make a free Sentry account.'" },
         "least_privilege_steps": { "type": "array", "items": { "type": "string" } }
       }
     },
@@ -91,9 +95,10 @@
     "cost": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["model", "source_url", "as_of"],
+      "required": ["model", "label", "source_url", "as_of"],
       "properties": {
         "model": { "enum": ["free", "paid", "usage_based"] },
+        "label": { "type": "string", "minLength": 1, "maxLength": 24, "description": "Cost for the card's facts line (at most 4 words, no amounts), e.g. 'Free plan'." },
         "plan_required": { "type": "string" },
         "source_url": { "type": "string", "format": "uri" },
         "as_of": { "type": "string", "format": "date" }
@@ -126,7 +131,7 @@
       "additionalProperties": false,
       "required": ["what_it_is", "could_help_with", "first_prompt", "reviewer", "reviewed_on"],
       "properties": {
-        "what_it_is": { "type": "string", "minLength": 1 },
+        "what_it_is": { "type": "string", "minLength": 1, "description": "What it does (at most 18 words), general to any project. Say 'your AI' for the person's AI tool; the card swaps in its name." },
         "could_help_with": { "type": "string", "minLength": 1 },
         "first_prompt": { "type": "string", "minLength": 1, "description": "The 'first sip' prompt (plan §6)." },
         "reviewer": { "type": "string", "minLength": 1 },

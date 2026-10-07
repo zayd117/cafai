@@ -6,11 +6,13 @@ kind: mcp_server            # mcp_server | skill | plugin | api | library | play
 identity:
   display_name: The outcome in plain words (no MCP/API/SDK words)
   vendor: Maker name
+  # vendor_short: Short maker name   # required when vendor is longer than 24 characters (at most 3 words)
   repo_url: https://example.com/repo
 capabilities:
   - capability-id-from-taxonomy
 need_signals: []
 skip_if:
+  # The first one is the card's "Skip if" line when no model writes it: at most 14 words, starting with You or Your.
   - When to skip it, in plain words
 resource_profile:
   provides:
@@ -32,13 +34,17 @@ access:
   auth: oauth                  # oauth | api_key | none
   read_write: read_only        # read_only | read_write | not_applicable
   access_plain: What it can reach, in plain words
+  access_short: The card's "It can see" line, at most 14 words. Say what it can change, and when.
   effort_plain: Effort in a few words
+  effort_short: About 10 min        # card facts line, at most 4 words
+  first_step: Make a free account.  # step 1 of the card's setup steps, at most 14 words
   least_privilege_steps:
     - Use a test project and read-only access.
 runtime:
   location: remote             # local | remote | not_applicable
 cost:
   model: free                  # free | paid | usage_based
+  label: Free                  # card facts line, at most 4 words, no amounts (e.g. Free plan, Needs paid Claude plan)
   source_url: https://vendor.example/pricing
   as_of: 2026-10-01
 trust:
@@ -46,8 +52,8 @@ trust:
   vendor_official: true
   namespace_verified: false
 editorial:
-  what_it_is: One plain sentence.
-  could_help_with: One plain sentence about this kind of project.
+  what_it_is: One plain sentence, at most 18 words. Say "your AI" for the person's AI tool.
+  could_help_with: One plain sentence about this kind of project. # at most 30 words
   first_prompt: A first thing to ask your AI tool to try.
   reviewer: your initials
   reviewed_on: 2026-10-01

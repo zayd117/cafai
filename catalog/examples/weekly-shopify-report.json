@@ -144,33 +144,33 @@
   },
   "explanations": {
     "shopify-connector": {
-      "why": "You export your Shopify orders every Monday. This lets Claude read them straight from your store instead.",
+      "why": "Claude can read your orders straight from Shopify, instead of you exporting them every Monday.",
       "evidence_ids": [
         "u1"
       ],
       "how_it_helps": "It's step one of your Monday report. Claude gets the orders, then Google Drive lets it put them in your sheet.",
-      "do_you_need_it": "Add it now if you'd rather Claude get your orders than export them yourself. Without it, Claude can't see your store.",
-      "skip_if": "Skip it if Shopify's own reports already show you everything you need.",
+      "do_you_need_it": "Now if you'd rather Claude get your orders than export them.",
+      "skip_if": "Shopify's own reports already show you everything you need.",
       "summary": "Shopify's own add-on for Claude: it reads your orders, customers and sales. It can also change products, so ask it for reports only."
     },
     "google-drive-connector": {
-      "why": "Your orders end up in a Google Sheet every week. This lets Claude open that sheet and add each new week for you.",
+      "why": "Claude can open the Google Sheet your orders go into and add each week for you.",
       "evidence_ids": [
         "u1"
       ],
       "how_it_helps": "It's step two of your Monday report. Once Claude has the week's orders from Shopify, this puts them in your sheet.",
-      "do_you_need_it": "Add it now if your report stays in Google Sheets.",
-      "skip_if": "Skip it if you'd rather read the summary in Claude and stop using the sheet.",
+      "do_you_need_it": "Now if your report stays in Google Sheets.",
+      "skip_if": "You'd rather read the summary in Claude and stop using the sheet.",
       "summary": "Google's own add-on for Claude: it finds, opens and saves files in your Google Drive, including Google Sheets."
     },
     "claude-for-google-sheets": {
-      "why": "You build your sales summary by hand each week. With this, Claude can add up the totals and write the formulas with you.",
+      "why": "You build your weekly summary by hand; Claude can add totals and write formulas with you.",
       "evidence_ids": [
         "u2"
       ],
       "how_it_helps": "It's the last step of your Monday report. Once the week's orders are in your sheet, Claude can add them up right there.",
-      "do_you_need_it": "Add it now if you like building the summary in your sheet. Otherwise, Claude Desktop can write it for you with the Shopify and Google Drive picks.",
-      "skip_if": "Skip it if your work or school blocks add-ons on your Google account.",
+      "do_you_need_it": "Now if you like building the summary in Sheets. Otherwise, not needed.",
+      "skip_if": "Your work or school blocks add-ons on your Google account.",
       "summary": "Anthropic's own add-on for Google Sheets, Docs and Slides: a Claude panel inside your file. Still in testing, and only on paid plans."
     }
   }

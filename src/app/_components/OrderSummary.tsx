@@ -3,8 +3,8 @@
 // Server-rendered with the default ticks, so it still reads right without JavaScript.
 import { useEffect, useState } from "react";
 
-// rank: the card's number under "Barista's picks"; the extra idea has none.
-type Item = { id: string; name: string; extra: boolean; rank?: number };
+// rank: the card's number under "Barista's picks"; the extra idea has none. ticked: starts in the order ("Add now").
+type Item = { id: string; name: string; extra: boolean; rank?: number; ticked: boolean };
 
 // Ticks survive the reload after card feedback (per tab, per order). Storage can be blocked: then the defaults stay.
 const KEY = (runId: string) => `cafai:order:${runId}`;
@@ -25,7 +25,7 @@ function save(runId: string, ids: string[]) {
 }
 
 export function OrderSummary({ runId, items }: { runId: string; items: Item[] }) {
-  const [ticked, setTicked] = useState(() => new Set(items.filter((i) => !i.extra).map((i) => i.id)));
+  const [ticked, setTicked] = useState(() => new Set(items.filter((i) => i.ticked).map((i) => i.id)));
   useEffect(() => {
     const boxes = () => [...document.querySelectorAll<HTMLInputElement>('input[name="pick"][form="order"]')];
     const read = () => boxes().filter((b) => b.checked).map((b) => b.value);
@@ -42,7 +42,7 @@ export function OrderSummary({ runId, items }: { runId: string; items: Item[] })
     return () => all.forEach((b) => b.removeEventListener("change", sync));
   }, [runId]);
   const chosen = items.filter((i) => ticked.has(i.id));
-  const extra = items.find((i) => i.extra && !ticked.has(i.id));
+  const waiting = items.filter((i) => !ticked.has(i.id));
   return (
     <>
       {/* One live region that stays mounted, so emptying and refilling the list are both announced. */}
@@ -55,7 +55,7 @@ export function OrderSummary({ runId, items }: { runId: string; items: Item[] })
           <p className="order-empty">Nothing ticked yet. Tick at least one pick to set it up.</p>
         )}
       </div>
-      {extra && <p className="small">Extra idea, only if you tick it: {extra.name}</p>}
+      {waiting.length > 0 && chosen.length > 0 && <p className="small">Not in your order yet: {waiting.map((i) => i.name).join("; ")}</p>}
     </>
   );
 }
