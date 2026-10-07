@@ -66,7 +66,10 @@ access:
   - Products, collections and inventory
   - Store analytics
   access_plain: Can see your orders, customers and sales numbers. Can also change products, stock and discount codes, so ask it for reports only.
+  access_short: Your orders, customers and sales numbers. Can also change products, stock and discount codes.
   effort_plain: About 5 minutes. Shopify says to do it in a web browser on a computer.
+  effort_short: About 5 min
+  first_step: On a computer, sign in to your Shopify admin in a web browser.
   least_privilege_steps:
   - Do you have a staff account that can see orders and reports, but not change store settings? Use that account when you approve it in Shopify.
   - Ask for totals and order numbers, not full customer lists. That keeps customer names and emails out of your chats.
@@ -75,6 +78,7 @@ runtime:
   location: remote
 cost:
   model: free
+  label: No extra cost
   plan_required: Your usual Shopify plan; Shopify charges nothing extra for the connector
   source_url: https://help.shopify.com/en/manual/ai-powered-tools/connecting-ai-tools/shopify-connector-for-claude
   as_of: 2026-10-06
@@ -84,7 +88,7 @@ trust:
   namespace_verified: true
   notes: Made by Shopify and marked Anthropic verified in Anthropic's connector directory; Shopify's own help center documents it. mcp.market lists only third-party Shopify servers, none from Shopify, so no grade is recorded. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
 editorial:
-  what_it_is: An add-on that links Claude to your Shopify store. You approve, in Shopify, what Claude can see and change.
+  what_it_is: Links Claude to your Shopify store, so it can read orders and sales. You approve access in Shopify.
   could_help_with: Getting last week's orders, total sales and average order value whenever you ask.
   first_prompt: Look at my Shopify store. List last week's orders, Monday to Sunday, with order number, date, total and items. Then give me total sales, order count and average order value. Don't change anything in the store.
   reviewer: Claude (AI), not yet a person

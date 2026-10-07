@@ -37,7 +37,7 @@ Contrast, measured with the WCAG 2.x formula on the exact hex values (shown on t
 ## 3. Plan rules the design must keep (checked against §5, §8, §9, §18)
 
 - Level 1 of a card has no "MCP", "OAuth", "API", "SDK", "stdio". Technical facts sit at level 3.
-- Match and Confidence are two separate indicators, each with words (Strong/Good/Possible/Weak/Skip and Sure/Fairly sure/Not sure yet). Score numbers appear only at level 3, and their weights are still open (register A-009), so no numbers are drawn.
+- Match and Confidence are two separate indicators, each with words (Strong/Good/Possible/Weak/Skip and Sure/Fairly sure/Not sure yet). Score numbers appear only at level 3, and their weights are still open (register A-009), so no numbers are drawn. Since 2026-10-07 the indicators sit under "More details" and a decision pill leads the card (§9, register A-042).
 - Meaning never rests on colour alone; 44px targets; 4.5:1 text contrast; visible focus.
 - No category grid, no browse, no trending wall, no paid placement, no pricing page. The plan says Caf.ai is not a marketplace, so the user's "marketplace" wording was not followed literally.
 - Nothing is installed by Caf.ai; setup is a handoff. Third-party text is never rendered as HTML.
@@ -107,3 +107,35 @@ clickable mockup, with four refinements zay accepted:
 - Each pick card lists the tags it was picked for, so removing one visibly changes something.
 
 Refine (the filter chips) now keeps read-back edits instead of reading the description afresh.
+
+## 9. Shorter pick cards (2026-10-07)
+
+zay found the pick card long and hard to act on (the Sentry card had about 200 words before any drop-down). From a
+clickable mockup (https://claude.ai/artifact/Gx57xbPY4xBPe4L6jWhcgZ) zay approved this shape for every pick, plus four
+refinements:
+
+- **Decision first.** One pill, Add now / Add later / Not sure, replaces the Match bar, Confidence dots and "Do you need
+  it?" box at level 1. Not sure means low confidence (or "probably not"), and adds a "Heads up" line. Match and Confidence
+  keep their words and indicators under "More details" (register A-042).
+- **One facts line** under the title: maker · cost · time ("Sentry · Free plan · About 20 min"), from the catalog's
+  `vendor_short`, `cost.label` and `access.effort_short`.
+- **One sentence on what it does** (`what_it_is`, at most 18 words). Catalog text says "your AI"; the card says the
+  person's AI tool when they named one.
+- **Four short lines**: Why it fits (with the read-back tags it was picked for), When, Skip if, It can see
+  (`access.access_short`, at most 14 words, never understating access). They replace the quote, two paragraphs, "What it
+  could help with" and "Before you add it". The longer wording moves to "More details".
+- **Less chrome**: "Set up in" leaves the card (the order button says it), feedback is two thumbs and "Knew it".
+
+The four refinements:
+
+1. The order follows the pill: only Add now picks start ticked (the setup page's bare link follows the same rule).
+2. Add later cards start folded: title, facts and one sentence, then "Show why".
+3. "How to set it up" is three numbered steps (the catalog's `access.first_step`, then the order button, then the first
+   thing to ask, with a Copy button).
+4. Word limits keep it this way: the catalog loader rejects card fields over their limits, and the explanation checker
+   rejects "Why it fits" over 16 words, "When" over 12 and "Skip if" over 14 (the template or a retry then takes over).
+   Prompts are `prompts-v2`: "When" starts with Now, Later or Once, and "Skip if" holds only the condition.
+
+The 11 real tools and three saved examples were rewritten to fit, each line checked against its catalog facts by a
+second reviewer (access lines in particular, so none understates what a tool can change).
+

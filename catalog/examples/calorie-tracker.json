@@ -170,43 +170,43 @@
   },
   "explanations": {
     "expo-app-toolkit": {
-      "why": "You're making a phone app and don't know yet what you need. Expo's own guides show Claude Code how to start an app like yours.",
+      "why": "You're making a phone app, and this is where it starts.",
       "evidence_ids": [
         "u1"
       ],
       "how_it_helps": "Claude Code follows Expo's guides to make each screen. It can also put together test versions of your app on Expo's computers.",
-      "do_you_need_it": "Add it now, before anything else on this page.",
-      "skip_if": "Skip it if your app was started with a tool other than Expo or React Native, such as Flutter. Or if it was made just for iPhone or just for Android. Not sure? Ask Claude Code.",
+      "do_you_need_it": "Now, before anything else.",
+      "skip_if": "Your app was started without Expo or React Native, or is iPhone-only or Android-only.",
       "summary": "Expo's own add-on for Claude Code: how-to guides, test versions of your app, and help getting into the app stores."
     },
     "usda-fooddata-central": {
-      "why": "Your tracker needs the calories and macros for every food people log. This gives your app those numbers.",
+      "why": "Your tracker needs the numbers for every food people log.",
       "evidence_ids": [
         "u2"
       ],
       "how_it_helps": "Claude Code can add a food search to your app. The key stays out of the app itself, because USDA turns off keys it finds in public.",
-      "do_you_need_it": "Add it now if your app should fill in the numbers for people.",
-      "skip_if": "Skip it if you already pay for another list of foods that covers your users' countries.",
+      "do_you_need_it": "Now, if your app should fill in the numbers.",
+      "skip_if": "You already pay for a food list that covers your users' countries.",
       "summary": "USDA FoodData Central: a free list of foods and their nutrition. It needs a free access key."
     },
     "supabase-backend": {
-      "why": "Your tracker keeps each person's meals and goals. This saves them online, under each person's own sign-in.",
+      "why": "Your tracker can save each person's meals and goals online, under their own sign-in.",
       "evidence_ids": [
         "u2"
       ],
       "how_it_helps": "Claude Code can set up sign-in, and a place to keep food logs and goals. Supabase also has a step-by-step guide for apps made with Expo.",
-      "do_you_need_it": "Add it now if people will sign in or switch phones. If each log stays on one phone, it can wait.",
-      "skip_if": "Skip it if you already chose another place to keep your app's data online, such as Firebase.",
+      "do_you_need_it": "Now if people sign in or switch phones. Otherwise later.",
+      "skip_if": "You already chose another place for your data, like Firebase.",
       "summary": "Supabase's own add-on for Claude Code: online storage for your app, with sign-in. Claude Code can set it up."
     },
     "sentry-crash-alerts": {
-      "why": "You didn't mention crashes. But once other people try your app, you'll want to know when it breaks on their phone.",
+      "why": "Once testers try your app, you'll know when it breaks on their phone.",
       "evidence_ids": [
         "u1"
       ],
       "how_it_helps": "Each crash report points to the exact spot in your app that failed. Claude Code can read it and help you fix the problem.",
-      "do_you_need_it": "Add it later, once you share your app with testers. Sentry's free plan lets one person, you, read the crash reports.",
-      "skip_if": "Skip it if you already get crash reports from another tool, such as Firebase Crashlytics.",
+      "do_you_need_it": "Once you share your app with testers.",
+      "skip_if": "You already get crash reports, like from Firebase Crashlytics.",
       "summary": "Sentry's own add-on for Claude Code: crash reports from your app. Claude Code can read them to help you fix problems."
     }
   }

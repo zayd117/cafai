@@ -14,6 +14,7 @@ import { SavedExampleNote } from "../../../_components/SavedExampleNote";
 import { Thanks } from "../../../_components/Thanks";
 import { formatDate } from "../../../_components/format";
 import { ArrowLeftIcon } from "../../../_components/icons";
+import { startsInOrder } from "../../../_components/cardCopy";
 
 const hostOf = (url: string) => {
   try {
@@ -44,12 +45,12 @@ export default async function SetupPage({ params, searchParams }: {
   if (!snapshot) notFound();
 
   // Only picks from this run. The order form sends the ticked ones plus order=1, so ticking nothing sets up nothing;
-  // a bare link to this page (no picks, no order mark) gets the direct picks.
+  // a bare link to this page (no picks, no order mark) gets the picks that start in the order ("Add now").
   const requested = new Set([sp.pick ?? []].flat());
   const chosen = requested.size > 0 || sp.order !== undefined;
   const flags = await readFlags(getRuntime().pool);
   // Revoked offerings never get setup steps (§11 "Setup hidden"); say so rather than dropping them silently.
-  const ordered = run.picks.filter((p) => (chosen ? requested.has(p.offering_id) : p.lane === "direct"));
+  const ordered = run.picks.filter((p) => (chosen ? requested.has(p.offering_id) : startsInOrder(p)));
   const picks = ordered.filter((p) => !flags.revoked.has(p.offering_id));
   const withdrawn = ordered.length - picks.length;
   // Tabs for declared clients only (§8); with none declared, the three supported clients (REGISTER A-031).

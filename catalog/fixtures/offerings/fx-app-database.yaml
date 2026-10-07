@@ -53,13 +53,17 @@ access:
   data_touched:
     - app database
   access_plain: "SAMPLE: reads and writes your dev database"
+  access_short: "SAMPLE: reads and writes your dev database"
   effort_plain: "[effort placeholder]"
+  effort_short: "[time placeholder]"
+  first_step: "SAMPLE: nothing to sign up for."
   least_privilege_steps:
     - Use a development project and read-only access.
 runtime:
   location: remote
 cost:
   model: free
+  label: Free
   source_url: https://example.com/docs
   as_of: 2026-09-29
 trust:

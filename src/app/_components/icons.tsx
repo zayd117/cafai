@@ -20,3 +20,40 @@ export function CopyIcon() {
 export function CheckIcon() {
   return <svg {...base}><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>;
 }
+
+export function PlusIcon() {
+  return <svg {...base}><path d="M12 5v14M5 12h14" /></svg>;
+}
+
+export function ChevronDownIcon() {
+  return <svg {...base}><path d="m6 9 6 6 6-6" /></svg>;
+}
+
+/** Card line icons: why it fits, when, skip if, it can see, heads up. */
+export function TargetIcon() {
+  return <svg {...base}><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="4" /></svg>;
+}
+
+export function ClockIcon() {
+  return <svg {...base}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>;
+}
+
+export function SkipIcon() {
+  return <svg {...base}><circle cx="12" cy="12" r="9" /><path d="m6 6 12 12" /></svg>;
+}
+
+export function EyeIcon() {
+  return <svg {...base}><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" /></svg>;
+}
+
+export function AlertIcon() {
+  return <svg {...base}><path d="M12 3 22 21H2L12 3Z" /><path d="M12 10v5M12 18v.01" /></svg>;
+}
+
+export function ThumbUpIcon() {
+  return <svg {...base}><path d="M7 11v9H4v-9h3ZM7 11l4-8c1.7 0 3 1.3 3 3v3h5a2 2 0 0 1 2 2.3l-1.2 7A2 2 0 0 1 17.8 20H7" /></svg>;
+}
+
+export function ThumbDownIcon() {
+  return <svg {...base}><path d="M17 13V4h3v9h-3ZM17 13l-4 8c-1.7 0-3-1.3-3-3v-3H5a2 2 0 0 1-2-2.3l1.2-7A2 2 0 0 1 6.2 4H17" /></svg>;
+}

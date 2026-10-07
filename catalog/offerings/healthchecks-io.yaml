@@ -93,7 +93,10 @@ access:
   data_touched:
   - The time of each ping and anything you put in a ping's body
   access_plain: Can't see anything on your computer or in Excel. Can see only when your script checks in, plus anything your script adds to the check-in.
+  access_short: Only when your script checks in, plus anything it adds. Nothing on your computer.
   effort_plain: About 10 minutes. Needs a free Healthchecks account.
+  effort_short: About 10 min
+  first_step: Make a free Healthchecks account. Add a check, then copy its check-in link.
   least_privilege_steps:
   - Keep each check-in empty. Then none of your spreadsheet reaches Healthchecks.
   - Keep your check-in link out of any script you share with others.
@@ -102,6 +105,7 @@ runtime:
   location: remote
 cost:
   model: free
+  label: Free plan
   plan_required: Hobbyist (free, 20 jobs); paid plans from $5 a month
   source_url: https://healthchecks.io/pricing/
   as_of: 2026-10-06
@@ -111,7 +115,7 @@ trust:
   namespace_verified: false
   notes: First-party service and API; the same company publishes the open-source code (github.com/healthchecks/healthchecks, BSD 3-clause). No credentials to your other accounts are involved. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
 editorial:
-  what_it_is: Healthchecks is a free service your script checks in with, to say it's still running. If the check-ins stop, it emails you.
+  what_it_is: A service your script checks in with while it runs. If the check-ins stop, it emails you.
   could_help_with: Knowing that a quiet day really means no changes, not a stopped script. Plus a warning right away if your script can't find the cells.
   first_prompt: "Make my Tampermonkey script check in with my Healthchecks link: [paste your check-in link here]. Every 5 minutes, after it reads the cells fine, have it check in. Keep each check-in empty. If it can't find the cells, use the same link with /fail on the end. Use Tampermonkey's own way of sending (GM_xmlhttpRequest), and add the @connect line for hc-ping.com. Explain each change in plain words."
   reviewer: Claude (AI), not yet a person

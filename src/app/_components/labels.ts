@@ -9,7 +9,8 @@ export const MATCH_LABEL: Record<string, string> = {
 export const MATCH_SEGMENTS: Record<string, number> = { strong: 4, good: 3, possible: 2, weak: 1, skip: 0 };
 export const CONFIDENCE_LABEL: Record<string, string> = { high: "Sure", medium: "Fairly sure", low: "Not sure yet" };
 export const CONFIDENCE_DOTS: Record<string, number> = { high: 3, medium: 2, low: 1 };
-export const NEED_LABEL: Record<string, string> = { needed_now: "Needed now", useful_later: "Useful later", probably_not: "Probably not" };
+/** The card's decision pill (2026-10-07): need and confidence in one word pair. See cardCopy.pickState. */
+export const PILL_LABEL = { now: "Add now", later: "Add later", maybe: "Not sure" } as const;
 
 // Level-3 offering types with a few plain words each (§8: technical terms first appear with an explanation).
 // Wording is a draft pending the glossary (§24 should-have; REGISTER A-029).

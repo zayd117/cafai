@@ -109,7 +109,10 @@ access:
   - Edge Functions and project logs
   - Project URL and publishable keys
   access_plain: Can see and change your app's data in the Supabase project you pick. Can also change the small bits of code your app runs there. You can limit it to looking only.
+  access_short: Your Supabase data and code. Can change both unless you make it look-only.
   effort_plain: About 15 minutes. Needs a free Supabase account.
+  effort_short: About 15 min
+  first_step: Make a free Supabase account and a test project.
   least_privilege_steps:
   - Make a separate free test project for working with your AI, and keep real users' logs in the other one. The free plan allows two active projects.
   - Let your AI reach only that test project. Ask it to add project_ref=<your-project-id> to the Supabase address it uses. Or copy the ready-made address from the MCP tab in Supabase's Connect window, and paste it to your AI.
@@ -120,6 +123,7 @@ runtime:
   location: remote
 cost:
   model: free
+  label: Free plan
   plan_required: Free plan $0 (2 active projects, pauses after 1 week without activity); Pro from $25/month for production.
   source_url: https://supabase.com/pricing
   as_of: 2026-10-06
@@ -133,7 +137,7 @@ trust:
     grade: A
     as_of: '2026-10-06'
 editorial:
-  what_it_is: Supabase is online storage for your app, with sign-in built in. This add-on lets your AI set it up and check on it.
+  what_it_is: Online storage for your app, with sign-in built in. Your AI sets it up and checks on it.
   could_help_with: Saving each person's meals, calorie and macro goals, and weigh-ins, so they match on every device they use.
   first_prompt: In my Supabase test project, plan where to keep each user's daily food log and saved foods. Include their calorie and macro goals. Use row-level security so each user sees only their own data. Explain the change in plain words, and show it to me before you make it.
   reviewer: Claude (AI), not yet a person

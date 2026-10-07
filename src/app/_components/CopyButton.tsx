@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { CheckIcon, CopyIcon } from "./icons";
 
 /** `text`, when given, is what gets copied (the server-built string, safe from in-page translation); otherwise the target's text. */
-export function CopyButton({ targetId, text: source, label = "Copy message", className = "btn primary" }: { targetId: string; text?: string; label?: string; className?: string }) {
+export function CopyButton({ targetId, text: source, label = "Copy message", className = "btn primary", describedBy }: { targetId: string; text?: string; label?: string; className?: string; describedBy?: string }) {
   const [state, setState] = useState<"idle" | "copied" | "select">("idle");
   const [shortcut, setShortcut] = useState("Ctrl+C");
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -21,6 +21,7 @@ export function CopyButton({ targetId, text: source, label = "Copy message", cla
       <button
         type="button"
         className={className}
+        aria-describedby={describedBy}
         onClick={async () => {
           const el = document.getElementById(targetId);
           if (!el) return;

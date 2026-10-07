@@ -4,6 +4,7 @@ kind: plugin
 identity:
   display_name: Get Claude's help right inside your Google Sheet
   vendor: Anthropic, the maker of Claude
+  vendor_short: Anthropic
   technical_name: Claude for Google Workspace (Google Workspace Marketplace add-on for Docs, Sheets and Slides)
 capabilities:
 - in-sheet-help
@@ -58,7 +59,10 @@ access:
   data_touched:
   - The Google Docs, Sheets or Slides file you have open
   access_plain: Can see and change the file you have open, when you ask it to. Every change shows in the file's version history.
+  access_short: Your open file. Can also use your Claude add-ons. Changes the file when asked.
   effort_plain: About 2 minutes. Needs a paid Claude plan.
+  effort_short: About 2 min
+  first_step: Have a paid Claude plan. Your Google account must allow add-ons.
   least_privilege_steps:
   - First select the cells you want it to work on. That tells it where to work. It can still see the rest of the file.
   - After its first change, open your sheet's version history. That's where you can undo a change.
@@ -66,6 +70,7 @@ runtime:
   location: remote
 cost:
   model: paid
+  label: Needs paid Claude plan
   plan_required: Claude Pro, Max, Team or Enterprise (beta)
   source_url: https://support.claude.com/en/articles/16951679-use-claude-in-google-docs-sheets-and-slides
   as_of: 2026-10-06
@@ -75,7 +80,7 @@ trust:
   namespace_verified: false
   notes: Anthropic's own add-on, documented in Anthropic's help center. Not an MCP server, so it has no mcp.market listing. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
 editorial:
-  what_it_is: An add-on that puts a Claude panel inside Google Sheets, Docs and Slides. It works on the file you have open. It is still in testing.
+  what_it_is: Adds a Claude panel to Google Sheets, Docs and Slides that edits your open file. Still in testing.
   could_help_with: Building a summary tab that adds up each week for you. Fixing broken formulas and tidying messy order data.
   first_prompt: Use the orders on this sheet. Add a Summary tab with last week's total sales, order count, average order value and top 5 products. Use formulas, so it updates when new rows are added.
   reviewer: Claude (AI), not yet a person

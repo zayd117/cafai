@@ -108,7 +108,10 @@ access:
   - Pages open in the controlled Chrome profile, including signed-in sites
   - Console messages and network requests of those pages
   access_plain: Can see and change everything in the Chrome it controls, in every tab and window. Can open pages, click, type, run small bits of code and read error messages. Can see any site you sign in to there.
+  access_short: Everything in the Chrome it controls, even signed-in sites. It can change things there.
   effort_plain: About 5 minutes. Needs Chrome and Node.js (a free program it runs on).
+  effort_short: About 5 min
+  first_step: Install Node.js, a free program, and keep Google Chrome up to date.
   least_privilege_steps:
   - Use the separate Chrome window this add-on opens, not your everyday Chrome. Sign in there only to the Microsoft account that has your Excel file.
   - Practise on a copy of your Excel file, or a test sheet with nothing private in it.
@@ -122,6 +125,7 @@ runtime:
   - Google Chrome (stable)
 cost:
   model: free
+  label: Free
   source_url: https://registry.npmjs.org/chrome-devtools-mcp
   as_of: 2026-10-06
 trust:
@@ -134,7 +138,7 @@ trust:
     grade: B
     as_of: '2026-10-06'
 editorial:
-  what_it_is: A free add-on that gives your AI its own Chrome window. There, it can open web pages and look inside them.
+  what_it_is: Gives your AI its own Chrome window. There it opens pages, tests them and reads error messages.
   could_help_with: Finding the exact cells your script should read. Fixing it when it misses one. Testing changes before they go into Tampermonkey.
   first_prompt: "Open my test Excel file in Chrome: [paste your test file's link here]. I will sign in to Microsoft in that window if you ask. Find which parts of the page hold the cell values I can see. Then run a small test that lists the values you can read. Explain what you found in plain words."
   reviewer: Claude (AI), not yet a person

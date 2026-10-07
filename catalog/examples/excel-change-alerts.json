@@ -120,33 +120,33 @@
   },
   "explanations": {
     "ntfy-push-alerts": {
-      "why": "You want to know when a cell changes. This lets your script send that news to your phone.",
+      "why": "You want to know when a cell changes, and this lets your script tell your phone.",
       "evidence_ids": [
         "u2"
       ],
       "how_it_helps": "Your script is what spots each change. Your AI can add the part that sends ntfy a short note about it.",
-      "do_you_need_it": "Add it now if you want to hear about changes while away from your computer.",
-      "skip_if": "Skip it if a pop-up on your computer is enough. Tampermonkey can show one by itself. Also skip it if your alerts already go to a chat app.",
+      "do_you_need_it": "Now if you want to hear about changes away from your computer.",
+      "skip_if": "A computer pop-up is enough, or your alerts already go to a chat app.",
       "summary": "ntfy: a free alert service with a phone app. Your script sends it a short message, and your phone buzzes."
     },
     "chrome-devtools-mcp": {
-      "why": "Your script has to find the right cells on the Excel page. With this, your AI can look at that page itself.",
+      "why": "Your AI can look at the Excel page itself to find the cells your script needs.",
       "evidence_ids": [
         "u1"
       ],
       "how_it_helps": "Your AI sees exactly where each cell value sits on the Excel page. It can try your cell-reading code there and read any error messages it causes.",
-      "do_you_need_it": "Add it now if you're still writing and fixing your script. Without it, you copy bits of the page to your AI by hand.",
-      "skip_if": "Skip it if you use Excel in Edge and won't switch to Chrome. Also skip it if your AI can already read your browser tabs, as the Claude in Chrome add-on can.",
+      "do_you_need_it": "Now if you're still writing and fixing your script.",
+      "skip_if": "You'll keep Excel in Edge, or your AI can already read your browser tabs.",
       "summary": "A free add-on from Google's Chrome team. It lets your AI open, check and test web pages in Chrome."
     },
     "healthchecks-io": {
-      "why": "A script in a browser tab can stop without telling you. The tab closes, Microsoft signs you out, or Excel changes and your script can't find the cells.",
+      "why": "Your script can quietly stop when the tab closes, you're signed out, or Excel changes.",
       "evidence_ids": [
         "u1"
       ],
       "how_it_helps": "Your script checks in each time it reads the cells, every few minutes. Warnings can come by email, or to your ntfy app.",
-      "do_you_need_it": "Add it later, once you rely on your script to tell you about changes. The free plan can watch up to 20 scripts or other tasks.",
-      "skip_if": "Skip it if you check the script yourself every day, and a missed change wouldn't matter.",
+      "do_you_need_it": "Later, once you rely on your script to tell you about changes.",
+      "skip_if": "You check the script yourself every day, and a missed change wouldn't matter.",
       "summary": "Healthchecks: a free service that emails you when your script stops checking in."
     }
   }

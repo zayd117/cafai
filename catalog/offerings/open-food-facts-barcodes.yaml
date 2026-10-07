@@ -76,7 +76,10 @@ access:
   data_touched:
   - Public product data only
   access_plain: Can see only public food data. Can't see or change anything of yours.
+  access_short: Only public food data. Nothing of yours.
   effort_plain: No sign-up needed. Then one chat with your AI to add a scan screen.
+  effort_short: No sign-up needed
+  first_step: Nothing to sign up for. Have a contact email ready.
   least_privilege_steps:
   - While making and testing the app, use the practice copy (the staging server). Switch to the real one (the production server) only when you launch.
   - Never put your own Open Food Facts username or password in the app. Looking up foods needs neither.
@@ -85,6 +88,7 @@ runtime:
   location: remote
 cost:
   model: free
+  label: Free
   source_url: https://openfoodfacts.github.io/openfoodfacts-server/api/
   as_of: 2026-10-06
 trust:
@@ -93,7 +97,7 @@ trust:
   namespace_verified: true
   notes: Open Food Facts runs both the database and this API (openfoodfacts.org domains; server code at github.com/openfoodfacts). No package to install. There is no official Open Food Facts MCP server; community ones were not considered. Reviewed by Claude (AI) on 2026-10-06 from the maker's own pages, for the intake's saved examples; no person has reviewed it yet.
 editorial:
-  what_it_is: Open Food Facts is a free list of packaged foods, made by volunteers. Your app can look up a food by the barcode on its label.
+  what_it_is: A free list of packaged foods, made by volunteers. Your app can find one by its barcode.
   could_help_with: Letting someone scan a cereal box or a yogurt and get its calories and macros, with no typing.
   first_prompt: Add a barcode scan screen to my Expo app. Look the food up on the Open Food Facts practice server (staging). Name my app in each lookup with a proper User-Agent. Show calories, protein, carbs and fat per 100 g, and let me edit the numbers before saving.
   reviewer: Claude (AI), not yet a person

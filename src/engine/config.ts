@@ -49,8 +49,9 @@ export const ENGINE_CONFIG = {
   /** Staleness (§11, ASSUMPTION): 60 days lowers Confidence one band; 90 days removes from picks. */
   staleness: { lowerConfidenceAfterDays: 60, removeAfterDays: 90 },
 
-  /** Explanation validator (§9): length limits. Plan gives no numbers. */
-  explanation: { maxFieldChars: 280 },
+  /** Explanation validator (§9): length limits. Plan gives no numbers. Word limits keep the card's lines short
+   * (2026-10-07 card redesign: "Why it fits", "When", "Skip if"; the other two sit under More details). */
+  explanation: { maxFieldChars: 280, maxWords: { why: 16, do_you_need_it: 12, skip_if: 14, how_it_helps: 30, summary: 25 } },
 } as const;
 
 export type EngineConfig = typeof ENGINE_CONFIG;

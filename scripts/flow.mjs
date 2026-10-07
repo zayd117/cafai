@@ -50,24 +50,35 @@ for (const [label, width, height] of [["desktop", 1440, 1000], ["mobile", 390, 8
   const picks = await page.locator("article.card").count();
   expect(`${label}: 1 to 5 pick cards (got ${picks})`, picks >= 1 && picks <= 5);
   expect(`${label}: at most one Also worth knowing`, (await page.locator("article.card.awk").count()) <= 1);
-  const level1 = await page.locator("article.card").evaluateAll((cards) =>
-    cards.map((c) => [...c.children].filter((el) => el.tagName !== "DETAILS").map((el) => el.textContent).join(" ")).join(" "));
+  // Level 1 is what shows before any drop-down opens (closed <details> content is not rendered, so innerText skips it).
+  const level1 = await page.locator("article.card").evaluateAll((cards) => cards.map((c) => c.innerText).join(" "));
   expect(`${label}: no MCP/OAuth/API/SDK words at level 1`, !/\b(MCP|OAuth|APIs?|SDKs?|stdio)\b/.test(level1));
-  expect(`${label}: Match and Confidence words present`, /(Strong|Good) match/.test(level1) && /(Sure|Fairly sure|Not sure yet)/.test(level1));
+  expect(`${label}: every card leads with Add now / Add later / Not sure`, (await page.locator("article.card .pill").count()) === picks
+    && (await page.locator("article.card .pill").allTextContents()).every((t) => /^(Add now|Add later|Not sure)$/.test(t.trim())));
+  expect(`${label}: facts line and It can see line on every card`, (await page.locator("article.card .facts").count()) === picks
+    && (await page.locator("article.card .lines dt", { hasText: "It can see" }).count()) === picks);
+  const later = page.locator("article.card:has(.pill.later)");
+  for (let i = 0; i < await later.count(); i++) {
+    expect(`${label}: Add later card starts folded and out of the order`, (await later.nth(i).locator(".why-fold:not([open])").count()) === 1
+      && !(await later.nth(i).locator('input[name="pick"]').isChecked()));
+  }
   const hScroll2 = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
   expect(`${label}: no horizontal scroll on results`, !hScroll2);
   await page.screenshot({ path: `${out}/02-results-${label}.png`, fullPage: true });
 
-  // Level 2 and 3 open.
+  // Level 2 (setup steps, More details with Match and Confidence) and level 3 open.
   const first = page.locator("article.card").first();
-  await first.getByText("How it fits and how to set it up").click();
+  await first.getByText("How to set it up").click();
+  expect(`${label}: setup steps with the first prompt ready to copy`, (await first.locator(".steps > li").count()) >= 2 && await first.getByRole("button", { name: "Copy" }).isVisible());
+  await first.getByText("More details").click();
+  expect(`${label}: Match and Confidence words under More details`, /(Strong|Good) match/.test(await first.locator(".fit-signals").innerText()) && /(Sure|Fairly sure|Not sure yet)/.test(await first.locator(".fit-signals").innerText()));
   await first.getByText("Technical details").click();
   expect(`${label}: level 3 shows offering type`, await first.getByText("Offering type").isVisible());
   await first.screenshot({ path: `${out}/03-card-levels-${label}.png` });
 
   // Should-haves: alternatives inside level 2, and "How we understood this".
   const withAlt = page.locator("article.card").filter({ hasText: "Sample app database access" });
-  await withAlt.getByText("How it fits and how to set it up").click();
+  await withAlt.getByText("More details").click();
   await withAlt.getByText(/Show alternatives/).click();
   expect(`${label}: alternatives listed`, await withAlt.getByText("Sample hosted database helper").isVisible());
   await page.getByText("How we understood this").click();

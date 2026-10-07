@@ -4,6 +4,7 @@ import { runPipeline, type Ablations } from "@/engine/pipeline";
 import { ScriptedProvider } from "@/engine/providers/mock";
 import type { DecisionProvider, ExplanationRequest, JudgmentRequest, LlmProvider } from "@/engine/providers/types";
 import { costUsd } from "./metrics";
+import { wordCount } from "@/lib/words";
 import type { CaseResult, EvalCase } from "./types";
 
 /** MOCK provider scripted by a fixture case: canned understanding, uniform judgments, plain explanations. */
@@ -35,8 +36,9 @@ export function scriptedFor(c: EvalCase): ScriptedProvider {
               why: "It matches what you described.",
               evidence_ids: p.evidence_ids.slice(0, 1),
               how_it_helps: p.could_help_with,
-              do_you_need_it: p.need_type === "latent" ? "Useful later." : "Needed now.",
-              skip_if: p.skip_conditions[0] ?? "You already have this.",
+              do_you_need_it: p.need_type === "latent" ? "Later." : "Now.",
+              // The card's "Skip if" line allows 14 words; a longer catalog condition gets the generic line.
+              skip_if: p.skip_conditions[0] && wordCount(p.skip_conditions[0]) <= 14 ? p.skip_conditions[0] : "You already have this.",
               summary: p.what_it_is,
             })),
           },
