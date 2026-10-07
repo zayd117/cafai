@@ -13,20 +13,37 @@
       {
         "id": "u1",
         "kind": "goal",
-        "text": "You're making a phone app where people log meals and track calories and macros",
-        "quote": "calorie and macro tracker app for phones"
+        "text": "You're making an app for phones",
+        "quote": "app for phones",
+        "tag": "Phone app",
+        "suggestions": [
+          "iPhone app",
+          "Android app",
+          "Website"
+        ]
       },
       {
         "id": "u2",
-        "kind": "environment",
-        "text": "You use Claude Code",
-        "quote": "I use Claude Code"
+        "kind": "goal",
+        "text": "People use it to track the calories and macros they eat",
+        "quote": "calorie and macro tracker",
+        "tag": "Calorie and macro tracking",
+        "suggestions": [
+          "Calorie tracking",
+          "Meal planning",
+          "Weight loss"
+        ]
       },
       {
         "id": "u3",
-        "kind": "problem",
-        "text": "You're not sure yet what you need",
-        "quote": "I don't really know what I need"
+        "kind": "environment",
+        "text": "You use Claude Code",
+        "quote": "I use Claude Code",
+        "tag": "Claude Code",
+        "suggestions": [
+          "Cursor",
+          "Claude Desktop"
+        ]
       }
     ],
     "concepts": [
@@ -71,21 +88,22 @@
         "capability_id": "food-data-lookup",
         "need_type": "implied",
         "evidence_ids": [
-          "u1"
+          "u2"
         ]
       },
       {
         "capability_id": "app-data-storage",
         "need_type": "implied",
         "evidence_ids": [
-          "u1"
+          "u1",
+          "u2"
         ]
       },
       {
         "capability_id": "barcode-food-lookup",
         "need_type": "not_relevant",
         "evidence_ids": [
-          "u1"
+          "u2"
         ],
         "reason": "Only if you add barcode scanning, which you didn't mention. Then Open Food Facts, a free list of packaged foods, can fill in calories and macros from a barcode."
       },
@@ -101,7 +119,7 @@
         "capability_id": "project-notes",
         "need_type": "not_relevant",
         "evidence_ids": [
-          "u2"
+          "u3"
         ],
         "reason": "Claude Code already does this. Each time it starts, it reads a notes file about your project called CLAUDE.md. Type /init in Claude Code and it writes one for you. Nothing to add."
       }
@@ -164,7 +182,7 @@
     "usda-fooddata-central": {
       "why": "Your tracker needs the calories and macros for every food people log. This gives your app those numbers.",
       "evidence_ids": [
-        "u1"
+        "u2"
       ],
       "how_it_helps": "Claude Code can add a food search to your app. The key stays out of the app itself, because USDA turns off keys it finds in public.",
       "do_you_need_it": "Add it now if your app should fill in the numbers for people.",
@@ -174,7 +192,7 @@
     "supabase-backend": {
       "why": "Your tracker keeps each person's meals and goals. This saves them online, under each person's own sign-in.",
       "evidence_ids": [
-        "u1"
+        "u2"
       ],
       "how_it_helps": "Claude Code can set up sign-in, and a place to keep food logs and goals. Supabase also has a step-by-step guide for apps made with Expo.",
       "do_you_need_it": "Add it now if people will sign in or switch phones. If each log stays on one phone, it can wait.",

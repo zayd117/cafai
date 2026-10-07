@@ -12,13 +12,25 @@
         "id": "u1",
         "kind": "task",
         "text": "You're writing a Tampermonkey script that reads the Excel cells you can see on screen",
-        "quote": "Tampermonkey script that reads visible Excel cells"
+        "quote": "Tampermonkey script that reads visible Excel cells",
+        "tag": "Script that reads Excel",
+        "suggestions": [
+          "Tampermonkey script",
+          "Browser extension",
+          "Excel add-in"
+        ]
       },
       {
         "id": "u2",
         "kind": "goal",
         "text": "You want it to tell you when something in those cells changes",
-        "quote": "notifies me when something changes"
+        "quote": "notifies me when something changes",
+        "tag": "Change alerts",
+        "suggestions": [
+          "Phone alerts",
+          "Desktop alerts",
+          "Email alerts"
+        ]
       }
     ],
     "concepts": [

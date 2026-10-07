@@ -29,6 +29,10 @@ export interface RunInput {
   declaredClients: string[];
   constraints?: Constraints;
   userItems?: UserItem[]; // read-back edits: ground truth, rerun stages 3-13 (§9)
+  /** The person sent back the whole read-back: what they removed stays out (see understand). */
+  lockedReadback?: boolean;
+  /** Words the person added in the read-back; already appended to `text`. Only these can bring new items. */
+  addedText?: string;
   /** The user confirmed a low-confidence read-back (§9 failure table). */
   confirmed?: boolean;
   snapshot: CatalogSnapshot;
@@ -50,7 +54,8 @@ export async function runPipeline(input: RunInput): Promise<RunResult> {
   const declaredClients = input.declaredClients.filter((c) => snapshot.clients.some((k) => k.id === c));
 
   // 2-4. Understanding, concept expansion, potential needs
-  const u = await understand({ llm, text: red.text, declaredClients, taxonomy: snapshot.taxonomy, userItems });
+  const added = input.addedText ? redact(input.addedText, ENGINE_CONFIG.input.maxChars).text : undefined;
+  const u = await understand({ llm, text: red.text, declaredClients, taxonomy: snapshot.taxonomy, userItems, locked: input.lockedReadback, added });
   usage.push(...u.usage.map((x) => ({ ...x, stage: "understanding" })));
   const understanding = u.output;
   if (ab.noExpansion) understanding.needs = understanding.needs.filter((n) => n.need_type !== "implied" && n.need_type !== "latent");

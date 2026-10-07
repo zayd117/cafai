@@ -4,6 +4,7 @@ import type { Capability } from "@/catalog/types";
 import { ENGINE_CONFIG } from "./config";
 import { BilledError, type LlmProvider, type TaxonomyEntryForModel, type Usage } from "./providers/types";
 import { validateUnderstanding } from "./schemas";
+import { cleanSuggestions, cleanTag, shortTag } from "./tags";
 import type { CapabilityNeed, NeedType, ProfileItem, UnderstandingOutput } from "./types";
 
 const norm = (s: string) => s.toLowerCase().replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/\s+/g, " ").trim();
@@ -24,6 +25,12 @@ export interface UserItem {
   id: string;
   kind: ProfileItem["kind"];
   text: string;
+  /** The tag shown for it; for an unedited item, the one the model wrote. */
+  tag?: string;
+  /** The person's own words it came from, kept while the item is unedited (checked against the text again). */
+  quote?: string;
+  /** Other tags offered for it, carried over so a later visit can still swap. */
+  suggestions?: string[];
 }
 
 export interface UnderstandingResult {
@@ -69,13 +76,19 @@ export async function understand(args: {
   declaredClients: string[];
   taxonomy: Capability[];
   userItems?: UserItem[];
+  /** The person sent back the whole read-back: their items are the full list, so anything they removed stays out.
+   * Only words in `added` (already part of `text`) can bring new items. */
+  locked?: boolean;
+  added?: string;
 }): Promise<UnderstandingResult> {
   const { llm, text, taxonomy } = args;
   const userItems = args.userItems ?? [];
+  const added = args.locked ? (args.added ?? "").trim() : "";
+  const fromAdded = (quote: string) => !!added && quoteIsInText(quote, added);
   const usage: Usage[] = [];
   const raw = await callWithRetry(
     llm,
-    { text, declared_clients: args.declaredClients, user_items: userItems, taxonomy: taxonomyForModel(taxonomy) },
+    { text, declared_clients: args.declaredClients, user_items: userItems.map(({ id, kind, text }) => ({ id, kind, text })), taxonomy: taxonomyForModel(taxonomy) },
     usage,
   );
   const failed = raw === null;
@@ -85,7 +98,21 @@ export async function understand(args: {
   let droppedNeeds = 0;
 
   // Items: user edits are ground truth; model items must quote the user's text or they are dropped (§9).
-  const items: ProfileItem[] = userItems.map((u) => ({ ...u, quote: u.text, edited: true }));
+  // Items still in the person's own words (not reworded): a model item quoting the same words is the same item.
+  const unchanged = userItems.filter((u) => !!u.quote && quoteIsInText(u.quote, text));
+  const items: ProfileItem[] = userItems.map((u) => {
+    const tag = cleanTag(u.tag) ?? shortTag(u.text);
+    const suggestions = cleanSuggestions(u.suggestions, tag);
+    return {
+      id: u.id,
+      kind: u.kind,
+      text: u.text,
+      quote: u.quote && quoteIsInText(u.quote, text) ? u.quote : u.text,
+      tag,
+      ...(suggestions.length ? { suggestions } : {}),
+      edited: true,
+    };
+  });
   const idMap = new Map<string, string>(userItems.map((u) => [u.id, u.id]));
   let next = 1;
   const freshId = () => {
@@ -99,9 +126,22 @@ export async function understand(args: {
       droppedItems++;
       continue;
     }
+    if (args.locked && !fromAdded(it.quote)) {
+      // The person's list is final; only their new words add items. Needs the model tied to an item they kept
+      // still count; needs tied to one they removed or reworded do not.
+      const same = unchanged.find((u) => quoteIsInText(u.quote!, it.quote) || quoteIsInText(it.quote, u.quote!));
+      if (same) idMap.set(it.id, same.id);
+      continue;
+    }
     const newId = freshId();
     idMap.set(it.id, newId);
-    items.push({ id: newId, kind: it.kind, text: it.text, quote: it.quote });
+    const tag = cleanTag(it.tag) ?? shortTag(it.text);
+    const suggestions = cleanSuggestions(it.suggestions, tag);
+    items.push({
+      id: newId, kind: it.kind, text: it.text, quote: it.quote, tag,
+      ...(suggestions.length ? { suggestions } : {}),
+      ...(args.locked ? { is_new: true } : {}),
+    });
   }
 
   // Needs from the model: closed-world capability ids; evidence must resolve to kept items; latent only via curated signals.
@@ -136,9 +176,10 @@ export async function understand(args: {
 
   // Rules first: a job-phrase hit is a stated need. It upgrades model needs and adds its sentence as evidence.
   for (const { need, sentence } of ruleNeeds(evidenceText, taxonomy)) {
-    let item = items.find((i) => quoteIsInText(i.quote, sentence) || quoteIsInText(sentence, i.quote));
+    let item = items.find((i) => [i.quote, i.text].some((q) => quoteIsInText(q, sentence) || quoteIsInText(sentence, q)));
     if (!item) {
-      item = { id: freshId(), kind: "task", text: sentence, quote: sentence };
+      if (args.locked && !fromAdded(sentence)) continue; // they removed the item these words gave
+      item = { id: freshId(), kind: "task", text: sentence, quote: sentence, tag: shortTag(sentence), ...(args.locked ? { is_new: true } : {}) };
       items.push(item);
     }
     const existing = needs.get(need.capability_id);

@@ -18,6 +18,10 @@ export interface StartRun {
   declaredClients: string[];
   constraints?: Constraints;
   userItems?: UserItem[];
+  /** The read-back was sent back whole, so removed items stay removed. */
+  lockedReadback?: boolean;
+  /** Words added in the read-back, already appended to `text`. */
+  addedText?: string;
   confirmed?: boolean;
   parentRunId?: string;
   /** Id of the intake example whose saved answer produced this run (catalog/examples). */
@@ -83,6 +87,8 @@ export async function startRun(
     declaredClients: input.declaredClients,
     constraints,
     userItems: input.userItems,
+    lockedReadback: input.lockedReadback,
+    addedText: input.addedText,
     confirmed: input.confirmed,
     snapshot,
     llm: deps.llm,

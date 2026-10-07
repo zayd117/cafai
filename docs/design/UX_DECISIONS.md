@@ -91,3 +91,19 @@ feedback thanks take focus so screen readers read them; tab titles name the outc
 tab has a strong outline and the tabs wrap on phones; high-contrast mode keeps chevrons, meters and ticks visible; and
 `Referrer-Policy: same-origin` (was `no-referrer`, which made browsers send `Origin: null`, so every form failed without
 JavaScript).
+
+## 8. Read-back as tags (2026-10-07)
+
+zay found the "We understood" panel clunky: long sentences in text boxes. It is now a set of short tags, approved from a
+clickable mockup, with four refinements zay accepted:
+
+- Tags sit under plain group names (What you're making, What you use, Must have, Good to know). Claude writes each tag
+  (one to four plain words) and keeps them few: at most 8, related ones merged, nothing for "I don't know what I need".
+- Tapping a tag highlights the words it came from in "You said" and offers up to three other tags to swap in, plus a box
+  to reword it. People never have to think up search terms.
+- × removes a tag, with Undo. Removed tags stay out of later runs: the form sends every tag still shown, and the engine
+  only takes new tags from words the person adds (`understand(..., { locked, added })`).
+- "Add something we missed" appends the sentence to what they said; the next run turns it into tags, shown in green.
+- Each pick card lists the tags it was picked for, so removing one visibly changes something.
+
+Refine (the filter chips) now keeps read-back edits instead of reading the description afresh.

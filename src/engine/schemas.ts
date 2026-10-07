@@ -23,6 +23,8 @@ export const understandingSchema = {
           kind: { enum: ["goal", "task", "problem", "environment", "constraint", "current_tool", "interest", "possible_need"] },
           text: shortText,
           quote: { type: "string", maxLength: 1000 },
+          tag: { type: "string", minLength: 1, maxLength: 60 },
+          suggestions: { type: "array", maxItems: 5, items: { type: "string", minLength: 1, maxLength: 60 } },
         },
       },
     },
