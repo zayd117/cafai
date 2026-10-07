@@ -142,3 +142,23 @@ The four refinements:
 The 11 real tools and three saved examples were rewritten to fit, each line checked against its catalog facts by a
 second reviewer (access lines in particular, so none understates what a tool can change).
 
+## 10. Logo and wordmark (2026-10-07)
+
+zay asked for a stronger logo and font for the header. After rejecting three abstract marks, they had their own sketch
+refined: a coffee mug seen from above at an angle, with "a.i." in the latte art and steam rising. The message is "AI
+inside the coffee". Mockups are in /mnt/project-files/logo-green-tile/ (the shipped version) and the earlier
+/mnt/project-files/logo-*/ folders. zay tried a white tile (rejected: not enough clear space) and a steeper top view
+(rejected), and approved the green tile shown in the thread.
+
+- **Mark** (`public/brand/cafai-mark.svg`, 64-unit grid): a cream mug, close up, on a brand-green tile with 16-unit
+  corners. 8 units (12.5%) of clear space at the top and sides. The middle steam strand, the cup opening and "a.i." sit on
+  one vertical centre line. Only the body (bottom edge) and the handle (right edge) run off the tile; the outer steam
+  strands mirror each other. "a.i." is lowercase with dots, drawn as outlines, so the file needs no font.
+- **Favicon** (`src/app/icon.svg`): the letters cannot be read at tab size, so it shows a milk swirl instead, zooms the
+  mug in a little and keeps two steam strands.
+- **Wordmark**: "caf.ai" in Bricolage Grotesque 700 (zay: "adds some personality or charm"), lowercase, 26px, -0.03em
+  tracking, the dot in brand green (`--color-text-brand`). It is the only text in that face; next/font self-hosts it
+  like the other two.
+- **Lockup**: 44px mark, 12px gap, the wordmark centred on the mark. Phones (700px and below): 40px and 22px.
+- The link keeps the accessible name "Caf.ai home"; the mark is decorative (`alt=""`).
+
