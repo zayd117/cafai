@@ -34,17 +34,21 @@ export function checkExplanation(e: Explanation, pick: Placed, knownOfferingIds:
   return problems;
 }
 
-const clip = (s: string, n: number) => (s.length <= n ? s : s.slice(0, n - 1).trimEnd() + "…");
-/** The first sentence, so a long catalog skip condition still fits the card's "Skip if" line. */
-const firstSentence = (s: string) => s.match(/^.*?[.!?](?=\s|$)/)?.[0] ?? s;
+/** The first n words, with "…" when cut, so a long quote still fits the card's "Why it fits" line. */
+const clipWords = (s: string, n: number) => {
+  const words = s.trim().split(/\s+/);
+  return words.length <= n ? s.trim() : words.slice(0, n).join(" ") + "…";
+};
 
 /** Template fallback: catalog facts plus the user's own words (§9 failure table). */
 export function templateExplanation(pick: Placed, snapshot: CatalogSnapshot, items: ProfileItem[]): Explanation {
   const o = snapshot.offerings.find((x) => x.id === pick.offering_id)!;
   const cap = snapshot.taxonomy.find((c) => c.id === pick.capability_id);
   const ev = items.find((i) => pick.evidence_ids.includes(i.id));
-  const quote = ev ? clip(ev.quote, 160) : "";
-  const skip = o.skip_if[0] ?? cap?.skip_conditions[0] ?? "";
+  // "You said" takes two of the line's words.
+  const quote = ev ? clipWords(ev.quote, C.explanation.maxWords.why - 2) : "";
+  // The first skip condition short enough for the card; the loader keeps the catalog's first one within the limit.
+  const skip = [...o.skip_if, ...(cap?.skip_conditions ?? [])].find((s) => wordCount(s) <= C.explanation.maxWords.skip_if) ?? "";
   // Card lines (2026-10-07): "Why it fits", "When" (no "Add it" prefix), "Skip if" (the condition only).
   return {
     offering_id: o.id,
@@ -57,7 +61,7 @@ export function templateExplanation(pick: Placed, snapshot: CatalogSnapshot, ite
         : pick.do_you_need_it === "useful_later"
           ? "Later. You didn't ask for it, but it fits your project."
           : "",
-    skip_if: skip ? firstSentence(skip) : "",
+    skip_if: skip,
     summary: o.editorial.what_it_is,
   };
 }

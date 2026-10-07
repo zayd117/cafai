@@ -127,6 +127,8 @@ export function loadCatalog(opts: LoadOptions): LoadResult {
     const cardFields: Record<keyof typeof CATALOG_WORD_LIMITS, string | undefined> = {
       "identity.vendor_short": o.identity.vendor_short,
       "editorial.what_it_is": o.editorial.what_it_is,
+      "editorial.could_help_with": o.editorial.could_help_with,
+      "skip_if[0]": o.skip_if[0],
       "access.access_short": o.access.access_short,
       "access.effort_short": o.access.effort_short,
       "access.first_step": o.access.first_step,

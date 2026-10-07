@@ -35,9 +35,10 @@ export function vendorShort(o: Offering): string {
   return o.identity.vendor_short ?? o.identity.vendor;
 }
 
+/** Older entries say "Free" even with a plan_required: it can mean a free tier or a free add-on to a paid plan. */
 export function costLabel(o: Offering): string {
   if (o.cost.label) return o.cost.label;
-  if (o.cost.model === "free") return o.cost.plan_required ? "Free plan" : "Free";
+  if (o.cost.model === "free") return "Free";
   return o.cost.model === "paid" ? "Paid" : "Pay as you go";
 }
 

@@ -12,6 +12,7 @@ capabilities:
   - capability-id-from-taxonomy
 need_signals: []
 skip_if:
+  # The first one is the card's "Skip if" line when no model writes it: at most 14 words, starting with You or Your.
   - When to skip it, in plain words
 resource_profile:
   provides:
@@ -52,7 +53,7 @@ trust:
   namespace_verified: false
 editorial:
   what_it_is: One plain sentence, at most 18 words. Say "your AI" for the person's AI tool.
-  could_help_with: One plain sentence about this kind of project.
+  could_help_with: One plain sentence about this kind of project. # at most 30 words
   first_prompt: A first thing to ask your AI tool to try.
   reviewer: your initials
   reviewed_on: 2026-10-01

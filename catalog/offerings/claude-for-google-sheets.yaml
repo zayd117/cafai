@@ -12,7 +12,7 @@ need_signals:
 - text: Builds a summary, formulas or a report by hand in Google Sheets
   need_type: implied
 skip_if:
-- Your work or school blocks add-ons on your Google account and won't allow this one.
+- Your work or school Google account blocks add-ons and won't allow this one.
 - You'd rather have Claude Desktop do the whole report for you.
 resource_profile:
   provides:

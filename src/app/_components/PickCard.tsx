@@ -95,11 +95,13 @@ export function PickCard(props: {
     );
   }
 
+  // The heads-up never folds away: on an Add later card it sits above "Show why", so it is seen before ticking.
+  const warn = headsUp.length > 0 && (
+    <div className="warn"><dt><AlertIcon />Heads up</dt><dd>{headsUp.join(" ")}</dd></div>
+  );
   const lines = (
     <dl className="lines">
-      {headsUp.length > 0 && (
-        <div className="warn"><dt><AlertIcon />Heads up</dt><dd>{headsUp.join(" ")}</dd></div>
-      )}
+      {state !== "later" && warn}
       <div>
         <dt><TargetIcon />Why it fits</dt>
         <dd>
@@ -124,7 +126,7 @@ export function PickCard(props: {
       <details className="card-more">
         <summary>How to set it up<ChevronDownIcon /></summary>
         <div className="card-more-body">
-          <ol className="steps">
+          <ol className="setup-steps">
             {o.access.first_step && <li>{say(o.access.first_step)}</li>}
             <li>Put it in your order, then press “Set up in {ai}”. You get one message to paste.</li>
             <li>
@@ -219,7 +221,7 @@ export function PickCard(props: {
         {/* Each button is described by the card title, so a list of buttons still says which card it is about. */}
         <SubmitButton className="thumb" name="kind" value="useful" aria-label="Useful" aria-describedby={titleId}><ThumbUpIcon /></SubmitButton>
         <SubmitButton className="thumb" name="kind" value="not_useful" aria-label="Not useful" aria-describedby={titleId}><ThumbDownIcon /></SubmitButton>
-        <SubmitButton className="thumb text" name="kind" value="already_knew" aria-label="I knew this already" aria-describedby={titleId}>Knew it</SubmitButton>
+        <SubmitButton className="thumb text" name="kind" value="already_knew" aria-describedby={titleId}>Knew it</SubmitButton>
         {props.thanks && <Thanks text="Thanks, noted." />}
       </form>
     </div>
@@ -245,10 +247,14 @@ export function PickCard(props: {
       </div>
       <p className="card-lead">{say(o.editorial.what_it_is)}</p>
       {state === "later" ? (
-        <details className="why-fold">
-          <summary><span className="if-closed">Show why</span><span className="if-open">Hide why</span><ChevronDownIcon /></summary>
-          <div className="why-body">{lines}{footer}</div>
-        </details>
+        <>
+          {warn && <dl className="lines">{warn}</dl>}
+          {/* Opened again after feedback, so the thanks it holds is seen and announced. */}
+          <details className="why-fold" open={props.thanks || undefined}>
+            <summary><span className="if-closed">Show why</span><span className="if-open">Hide why</span><ChevronDownIcon /></summary>
+            <div className="why-body">{lines}{footer}</div>
+          </details>
+        </>
       ) : (
         <>{lines}{footer}</>
       )}

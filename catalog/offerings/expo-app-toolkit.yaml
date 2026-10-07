@@ -14,7 +14,7 @@ need_signals:
 - text: Building an app for iPhone and Android without native coding experience
   need_type: implied
 skip_if:
-- Your app was started with a tool other than Expo or React Native, such as Flutter. Or it was made just for iPhone or just for Android. Ask your AI if you're not sure.
+- Your app was started without Expo or React Native, or is iPhone-only or Android-only.
 - You are making a website, not a phone app.
 resource_profile:
   provides:

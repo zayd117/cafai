@@ -14,7 +14,7 @@ need_signals:
 - text: notification should reach a phone or another device, not only the computer running the script
   need_type: latent
 skip_if:
-- A pop-up on the same computer is enough. Tampermonkey can already show one by itself.
+- You only need a pop-up on the same computer; Tampermonkey can show one.
 - Your employer doesn't allow work data in outside services, and your alerts would need what's in the sheet.
 resource_profile:
   provides:

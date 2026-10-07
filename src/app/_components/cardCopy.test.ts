@@ -42,7 +42,8 @@ describe("pick card copy", () => {
   it("builds the facts line from the short fields, falling back for older snapshots", () => {
     const old = offering();
     expect([vendorShort(old), costLabel(old), effortShort(old)]).toEqual(["Sentry", "Free", "About 20 min"]);
-    expect(costLabel(offering({ cost: { plan_required: "Team from $26/month." } }))).toBe("Free plan");
+    // An older Shopify entry is free on top of a paid plan, so the fallback never guesses "Free plan".
+    expect(costLabel(offering({ cost: { plan_required: "Your usual Shopify plan; nothing extra for the connector" } }))).toBe("Free");
     expect(costLabel(offering({ cost: { model: "paid" } }))).toBe("Paid");
     expect(effortShort(offering({ access: { effort_plain: "No sign-up needed." } }))).toBe("");
     const now = offering({

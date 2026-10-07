@@ -31,6 +31,8 @@ for (const [label, width, height] of [["desktop", 1440, 1000], ["mobile", 390, 8
   await page.goto(`${base}/`, { waitUntil: "networkidle" });
   expect(`${label}: counter heading`, (await page.getByRole("heading", { level: 1 }).textContent())?.includes("What are you working on?"));
   expect(`${label}: sample-mode banner shown`, await page.getByText("Nothing here is a real recommendation.").isVisible());
+  expect(`${label}: How it works steps stay one row of three`, (await page.locator(".steps li .step-n").count()) === 3
+    && await page.locator(".steps").evaluate((el) => getComputedStyle(el).flexDirection === "row"));
   const csp = (await page.request.get(`${base}/`)).headers()["content-security-policy"] ?? "";
   expect(`${label}: strict CSP header`, csp.includes("script-src 'self' 'nonce-") && !csp.includes("unsafe-inline"));
   const hScroll = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
@@ -69,7 +71,7 @@ for (const [label, width, height] of [["desktop", 1440, 1000], ["mobile", 390, 8
   // Level 2 (setup steps, More details with Match and Confidence) and level 3 open.
   const first = page.locator("article.card").first();
   await first.getByText("How to set it up").click();
-  expect(`${label}: setup steps with the first prompt ready to copy`, (await first.locator(".steps > li").count()) >= 2 && await first.getByRole("button", { name: "Copy" }).isVisible());
+  expect(`${label}: setup steps with the first prompt ready to copy`, (await first.locator(".setup-steps > li").count()) >= 2 && await first.getByRole("button", { name: "Copy" }).isVisible());
   await first.getByText("More details").click();
   expect(`${label}: Match and Confidence words under More details`, /(Strong|Good) match/.test(await first.locator(".fit-signals").innerText()) && /(Sure|Fairly sure|Not sure yet)/.test(await first.locator(".fit-signals").innerText()));
   await first.getByText("Technical details").click();
@@ -89,6 +91,14 @@ for (const [label, width, height] of [["desktop", 1440, 1000], ["mobile", 390, 8
   await first.getByRole("button", { name: "Useful", exact: true }).click();
   await page.waitForURL(/thanks=useful/);
   expect(`${label}: feedback acknowledged`, await page.getByRole("status").filter({ hasText: "Thanks, noted." }).isVisible());
+  // Feedback on a folded Add later card reopens it, so the thanks is seen.
+  const laterCard = page.locator("article.card:has(.pill.later)").first();
+  const laterId = await laterCard.locator('input[name="rec"]').inputValue();
+  await laterCard.getByText("Show why").click();
+  await laterCard.getByRole("button", { name: "Useful", exact: true }).click();
+  await page.waitForURL((u) => u.searchParams.get("rec") === laterId);
+  expect(`${label}: feedback on an Add later card is acknowledged in the open card`, await laterCard.locator(".why-fold[open]").count() === 1
+    && await laterCard.getByRole("status").filter({ hasText: "Thanks, noted." }).isVisible());
 
   // Setup handoff (board 7): order form → setup, client tabs, decoded Cursor config, warnings, feedback.
   const resultsUrl = page.url().replace(/[?#].*$/, "");

@@ -16,7 +16,7 @@ need_signals:
 - text: needs to debug console errors from a script running in the browser
   need_type: implied
 skip_if:
-- You use Claude Code on a Pro, Max, Team or Enterprise plan, with the Claude in Chrome add-on. It can already read pages and error messages in your own Chrome or Edge.
+- You already use Claude Code with Claude in Chrome, which reads your browser pages.
 - You use Excel in Microsoft Edge or another browser and won't use Google Chrome. This add-on is made only for Chrome.
 - You don't want your AI to see what is open in a browser window.
 resource_profile:

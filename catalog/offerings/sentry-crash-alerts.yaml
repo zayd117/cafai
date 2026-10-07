@@ -14,7 +14,7 @@ need_signals:
 - text: The app is heading to testers or real users and no crash or error tracking is mentioned
   need_type: latent
 skip_if:
-- You already get crash reports from another tool, such as Firebase Crashlytics or PostHog error tracking.
+- You already get crash reports from another tool, such as Crashlytics or PostHog.
 - The app is an early version that nobody else uses yet.
 resource_profile:
   provides:

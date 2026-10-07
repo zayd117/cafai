@@ -129,11 +129,14 @@ refinements:
 The four refinements:
 
 1. The order follows the pill: only Add now picks start ticked (the setup page's bare link follows the same rule).
-2. Add later cards start folded: title, facts and one sentence, then "Show why".
+2. Add later cards start folded: title, facts and one sentence, then "Show why". A "Heads up" (automated-only trust)
+   stays above the fold, so nobody ticks the pick without seeing it.
 3. "How to set it up" is three numbered steps (the catalog's `access.first_step`, then the order button, then the first
    thing to ask, with a Copy button).
 4. Word limits keep it this way: the catalog loader rejects card fields over their limits, and the explanation checker
    rejects "Why it fits" over 16 words, "When" over 12 and "Skip if" over 14 (the template or a retry then takes over).
+   The template keeps to the same limits: it quotes at most 14 of the person's words, and the loader keeps each tool's
+   first `skip_if` (its "Skip if" line) within 14 words and `could_help_with` (its "How it helps") within 30.
    Prompts are `prompts-v2`: "When" starts with Now, Later or Once, and "Skip if" holds only the condition.
 
 The 11 real tools and three saved examples were rewritten to fit, each line checked against its catalog facts by a

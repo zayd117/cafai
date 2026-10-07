@@ -14,7 +14,7 @@ need_signals:
 - text: The app has sign-in or keeps each person's food log and goals
   need_type: implied
 skip_if:
-- Logs stay only on the phone, and you don't need sign-in or the same log on more than one device.
+- Your app keeps everything on the phone, with no sign-in and no second device.
 - You already chose another place to keep your app's data online, such as Firebase.
 resource_profile:
   provides:

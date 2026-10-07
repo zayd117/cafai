@@ -97,11 +97,13 @@ describe("loadCatalog", () => {
     const usda = join(dir, "offerings/usda-fooddata-central.yaml");
     edit(usda, "  vendor_short: USDA\n", "");
     edit(usda, "access_short: Only public food data. Nothing of yours.", "access_short: Only public food data, nothing of yours, and nothing at all from your phone, your computer or your account.");
+    edit(usda, "- You already pay for a list of foods that covers your users' countries.", "- You already pay for a list of foods that covers every country your users live in today.");
     const res = loadCatalog({ root: dir });
     expect(res.ok).toBe(false);
     if (!res.ok) {
       expect(res.errors.some((e) => e.message.includes("access.access_short has 19 words; the card allows 14"))).toBe(true);
       expect(res.errors.some((e) => e.message.includes("identity.vendor_short is required"))).toBe(true);
+      expect(res.errors.some((e) => e.message.includes("skip_if[0] has 17 words; the card allows 14"))).toBe(true);
     }
   });
 
