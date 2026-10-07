@@ -18,7 +18,7 @@ npm run flow -- http://localhost:3100 docs/figma-handoff/screens
 | Suite | Count | Covers |
 |---|---|---|
 | `src/catalog/load.test.ts` | 10 | Schema validation, fixture separation, referential rules, trust rule, stable snapshot version, card-copy word limits and short maker name |
-| `src/engine/explain.test.ts` | 2 | Explanation word limits for the card's "Why it fits", "When" and "Skip if" lines |
+| `src/engine/explain.test.ts` | 3 | Explanation word limits for the card's "Why it fits", "When" and "Skip if" lines, and the template keeping to them for every real tool |
 | `src/app/_components/cardCopy.test.ts` | 5 | Pick card decision pill and default order ticks, "your AI" → the person's AI tool, old "Add it" / "Skip it if" prefixes dropped, facts line with fallbacks for older snapshots |
 | `src/db/runs.db.test.ts` | 9 | Row-level security: tenant isolation, no enumeration of anonymous runs, child rows cannot claim another tenant, catalog write lock, append-only ledger, retention purge |
 | `src/engine/redact.test.ts` | 14 | 9 canary secrets, key assignments, URL credentials, private keys, length cap, injection flag |
