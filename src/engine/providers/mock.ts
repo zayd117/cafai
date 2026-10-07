@@ -8,8 +8,11 @@ import type {
   ModelResponse,
   UnderstandingRequest,
 } from "./types";
+import { shortTag } from "../tags";
 
 const ZERO = { model: "MOCK", input_tokens: 0, output_tokens: 0 };
+/** "I don't really know what I need" says why they came, not what they are building: no item for it. */
+const UNSURE = /\b(?:don(?:'|’)t|do not|not)\b.*\b(?:know|sure)\b.*\bneed\b/i;
 
 type Handler<Req> = (req: Req) => unknown | Promise<unknown>;
 
@@ -41,7 +44,7 @@ export class ScriptedProvider implements LlmProvider, DecisionProvider {
 }
 
 /**
- * Development stand-in with no intelligence: each sentence becomes a read-back item, no needs are inferred
+ * Development stand-in with no intelligence: each sentence becomes a read-back item tagged with its first words, no needs are inferred
  * (the engine's deterministic job-phrase rules still run), every candidate is judged "partial", and explanations
  * are left to the engine's template fallback. Useful only to exercise the UI end to end.
  */
@@ -51,12 +54,12 @@ export class HeuristicMockProvider implements LlmProvider, DecisionProvider {
     const sentences = req.text
       .split(/(?<=[.!?])\s+|\n+/)
       .map((s) => s.trim())
-      .filter((s) => s.split(/\s+/).length >= 3);
+      .filter((s) => s.split(/\s+/).length >= 3 && !UNSURE.test(s));
     return {
       json: {
         in_scope: req.text.trim().length > 0,
         confidence: sentences.length ? "medium" : "low",
-        items: sentences.slice(0, 8).map((s, i) => ({ id: `u${i + 1}`, kind: "task", text: s, quote: s })),
+        items: sentences.slice(0, 8).map((s, i) => ({ id: `u${i + 1}`, kind: "task", text: s, quote: s, tag: shortTag(s) })),
         concepts: [],
         needs: [],
         clarifying_question: null,

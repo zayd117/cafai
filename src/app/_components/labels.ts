@@ -34,3 +34,17 @@ export const NOT_NEEDED_REASON: Record<string, string> = {
 export const EVIDENCE_LABEL: Record<string, string> = { claimed: "The maker says", observed: "We checked", inferred: "Not confirmed" };
 
 export const TRUST_LABEL: Record<string, string> = { reviewed: "Reviewed", checked: "Checked" };
+
+// Read-back tag groups (results page): each item kind sits under a plain heading.
+export const TAG_GROUP: Record<string, string> = {
+  goal: "make", task: "make", problem: "make", interest: "make",
+  environment: "use", current_tool: "use",
+  constraint: "must",
+  possible_need: "know",
+};
+export const TAG_GROUP_ORDER = [
+  { id: "make", label: "What you’re making" },
+  { id: "use", label: "What you use" },
+  { id: "must", label: "Must have" },
+  { id: "know", label: "Good to know" },
+] as const;

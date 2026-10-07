@@ -5,6 +5,7 @@ import type { CatalogSnapshot, Fact } from "@/catalog/types";
 import type { StoredPick } from "@/server/runService";
 import type { ProfileItem } from "@/engine/types";
 import { sendFeedback } from "../actions";
+import { tagOf } from "@/engine/tags";
 import { formatDate } from "./format";
 import { SubmitButton } from "./SubmitButton";
 import { Thanks } from "./Thanks";
@@ -62,6 +63,8 @@ export function PickCard(props: {
   if (!o) return null; // offering left the snapshot: never render a pick without catalog facts
   const ex = pick.explanation;
   const evidence = readback.find((i) => ex.evidence_ids.includes(i.id));
+  // The read-back tags this pick rests on, so removing a tag visibly changes something.
+  const pickedFor = readback.filter((i) => pick.evidence_ids.includes(i.id) || ex.evidence_ids.includes(i.id));
   const awk = pick.lane === "also_worth_knowing";
   const facts = [...o.resource_profile.provides, ...o.resource_profile.requires, ...o.resource_profile.limits];
   const lowConfidence = pick.confidence_band === "low";
@@ -94,6 +97,12 @@ export function PickCard(props: {
         </label>
       </div>
       <p className="card-lead">{o.editorial.what_it_is}</p>
+      {pickedFor.length > 0 && (
+        <div className="picked-for">
+          <span className="part-label" id={`pf-${pick.id}`}>Picked for</span>
+          <ul aria-labelledby={`pf-${pick.id}`}>{pickedFor.map((i) => <li key={i.id}>{tagOf(i)}</li>)}</ul>
+        </div>
+      )}
       <dl className="signals">
         <div><dt className="part-label">Match</dt><dd><MatchMeter band={pick.match_band} /></dd></div>
         <div><dt className="part-label">Confidence</dt><dd><ConfidenceDots band={pick.confidence_band} /></dd></div>

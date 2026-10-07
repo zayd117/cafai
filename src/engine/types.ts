@@ -17,6 +17,12 @@ export interface ProfileItem {
   text: string; // plain words, shown in the read-back (§6)
   quote: string; // must be a substring of the redacted input
   edited?: boolean; // user edit = ground truth (§9)
+  /** Short label shown as a tag in the read-back ("Phone app"). Older runs have none: the UI cuts one from text. */
+  tag?: string;
+  /** Up to three other tags the person can swap this one for, so nobody has to think up the right words. */
+  suggestions?: string[];
+  /** Came from words the person just added, so the read-back can point it out. */
+  is_new?: boolean;
 }
 
 export type NeedType = "stated" | "implied" | "latent" | "present" | "not_relevant";

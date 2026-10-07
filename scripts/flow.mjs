@@ -103,16 +103,21 @@ for (const [label, width, height] of [["desktop", 1440, 1000], ["mobile", 390, 8
   // Not needed now and unknown run.
   if (label === "desktop") {
     await page.goto(resultsUrl, { waitUntil: "networkidle" });
-    // T-07: read-back edits are ground truth and redo the picks as a new run (plan §9).
+    // T-07: read-back edits are ground truth and redo the picks as a new run (plan §9). The read-back is tags:
+    // tapping one shows where it came from and lets the person reword it; × removes it.
     await page.getByText("Change this").click();
-    await page.getByLabel("Understood item 1").fill("A phone app where people log meals");
-    await page.getByLabel("Add something I missed").fill("I test signup flow by hand");
+    await page.locator(".tags .tag-t").last().click();
+    expect("T-07 tapping a tag highlights the words it came from", await page.locator(".said mark").isVisible());
+    await page.locator("#tag-own").fill("Claude Code on a laptop");
+    await page.getByRole("button", { name: "Save" }).click();
     await page.getByRole("button", { name: "Update my picks" }).click();
     await page.waitForURL((u) => /\/r\/[0-9a-f-]{36}$/.test(u.pathname) && u.href.replace(/[?#].*$/, "") !== resultsUrl);
     await page.waitForLoadState("networkidle");
     await page.getByText("Change this").click();
-    expect("T-07 edit reruns as a new run keeping the user's words", (await page.getByLabel("Understood item 1").inputValue()) === "A phone app where people log meals");
-    // T-08: refine filters rerun and stay ticked.
+    const tagsOf = () => page.locator(".tags .tag-t").allTextContents();
+    expect("T-07 edit reruns as a new run keeping the user's words", (await tagsOf()).includes("Claude Code on a laptop"));
+    expect("T-07 picks still shown after a tag edit", (await page.locator("article.card").count()) >= 1);
+    // T-08: refine filters rerun and stay ticked, and keep the read-back edits.
     await page.getByLabel("Free only").check().catch(async (e) => {
       await page.screenshot({ path: `${out}/_debug-refine.png`, fullPage: true });
       throw e;
@@ -120,6 +125,20 @@ for (const [label, width, height] of [["desktop", 1440, 1000], ["mobile", 390, 8
     await page.getByRole("button", { name: "Update picks" }).click();
     await page.waitForLoadState("networkidle");
     expect("T-08 refine keeps the filter ticked", await page.getByLabel("Free only").isChecked());
+    await page.getByText("Change this").click();
+    expect("T-08 refine keeps the read-back edits", (await tagsOf()).includes("Claude Code on a laptop"));
+    // T-07b: × removes a tag (with Undo), and a sentence added in the read-back becomes new tags.
+    const gone = (await tagsOf())[0];
+    await page.getByRole("button", { name: `Remove ${gone}` }).click();
+    expect("T-07b removing a tag offers Undo", await page.getByRole("button", { name: "Undo" }).isVisible());
+    // T-07b: a sentence added in the read-back becomes new tags.
+    await page.getByLabel("Add something we missed").fill("I test the signup flow by hand.");
+    await page.getByRole("button", { name: "Add", exact: true }).click();
+    await page.waitForURL((u) => /\/r\/[0-9a-f-]{36}$/.test(u.pathname));
+    await page.waitForLoadState("networkidle");
+    await page.getByText("Change this").click();
+    expect("T-07b an added sentence shows as a new tag", (await page.locator(".tags .tag.new").count()) >= 1);
+    expect("T-07b a removed tag stays removed", !(await tagsOf()).includes(gone));
     await page.goto(resultsUrl, { waitUntil: "networkidle" });
     await page.getByText(/Not needed now/).click();
     await page.screenshot({ path: `${out}/04-not-needed-${label}.png`, fullPage: false });

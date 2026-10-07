@@ -14,25 +14,45 @@
         "id": "u1",
         "kind": "task",
         "text": "Every Monday, you export your Shopify orders to Google Sheets",
-        "quote": "Every Monday I export Shopify orders to Google Sheets"
+        "quote": "Every Monday I export Shopify orders to Google Sheets",
+        "tag": "Shopify to Google Sheets",
+        "suggestions": [
+          "Shopify orders",
+          "Shopify to Excel"
+        ]
       },
       {
         "id": "u2",
         "kind": "task",
         "text": "Then you build a sales summary from those orders",
-        "quote": "build a sales summary"
+        "quote": "build a sales summary",
+        "tag": "Sales summary",
+        "suggestions": [
+          "Sales report",
+          "Weekly totals",
+          "Charts"
+        ]
       },
       {
         "id": "u3",
         "kind": "environment",
         "text": "You use Claude Desktop",
-        "quote": "I use Claude Desktop"
+        "quote": "I use Claude Desktop",
+        "tag": "Claude Desktop",
+        "suggestions": [
+          "Claude Code",
+          "Claude on the web"
+        ]
       },
       {
         "id": "u4",
         "kind": "environment",
         "text": "You also use ChatGPT at work",
-        "quote": "ChatGPT at work"
+        "quote": "ChatGPT at work",
+        "tag": "ChatGPT at work",
+        "suggestions": [
+          "ChatGPT"
+        ]
       }
     ],
     "concepts": [

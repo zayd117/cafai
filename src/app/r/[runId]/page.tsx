@@ -9,9 +9,11 @@ import { rerun } from "../../actions";
 import { MATCH_LABEL, NOT_NEEDED_REASON } from "../../_components/labels";
 import { OrderSummary } from "../../_components/OrderSummary";
 import { PickCard } from "../../_components/PickCard";
+import { ReadBackTags } from "../../_components/ReadBackTags";
 import { SubmitButton } from "../../_components/SubmitButton";
+import { tagOf } from "@/engine/tags";
 import { SavedExampleNote } from "../../_components/SavedExampleNote";
-import { ArrowRightIcon, PencilIcon } from "../../_components/icons";
+import { ArrowRightIcon } from "../../_components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -40,75 +42,22 @@ const RUN_ERRORS: Record<string, string> = {
 };
 
 function ReadBack({ run }: { run: StoredRun }) {
-  const items = run.details.readback;
-  const q = run.details.clarifying_question;
   // Open only when the next step is to check or add to what we understood.
   const open = run.outcome === "needs_confirmation" || run.outcome === "needs_clarification";
-  const asking = run.outcome === "needs_clarification";
   return (
-    <details className="readback" open={open}>
-      <summary>
-        <span className="readback-text">
-          <span className="readback-label">We understood<span className="sr-only">:</span></span>{" "}
-          {items[0]?.text ?? "Nothing yet"}
-          {items.length > 1 && <span className="muted"> and {items.length - 1} more</span>}
-        </span>
-        <span className="readback-edit">
-          <span className="if-closed">{run.text === null ? "Show" : <><PencilIcon />Change this</>}</span>
-          <span className="if-open">Hide</span>
-        </span>
-      </summary>
-      {run.text === null ? (
-        <div className="readback-form">
-          <ul className="have">{items.map((it) => <li key={it.id}>{it.text}</li>)}</ul>
-          <p className="small muted">Your original wording for this order has expired, so it can’t be changed. <a href="/">Start a new order</a> instead.</p>
-        </div>
-      ) : (
-      <form action={rerun} className="readback-form" id="readback-form">
-        <input type="hidden" name="run" value={run.id} />
-        {run.text && (
-          <div className="part">
-            <span className="part-label">You said</span>
-            <blockquote className="said">{run.text}</blockquote>
-          </div>
-        )}
-        {items.length > 0 && (
-          <fieldset className="readback-items">
-            <legend className="legend">Here’s what we understood. Change anything that’s off.</legend>
-            {items.map((it, i) => (
-              <div className="field" key={it.id}>
-                <label htmlFor={`item-${i}`} className="sr-only">Understood item {i + 1}</label>
-                <input type="hidden" name="item_id" value={it.id} />
-                <input type="hidden" name="item_kind" value={it.kind} />
-                <input id={`item-${i}`} name="item_text" className="input" defaultValue={it.text} maxLength={300} autoComplete="off" />
-              </div>
-            ))}
-          </fieldset>
-        )}
-        <div className="field">
-          <label htmlFor="add_item">Add something I missed</label>
-          <input id="add_item" name="add_item" className="input" maxLength={300} autoComplete="off" />
-        </div>
-        {q && (
-          <fieldset className={`chips${asking ? " ask" : ""}`}>
-            <legend className="legend">{asking ? q.text : `One quick question (only if it changes a pick): ${q.text}`}</legend>
-            {q.options.map((o) => (
-              <label key={o} className="chip"><input type="radio" name="answer" value={o} /><span>{o}</span></label>
-            ))}
-          </fieldset>
-        )}
-        <div className="form-actions">
-          <span className="small muted">{run.picks.length ? "Editing redoes the picks." : "We look again with your changes."}</span>
-          <span className="form-buttons">
-            <SubmitButton className={`btn${run.outcome === "needs_clarification" ? " primary" : ""}`} name="update" value="1" pendingText="Updating…">Update my picks</SubmitButton>
-            {run.outcome === "needs_confirmation" && (
-              <SubmitButton className="btn primary" name="confirm" value="1" pendingText="Checking…">Yes, that’s right</SubmitButton>
-            )}
-          </span>
-        </div>
-      </form>
-      )}
-    </details>
+    <ReadBackTags
+      runId={run.id}
+      said={run.text}
+      items={run.details.readback.map((i) => ({
+        id: i.id, kind: i.kind, text: i.text, tag: tagOf(i), quote: i.quote,
+        suggestions: i.suggestions ?? [], isNew: !!i.is_new,
+      }))}
+      question={run.details.clarifying_question}
+      asking={run.outcome === "needs_clarification"}
+      confirming={run.outcome === "needs_confirmation"}
+      hasPicks={run.picks.length > 0}
+      open={open}
+    />
   );
 }
 

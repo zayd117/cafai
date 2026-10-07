@@ -12,6 +12,15 @@ import { loadRun, startRun, type StartRun } from "@/server/runService";
 import { sameReadback, savedExampleById, savedExampleFor, savedProviders, type SavedExample } from "@/server/savedExamples";
 
 const CLIENTS = new Set(["claude_code", "cursor", "claude_desktop", "other"]);
+/** A posted JSON list of strings; anything else reads as empty. */
+function parseList(raw: string): string[] {
+  try {
+    const v: unknown = JSON.parse(raw.slice(0, 1000));
+    return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string").slice(0, 5) : [];
+  } catch {
+    return [];
+  }
+}
 const ITEM_KINDS = new Set(["goal", "task", "problem", "environment", "constraint", "current_tool", "interest", "possible_need"]);
 
 /** Checks before any run (plan §14 denial of wallet, §17 kill switches). Redirects instead of running when refused. */
@@ -71,30 +80,50 @@ export async function rerun(form: FormData) {
   const prev = await loadRun(g.rt.pool, parent);
   if (!prev || prev.text === null) redirect(`/r/${parent}?error=expired`);
 
+  // The read-back form sends every tag still shown, so a missing one was removed and must stay out of the new run.
   const items: UserItem[] = [];
   const ids = form.getAll("item_id").map(String);
   const kinds = form.getAll("item_kind").map(String);
   const texts = form.getAll("item_text").map(String);
+  const tags = form.getAll("item_tag").map(String);
+  const quotes = form.getAll("item_quote").map(String);
+  const suggestions = form.getAll("item_suggestions").map(String);
+  const removed = String(form.get("remove") || ""); // the × on a tag, when the page runs without JavaScript
   ids.forEach((id, i) => {
     const t = (texts[i] ?? "").trim().slice(0, 300);
-    if (t && /^[a-z0-9]{1,12}$/i.test(id) && ITEM_KINDS.has(kinds[i] ?? "")) items.push({ id, kind: kinds[i] as UserItem["kind"], text: t });
+    if (id === removed || !t || !/^[a-z0-9]{1,12}$/i.test(id) || !ITEM_KINDS.has(kinds[i] ?? "")) return;
+    const tag = (tags[i] ?? "").trim().slice(0, 60);
+    const quote = (quotes[i] ?? "").trim().slice(0, 1000);
+    const swap = parseList(suggestions[i] ?? "");
+    items.push({ id, kind: kinds[i] as UserItem["kind"], text: t, ...(tag ? { tag } : {}), ...(quote ? { quote } : {}), suggestions: swap });
   });
+  let locked = form.has("readback");
+  // Refine sends no read-back. Keep the person's earlier changes instead of reading their words afresh (which would
+  // bring back tags they removed and undo their edits).
+  if (!locked && form.has("refine") && prev.details.readback.some((i) => i.edited)) {
+    locked = true;
+    for (const i of prev.details.readback) {
+      items.push({ id: i.id, kind: i.kind, text: i.text, ...(i.tag ? { tag: i.tag } : {}), quote: i.quote, suggestions: i.suggestions ?? [] });
+    }
+  }
+  // A sentence added in the read-back joins what they said; Claude turns it into new tags.
   const added = String(form.get("add_item") || "").trim().slice(0, 300);
-  if (added) items.push({ id: `a${items.length + 1}`, kind: "task", text: added });
   const answer = String(form.get("answer") || "").trim().slice(0, 120);
-  if (answer) items.push({ id: `q${items.length + 1}`, kind: "constraint", text: answer });
+  if (answer) items.push({ id: `q${items.length + 1}`, kind: "constraint", text: answer, tag: answer });
 
   // A saved example still applies while the read-back is unchanged (Refine, or Update with no edits).
-  const example = prev.details.saved_example && (items.length === 0 || sameReadback(items, prev.details.readback))
-    ? savedExampleById(prev.details.saved_example) : null;
+  const unchanged = !added && !answer && (items.length === 0 ? !locked : sameReadback(items, prev.details.readback));
+  const example = prev.details.saved_example && unchanged ? savedExampleById(prev.details.saved_example) : null;
   const constraints = form.has("refine")
     ? { remote_only: form.has("remote_only"), vendor_official_only: form.has("vendor_official_only"), free_only: form.has("free_only") }
     : prev.details.constraints;
   const id = await run(g, {
-    text: prev.text,
+    text: added ? `${prev.text}\n${added}` : prev.text,
     declaredClients: prev.declared_clients,
     constraints,
-    userItems: items.length && !example ? items : undefined,
+    userItems: (items.length || locked) && !example ? items : undefined,
+    lockedReadback: locked && !example,
+    addedText: added || undefined,
     confirmed: form.has("confirm") || prev.details.confirmed,
     parentRunId: parent,
   }, example);

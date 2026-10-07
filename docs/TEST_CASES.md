@@ -47,8 +47,8 @@ copy button works (client JS under CSP) · Cursor config decoded before link · 
 
 | ID | Case | Steps | Expected | Status |
 |---|---|---|---|---|
-| T-07 | Read-back edit reruns | On a results page open "Change this", edit an item, add one, press "Update my picks" | New run URL; picks recomputed; old run unchanged | Automated in flow.mjs |
-| T-08 | Refine filters | Tick "Free only", "Update picks" | Paid offerings leave the picks; filter stays ticked | Automated in flow.mjs (filter persists; fixture catalog has no paid pick to drop) |
+| T-07 | Read-back tag edits rerun | On a results page open "Change this", tap a tag (its words highlight), reword it, remove another with ×, press "Update my picks"; then add a sentence and press "Add" | New run URL; picks recomputed; the reworded tag stays, the removed one stays out; the added sentence shows as new tags; old run unchanged | Automated in flow.mjs |
+| T-08 | Refine filters | Tick "Free only", "Update picks" | Paid offerings leave the picks; filter stays ticked; read-back edits are kept | Automated in flow.mjs (filter and edits persist; fixture catalog has no paid pick to drop) |
 | T-09 | Low-confidence confirm | Input that the model reads with low confidence | Read-back open, "Is this right?", no picks until "Yes, that's right" | Shown in controls-flow (AI off); pressing "Yes, that's right" not yet automated |
 | T-10 | Clarifying question | Input with a model question | One question with options; answer reruns | Needs a fixture script with a question |
 | T-11 | Degraded banner | Explanation model fails | Banner shown; cards use template wording | Covered in unit tests; not in browser |
