@@ -37,7 +37,7 @@ Legend: **BUILT** = drawn in Figma and visually checked. **SPEC'D** = specified 
 
 | Figma component (variant axes → props) | Node | Status | Expected code | Location | Today |
 |---|---|---|---|---|---|
-| **Icon/** check, chevron-down, chevron-right, copy, alert, external, cup, x | 5:14 … 5:59 | BUILT | `<Icon name="check" />`, inline SVG, `stroke="currentColor"`, 24px grid, 1.75 stroke | `src/app/_components/Icon.tsx` (new) | Cup drawn inline in `layout.tsx` (`CupIcon`); chevrons are CSS |
+| **Icon/** check, chevron-down, chevron-right, copy, alert, external, cup, x | 5:14 … 5:59 | BUILT | `<Icon name="check" />`, inline SVG, `stroke="currentColor"`, 24px grid, 1.75 stroke | `src/app/_components/Icon.tsx` (new) | Header uses the brand mark (`public/brand/cafai-mark.svg`, UX_DECISIONS §10); chevrons are CSS |
 | **Button** `Style=Primary\|Secondary\|Ghost`, `Size=Large\|Default\|Small`, `State=Default\|Hover\|Focus\|Disabled`; text prop `Label` | 5:122 (28 variants) | BUILT | Keep the class API: `.btn` + `.primary` / (secondary = default) / `.link` for Ghost; `.small`; new `.large` (56px, counter only). States are CSS `:hover`, `:focus-visible`, `:disabled`, not props | `globals.css` | `.btn`, `.btn.primary`, `.btn.small`, `.btn.link`, `.btn.fit`; pill radius, 48px |
 | **Chip** `Selected=False\|True`, `State=Default\|Hover\|Focus\|Disabled`; text prop `Label` | 5:151 (8) | BUILT | Keep markup `label.chip > input[type=checkbox\|radio] + span`; `Selected=True` is `:checked + span`; check mark via `::before` (mask or inline SVG) | `globals.css` | `.chip` (checked = ink fill, no check mark) |
 | **Tab** `State=Default\|Hover\|Current\|Focus`; text prop `Label` | 5:164 (4) | BUILT | `a.tab[aria-current="page"]` | `globals.css` | `.tab` (same markup) |

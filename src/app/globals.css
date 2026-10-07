@@ -13,6 +13,7 @@
   --moss: var(--color-fill-meter-on);
   --moss-soft: var(--color-bg-brand-soft);
   --display: var(--font-sans);
+  --font-wordmark: var(--font-bricolage), var(--font-sans);
   --body: var(--font-sans);
   --mono: var(--font-mono);
   color-scheme: light;
@@ -39,8 +40,11 @@ summary::-webkit-details-marker { display: none; }
 
 /* Shell */
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px clamp(16px, 5vw, 72px); }
-.brand { display: flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; font-family: var(--display); font-size: 24px; }
-.brand-mark { width: 40px; height: 40px; border-radius: 999px; background: var(--clay); display: grid; place-items: center; }
+.brand { display: flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
+.brand-mark { display: block; width: 44px; height: 44px; flex: none; }
+.wordmark { font: 700 26px/1 var(--font-wordmark); letter-spacing: -0.03em; }
+.wordmark-dot { color: var(--color-text-brand); }
+@media (max-width: 700px) { .brand-mark { width: 40px; height: 40px; } .wordmark { font-size: 22px; } }
 .nav { display: flex; gap: 24px; }
 .nav a { color: var(--ink); text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; text-underline-offset: 4px; }
 .nav a:hover { color: var(--color-text-brand); text-decoration: underline; }
