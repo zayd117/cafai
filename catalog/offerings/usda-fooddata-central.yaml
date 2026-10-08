@@ -102,4 +102,8 @@ editorial:
   first_prompt: Plan how my app can look up a food in USDA FoodData Central. Show its calories, protein, carbs and fat per serving. Keep the access key in a private place online, never inside the app. Explain the plan in plain words before you write any code.
   reviewer: Claude (AI), not yet a person
   reviewed_on: 2026-10-06
+found_on:
+  url: https://fdc.nal.usda.gov/api-guide
+  label: USDA’s guide
+  snapshot_on: 2026-10-07
 last_verified_on: 2026-10-06

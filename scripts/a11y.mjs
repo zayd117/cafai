@@ -48,6 +48,25 @@ await page.keyboard.press("Enter");
 await page.waitForURL(/\/r\/[0-9a-f-]{36}$/);
 await page.waitForLoadState("networkidle");
 await scan("results (all levels open)");
+
+// "Found on" from the keyboard: Tab onto the link opens its picture after a short wait; Esc closes it and keeps focus.
+const card = page.locator("article.card").first();
+await card.locator('input[name="pick"]').focus();
+await page.keyboard.press("Tab");
+await page.waitForTimeout(700);
+const opened = await card.locator(".found-link").evaluate((a) => a === document.activeElement) && await card.locator(".found-pop").isVisible();
+await scan("results (Found on picture open)");
+await page.keyboard.press("Escape");
+const closed = !(await card.locator(".found-pop").isVisible()) && await card.locator(".found-link").evaluate((a) => a === document.activeElement);
+await page.keyboard.press("Tab");
+await page.keyboard.press("Enter");
+const button = await card.getByRole("button", { name: "Preview" }).getAttribute("aria-expanded") === "true";
+// Tabbing out of the line closes it, so it never covers the control that gets focus next.
+await page.keyboard.press("Tab");
+const tabbedOut = !(await card.locator(".found-pop").isVisible());
+const kbFound = opened && closed && button && tabbedOut;
+results.push(`${kbFound ? "PASS" : "FAIL"} keyboard opens the Found on picture (Tab to link, or Preview + Enter); Esc closes it and keeps focus; tabbing on closes it`);
+if (!kbFound) { failed = true; results.push(`    opened ${opened}, closed ${closed}, button ${button}, tabbed out ${tabbedOut}`); }
 await page.getByRole("button", { name: /^Set up in/ }).focus();
 await page.keyboard.press("Enter");
 await page.waitForURL(/\/setup/);

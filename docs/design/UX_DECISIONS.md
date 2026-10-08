@@ -162,3 +162,38 @@ inside the coffee". Mockups are in /mnt/project-files/logo-green-tile/ (the ship
 - **Lockup**: 44px mark, 12px gap, the wordmark centred on the mark. Phones (700px and below): 40px and 22px.
 - The link keeps the accessible name "Caf.ai home"; the mark is decorative (`alt=""`).
 
+
+## 11. "Found on" link with a page picture (2026-10-08)
+
+zay asked for a visible link on each card to where we found the tool, previewing that page on hover. Claude built three
+versions and tested them with zay's live-page idea on the 11 real pages (report:
+https://claude.ai/artifact/BPf5gkFMZJEQW2pB89ZVAa). zay chose "my first version": a dated picture we take ourselves,
+plus a separate Preview button on every device. Claude had recommended words only; the live page in a frame was ruled
+out (blocked by 7 of 11 sites and by our own security rules, and it let trackers run).
+
+- **Line**: under "what it does", `Found on {label} · {host} ↗`, then a Preview pill. The label is ours (at most 4
+  words, house style), the host is muted. The link opens in a new tab and is named "{label} {host}, opens in a new tab".
+- **Which page**: `found_on.url` must be a page the card's own facts cite (the loader refuses anything else). Three
+  cited pages had moved (Expo, Supabase, Sentry's Expo guide), so those facts now cite where the page lives today.
+- **Picture**: the top of the page, computer (640×400) and phone (780×720) versions, served by Caf.ai from
+  `public/found-on/<id>-<date>.jpg` (and `-phone`), so the other site hears nothing until the link is clicked. The date
+  in the name means a retake never replaces a picture an older run shows; keep old pictures while runs can cite them. Screens 600px wide or less get the
+  phone picture. It loads only when someone points at the link or presses Preview, never with the page. The box says
+  "Snapshot from {date}"; an entry without `snapshot_on` shows the link and no Preview, so no card claims a picture it
+  does not have.
+- **Opening**: Preview toggles it on any device. On a computer, resting on the link for 0.4 s opens it too (sliding
+  past opens nothing), and it stays open while the mouse moves into it. Tabbing to the link opens it after the same
+  wait. Focus leaving the line closes it, however it opened, so it never hides the next control. Esc or a click
+  elsewhere closes it; after Esc it stays closed until the mouse leaves the link. Taps on the link only open the page.
+  One picture is open at a time. Near the bottom of the window it opens above the line, and in a short window the
+  picture shrinks, down to the words only.
+- **Fixed from the tested first version**: no picture downloads on page load (was 11, about 370 KB); readable phone
+  picture (was a computer picture at 27% size); 44px targets on touch screens; no flash while tabbing; stays inside the
+  window near the bottom; no tooltip role around an image; the box no longer says "opens in a new tab" (it is not a link); no stray space before ", opens in a new tab"; label "USDA's
+  guide" (the first version's label used a banned word); links to the cited page for Chrome, Healthchecks and Sentry.
+- **Retaking pictures**: `node scripts/capture-found-on.mjs [id ...]` where the open web is reachable (GitHub's
+  runners). It keeps the old picture and date on a robot check, an error or a move to another site. Look at each new
+  picture before committing it.
+- **Known limits** (REGISTER A-043): the pictures show other sites' words, including ones our house style bans; on a
+  computer the picture is too small to read and mainly shows what kind of page it is; storing pictures of other sites
+  is not yet cleared; nothing retakes them on a schedule.

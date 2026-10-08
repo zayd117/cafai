@@ -102,4 +102,8 @@ editorial:
   first_prompt: Add a barcode scan screen to my Expo app. Look the food up on the Open Food Facts practice server (staging). Name my app in each lookup with a proper User-Agent. Show calories, protein, carbs and fat per 100 g, and let me edit the numbers before saving.
   reviewer: Claude (AI), not yet a person
   reviewed_on: 2026-10-06
+found_on:
+  url: https://openfoodfacts.github.io/openfoodfacts-server/api/
+  label: Open Food Facts’ guide
+  snapshot_on: 2026-10-07
 last_verified_on: 2026-10-06

@@ -93,4 +93,8 @@ editorial:
   first_prompt: Look at my Shopify store. List last week's orders, Monday to Sunday, with order number, date, total and items. Then give me total sales, order count and average order value. Don't change anything in the store.
   reviewer: Claude (AI), not yet a person
   reviewed_on: 2026-10-06
+found_on:
+  url: https://help.shopify.com/en/manual/ai-powered-tools/connecting-ai-tools/shopify-connector-for-claude
+  label: Shopify’s help page
+  snapshot_on: 2026-10-07
 last_verified_on: 2026-10-06

@@ -300,6 +300,29 @@ details[open] > summary::after { transform: rotate(180deg); }
 .why-fold { margin-left: -10px; }
 .why-fold:not([open]) > summary .if-open, .why-fold[open] > summary .if-closed { display: none; }
 .why-body { display: flex; flex-direction: column; gap: 14px; margin-left: 10px; padding-top: 6px; }
+/* "Found on" line with its Preview picture (UX_DECISIONS §11). The picture floats over the rows below it. */
+.found-on { position: relative; }
+.found-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; font-size: 15px; color: var(--color-text-secondary); }
+.found-where { min-width: 0; overflow-wrap: anywhere; }
+.found-link { color: var(--color-text-brand); font-weight: 600; text-decoration: none; }
+.found-label { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.found-host { font-weight: 400; color: var(--color-text-secondary); }
+.found-link svg { width: 14px; height: 14px; margin-left: 3px; vertical-align: -2px; }
+.found-link:hover .found-label { text-decoration-thickness: 2px; }
+.found-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 14px; border: 1px solid var(--color-border-brand); border-radius: var(--radius-full); background: var(--color-bg-brand-soft); color: var(--color-text-on-brand-soft); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.found-btn[aria-expanded="true"] { background: var(--prim-brand-100); }
+@media (hover: hover) { .found-btn:hover { background: var(--prim-brand-100); } }
+/* Touch: 44px tap areas. The link's padding grows its target without moving the text; the row gap keeps it off the
+   Preview button when that wraps below. */
+@media (pointer: coarse) { .found-line { row-gap: 14px; } .found-link { padding: 12.5px 0; } .found-btn { min-height: 44px; } }
+.found-pop { position: absolute; z-index: 5; top: calc(100% + 8px); left: 0; width: min(380px, 100%); display: flex; flex-direction: column; overflow: hidden; background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); }
+.found-pop[hidden] { display: none; }
+.found-pop.above { top: auto; bottom: calc(100% + 8px); }
+.found-pop img { display: block; width: 100%; height: auto; max-height: var(--found-pic-max, 45vh); object-fit: cover; object-position: top left; background: var(--color-bg-sunken); border-bottom: 1px solid var(--line); }
+.found-pop[data-fit="words"] picture { display: none; }
+.found-pop-text { display: flex; flex-direction: column; gap: 2px; padding: 12px 16px 14px; }
+.found-pop-host, .found-pop-meta { font-size: 14px; color: var(--color-text-muted); }
+@media (max-width: 600px) { .found-pop { width: 100%; } }
 .signal { display: inline-flex; gap: 8px; align-items: center; font-weight: 600; font-size: 15px; }
 .meter { display: inline-flex; gap: 3px; }
 .meter i { width: 20px; height: 8px; border-radius: var(--radius-xs); background: var(--color-fill-meter-off); }
@@ -396,6 +419,7 @@ details[open] > summary::after { transform: rotate(180deg); }
   .meter i, .dots i { forced-color-adjust: none; background: Canvas; border: 1px solid CanvasText; }
   .meter i.on, .dots i.on { background: CanvasText; }
   .rank { border: 1px solid CanvasText; }
+  .found-btn[aria-expanded="true"] { outline: 2px solid Highlight; outline-offset: 2px; }
   .pill, .lines .picked-for li { border: 1px solid CanvasText; }
   .order-toggle input:not(:checked) + span::before { forced-color-adjust: none; background: CanvasText; }
   .tab[aria-current="page"] { outline: 2px solid Highlight; outline-offset: -2px; }

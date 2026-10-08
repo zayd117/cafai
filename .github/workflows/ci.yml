@@ -52,9 +52,9 @@ jobs:
           npx next start -p 3100 > "$RUNNER_TEMP/next.log" 2>&1 &
           for i in $(seq 60); do curl -sf -o /dev/null http://localhost:3100/ && exit 0; sleep 1; done
           cat "$RUNNER_TEMP/next.log"; exit 1
-      - name: Browser flow (85 checks)
+      - name: Browser flow (116 checks)
         run: CHROMIUM_PATH=$(command -v google-chrome) npm run flow -- http://localhost:3100 "$RUNNER_TEMP/screens"
-      - name: Accessibility (6 checks)
+      - name: Accessibility (8 checks)
         run: CHROMIUM_PATH=$(command -v google-chrome) npm run a11y -- http://localhost:3100
       - if: failure()
         uses: actions/upload-artifact@v4

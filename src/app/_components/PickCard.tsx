@@ -1,5 +1,6 @@
 // The pick card (plan §8 Card anatomy), redesigned 2026-10-07 from a mockup zay approved: a decision pill, a facts
-// line, one sentence on what it does and four short lines, then "How to set it up" and "More details". Match and
+// line, one sentence on what it does, where we found it (2026-10-08) and four short lines, then "How to set it up" and
+// "More details". Match and
 // Confidence moved into More details (REGISTER A-042). Level 1 never shows MCP, stdio, OAuth, API or SDK; catalog facts
 // (names, access, setup) render from the run's catalog snapshot, never from model text (§9).
 import { Fragment } from "react";
@@ -11,6 +12,7 @@ import { tagOf } from "@/engine/tags";
 import { accessShort, costLabel, effortShort, forClient, pickState, skipLine, startsInOrder, vendorShort, whenLine } from "./cardCopy";
 import { CopyButton } from "./CopyButton";
 import { formatDate } from "./format";
+import { FoundOn } from "./FoundOn";
 import { AlertIcon, CheckIcon, ChevronDownIcon, ClockIcon, EyeIcon, SkipIcon, TargetIcon, ThumbDownIcon, ThumbUpIcon } from "./icons";
 import { SubmitButton } from "./SubmitButton";
 import { Thanks } from "./Thanks";
@@ -246,6 +248,8 @@ export function PickCard(props: {
         </label>
       </div>
       <p className="card-lead">{say(o.editorial.what_it_is)}</p>
+      {/* Where we found it, under what it does: a link to the page the facts cite, and a dated picture of it. */}
+      {o.found_on && <FoundOn offeringId={o.id} url={o.found_on.url} label={o.found_on.label} snapshotOn={o.found_on.snapshot_on} describedBy={titleId} />}
       {state === "later" ? (
         <>
           {warn && <dl className="lines">{warn}</dl>}

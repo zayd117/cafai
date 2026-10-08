@@ -120,4 +120,8 @@ editorial:
   first_prompt: "Make my Tampermonkey script check in with my Healthchecks link: [paste your check-in link here]. Every 5 minutes, after it reads the cells fine, have it check in. Keep each check-in empty. If it can't find the cells, use the same link with /fail on the end. Use Tampermonkey's own way of sending (GM_xmlhttpRequest), and add the @connect line for hc-ping.com. Explain each change in plain words."
   reviewer: Claude (AI), not yet a person
   reviewed_on: 2026-10-06
+found_on:
+  url: https://healthchecks.io/docs/http_api/
+  label: Healthchecks’ guide
+  snapshot_on: 2026-10-07
 last_verified_on: 2026-10-06

@@ -138,6 +138,17 @@
         "reviewed_on": { "type": "string", "format": "date" }
       }
     },
+    "found_on": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url", "label"],
+      "description": "The card's \"Found on\" link: the page its shown facts cite most.",
+      "properties": {
+        "url": { "type": "string", "format": "uri", "description": "Must also be a fact's source_url." },
+        "label": { "type": "string", "minLength": 1, "maxLength": 32, "description": "Who runs the page and what it is (at most 4 words), e.g. 'Shopify’s help page'." },
+        "snapshot_on": { "type": "string", "format": "date", "description": "Day we took the pictures in public/found-on/<id>-<date>.jpg (computer) and <id>-<date>-phone.jpg. Leave out without pictures: the card then shows the link and no Preview." }
+      }
+    },
     "last_verified_on": { "type": "string", "format": "date", "description": "Drives staleness rules (plan §11: 60 days lowers Confidence, 90 removes; ASSUMPTION)." }
   },
   "$defs": {

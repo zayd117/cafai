@@ -20,7 +20,7 @@ resource_profile:
   provides:
   - text: Sentry's kit for Expo apps watches for errors. It can also track speed, replay what a person did in the app, and collect your app's error messages.
     evidence: claimed
-    source_url: https://docs.sentry.io/platforms/react-native/manual-setup/expo/
+    source_url: https://docs.sentry.io/platforms/react-native/guides/expo/
     as_of: 2026-10-06
   - text: The add-on links your AI to your Sentry account and adds Sentry's how-to guides. The guides set Sentry up to fit your app. They also help find and fix problems, check changes to your app's code, and turn on more features.
     evidence: claimed
@@ -37,11 +37,11 @@ resource_profile:
   requires:
   - text: Expo version 50 or newer (Expo SDK 50), and a Sentry account.
     evidence: claimed
-    source_url: https://docs.sentry.io/platforms/react-native/manual-setup/expo/
+    source_url: https://docs.sentry.io/platforms/react-native/guides/expo/
     as_of: 2026-10-06
   - text: Setup uses a secret key called SENTRY_AUTH_TOKEN. Sentry says to keep it in a hidden file on your computer (.env.local). When Expo puts your app together on its own computers, keep it in Expo's hidden settings (an EAS secret). Never save it in git (your saved code history).
     evidence: claimed
-    source_url: https://docs.sentry.io/platforms/react-native/manual-setup/expo/
+    source_url: https://docs.sentry.io/platforms/react-native/guides/expo/
     as_of: 2026-10-06
   supports:
   - text: The connection can be limited to one organization (/mcp/<org>) or one project (/mcp/<org>/<project>); tools then default to that scope and discovery tools are hidden.
@@ -145,4 +145,8 @@ editorial:
   first_prompt: Add Sentry crash reports to my Expo app. Explain each step in plain words, and keep the secret key (SENTRY_AUTH_TOKEN) out of git. Then help me cause a test crash and find it in Sentry.
   reviewer: Claude (AI), not yet a person
   reviewed_on: 2026-10-06
+found_on:
+  url: https://docs.sentry.io/platforms/react-native/guides/expo/
+  label: Sentry’s guide
+  snapshot_on: 2026-10-07
 last_verified_on: 2026-10-06

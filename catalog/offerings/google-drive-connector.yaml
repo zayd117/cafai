@@ -92,4 +92,8 @@ editorial:
   first_prompt: "Open this sheet: [paste your sheet's link here]. Tell me which columns it has and what last week's totals were. Don't change the file yet."
   reviewer: Claude (AI), not yet a person
   reviewed_on: 2026-10-06
+found_on:
+  url: https://support.claude.com/en/articles/10166901-use-google-workspace-connectors
+  label: Claude’s help page
+  snapshot_on: 2026-10-07
 last_verified_on: 2026-10-06

@@ -56,6 +56,7 @@ Legend: **BUILT** = drawn in Figma and visually checked. **SPEC'D** = specified 
 | **ReadBack** `State=Collapsed\|Open\|Needs confirmation` | — | SPEC'D | `ReadBack()` (unchanged behaviour: `<details>`, editable items, one question, "Editing redoes the picks") | extract from `r/[runId]/page.tsx` to `_components/ReadBack.tsx` | function in the page file |
 | **TopBar**, **Footer** | — | SPEC'D | `layout.tsx` header/footer | `layout.tsx` (or `_components/TopBar.tsx`, `Footer.tsx`) | inline in `layout.tsx` |
 | **PickCard** `Kind=Direct\|AlsoWorthKnowing`, `Depth=Collapsed\|Level 2 open\|Levels 2+3 open`, booleans `Low-confidence note`, `Checked-trust note`; **PickCardRevoked** | — | SPEC'D | `PickCard` (behaviour unchanged: 12 parts, 3 levels, tick-to-add checkbox, feedback, alternatives) | `_components/PickCard.tsx` | exists |
+| **FoundOn** `Picture=Dated\|None`, `State=Closed\|Open\|Open above` | — | not drawn (code first, UX_DECISIONS §11) | `<FoundOn offeringId url label snapshotOn describedBy />` | `_components/FoundOn.tsx` | exists: `.found-on`, `.found-pop` |
 | **Skeletons** (read-back, pick card) | — | SPEC'D | new; only when streaming is built | `_components/Skeleton.tsx` | not built (plan §18 streaming) |
 
 ## 3. Screens (all SPEC'D, none drawn yet)

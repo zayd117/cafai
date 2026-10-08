@@ -57,4 +57,9 @@ editorial:
   first_prompt: A first thing to ask your AI tool to try.
   reviewer: your initials
   reviewed_on: 2026-10-01
+# The card's "Found on" link: the page its facts cite most (url must be one of the source_url values above).
+found_on:
+  url: https://example.com/docs
+  label: Maker’s guide # who runs it and what it is, at most 4 words
+  # snapshot_on: 2026-10-01 # only with pictures at public/found-on/<id>-<date>.jpg and <id>-<date>-phone.jpg (scripts/capture-found-on.mjs)
 last_verified_on: 2026-10-01
