@@ -108,6 +108,10 @@ export function loadCatalog(opts: LoadOptions): LoadResult {
     };
     https("identity.repo_url", o.identity.repo_url);
     https("cost.source_url", o.cost.source_url);
+    https("found_on.url", o.found_on?.url);
+    // The "Found on" link goes to a page the card's own facts cite, never to one nothing on the card rests on.
+    const cited = [...o.resource_profile.provides, ...o.resource_profile.requires, ...o.resource_profile.supports, ...o.resource_profile.limits].map((f) => f.source_url);
+    if (o.found_on && !cited.includes(o.found_on.url)) issues.push({ file, message: `found_on.url must be one of its facts' source_url, got ${o.found_on.url}` });
     for (const f of [...o.resource_profile.provides, ...o.resource_profile.requires, ...o.resource_profile.supports, ...o.resource_profile.limits]) https("fact source_url", f.source_url);
     for (const d of o.distributions) {
       https("distribution source_url", d.source_url);
@@ -133,6 +137,7 @@ export function loadCatalog(opts: LoadOptions): LoadResult {
       "access.effort_short": o.access.effort_short,
       "access.first_step": o.access.first_step,
       "cost.label": o.cost.label,
+      "found_on.label": o.found_on?.label,
     };
     for (const [k, v] of Object.entries(cardFields) as [keyof typeof CATALOG_WORD_LIMITS, string | undefined][]) {
       if (v && wordCount(v) > CATALOG_WORD_LIMITS[k]) issues.push({ file, message: `${k} has ${wordCount(v)} words; the card allows ${CATALOG_WORD_LIMITS[k]}` });

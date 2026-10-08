@@ -28,20 +28,20 @@ resource_profile:
     as_of: 2026-10-06
   - text: On a paid Expo plan, the link to your Expo account lets your AI search Expo's latest help pages. It can add ready-made parts that work with your app, and make and check new versions of it online. It can run Expo tasks you saved, and send your app to the stores. It can read crash reports from TestFlight (Apple's test app) and Google Play. It can also read your App Store and Google Play reviews.
     evidence: claimed
-    source_url: https://docs.expo.dev/eas/ai/mcp/
+    source_url: https://docs.expo.dev/mcp/
     as_of: 2026-10-06
   - text: While you test your app from your computer, your AI can take screenshots of it and tap around in it. It can also collect your app's error messages.
     evidence: claimed
-    source_url: https://docs.expo.dev/eas/ai/mcp/
+    source_url: https://docs.expo.dev/mcp/
     as_of: 2026-10-06
   requires:
   - text: An Expo account, and an app made with the latest version of Expo.
     evidence: claimed
-    source_url: https://docs.expo.dev/eas/ai/mcp/
+    source_url: https://docs.expo.dev/mcp/
     as_of: 2026-10-06
   - text: Screenshots and tapping need Expo version 54 or later. They also need one extra piece added to your app (expo-mcp). And the app must be started in a special way (with EXPO_UNSTABLE_MCP_SERVER=1).
     evidence: claimed
-    source_url: https://docs.expo.dev/eas/ai/mcp/
+    source_url: https://docs.expo.dev/mcp/
     as_of: 2026-10-06
   - text: To put your app in Apple's App Store, you need an Apple Developer Program membership. It costs 99 USD per membership year.
     evidence: claimed
@@ -67,11 +67,11 @@ resource_profile:
   limits:
   - text: Your AI can connect to only one running copy of your app at a time. On iPhone, screenshots and tapping work only in Apple's pretend iPhone on a Mac (the iOS simulator).
     evidence: claimed
-    source_url: https://docs.expo.dev/eas/ai/mcp/
+    source_url: https://docs.expo.dev/mcp/
     as_of: 2026-10-06
   - text: Searching Expo's help pages needs a paid Expo plan.
     evidence: claimed
-    source_url: https://docs.expo.dev/eas/ai/mcp/
+    source_url: https://docs.expo.dev/mcp/
     as_of: 2026-10-06
   - text: On the free plan, Expo's pricing page says the link to your Expo account is limited to fair use.
     evidence: claimed
@@ -102,7 +102,7 @@ distributions:
   - Use this only if you want the link to your Expo account without Expo's how-to guides. Then type /mcp in Claude Code to sign in.
   compatibility: declared
   verified_on: 2026-10-06
-  source_url: https://docs.expo.dev/eas/ai/mcp/
+  source_url: https://docs.expo.dev/mcp/
 - client: cursor
   method: deeplink
   link: cursor://anysphere.cursor-deeplink/mcp/install?name=expo&config=eyJ1cmwiOiJodHRwczovL21jcC5leHBvLmRldi9tY3AifQ%3D%3D
@@ -118,7 +118,7 @@ distributions:
   - Open the "Start here" link above. It's Expo's page in Claude's list of add-ons. Add it, then sign in to Expo.
   compatibility: declared
   verified_on: 2026-10-06
-  source_url: https://docs.expo.dev/eas/ai/mcp/
+  source_url: https://docs.expo.dev/mcp/
 access:
   auth: oauth
   credential_needed: a free Expo account. You sign in to it in your web browser, with no key to copy
@@ -160,4 +160,8 @@ editorial:
   first_prompt: Use Expo's how-to guides to start a new calorie and macro tracker app. Give it three tabs called Today, Add food and Progress. Then tell me step by step, in plain words, how to open it on my phone.
   reviewer: Claude (AI), not yet a person
   reviewed_on: 2026-10-06
+found_on:
+  url: https://docs.expo.dev/mcp/
+  label: Expo’s guide
+  snapshot_on: 2026-10-07
 last_verified_on: 2026-10-06

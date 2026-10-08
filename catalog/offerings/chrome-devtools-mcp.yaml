@@ -143,4 +143,8 @@ editorial:
   first_prompt: "Open my test Excel file in Chrome: [paste your test file's link here]. I will sign in to Microsoft in that window if you ask. Find which parts of the page hold the cell values I can see. Then run a small test that lists the values you can read. Explain what you found in plain words."
   reviewer: Claude (AI), not yet a person
   reviewed_on: 2026-10-06
+found_on:
+  url: https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/README.md
+  label: Google’s code page
+  snapshot_on: 2026-10-07
 last_verified_on: 2026-10-06

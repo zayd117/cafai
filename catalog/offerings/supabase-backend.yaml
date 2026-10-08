@@ -20,7 +20,7 @@ resource_profile:
   provides:
   - text: Your AI can see how your app's data is set up, and change it. It can read and change the data itself. It can get Supabase's advice on security and speed, and read your app's error messages. It can also put small bits of code online.
     evidence: claimed
-    source_url: https://supabase.com/docs/guides/getting-started/mcp
+    source_url: https://supabase.com/docs/guides/ai-tools/mcp
     as_of: 2026-10-06
   - text: The add-on links your AI to your Supabase account and adds two how-to guides. One covers sign-in, storing data and files, small bits of code online and live updates. The other covers laying out your data and keeping each person's data private (row-level security).
     evidence: claimed
@@ -33,7 +33,7 @@ resource_profile:
   requires:
   - text: A Supabase account and project. At setup, a sign-in page opens in your web browser. There, pick the organization (Supabase's folder for your projects) that holds your project.
     evidence: claimed
-    source_url: https://supabase.com/docs/guides/getting-started/mcp
+    source_url: https://supabase.com/docs/guides/ai-tools/mcp
     as_of: 2026-10-06
   supports:
   - text: Supabase has an official Expo React Native tutorial covering sign-in with Supabase Auth, profile data in the database with row-level security, and photo upload with Storage.
@@ -42,7 +42,7 @@ resource_profile:
     as_of: 2026-10-06
   - text: "Server address options: read_only=true runs all queries as a read-only Postgres user, project_ref=<id> limits it to one project and turns off account tools, features=<groups> enables only chosen tool groups."
     evidence: claimed
-    source_url: https://supabase.com/docs/guides/getting-started/mcp
+    source_url: https://supabase.com/docs/guides/ai-tools/mcp
     as_of: 2026-10-06
   - text: Anthropic's connector directory lists Supabase, made by Supabase, for Claude web, desktop, mobile and Claude Code.
     evidence: claimed
@@ -51,7 +51,7 @@ resource_profile:
   limits:
   - text: Supabase warns that linking an AI to your projects has risks. Text hidden in your saved data could trick the AI (prompt injection). The link has your own permissions, as the app's maker. So only you should use it, never your app's users.
     evidence: claimed
-    source_url: https://supabase.com/docs/guides/getting-started/mcp
+    source_url: https://supabase.com/docs/guides/ai-tools/mcp
     as_of: 2026-10-06
   - text: The free plan allows 2 active projects, 500 MB of data storage and 50,000 active users a month. Free projects are paused after 1 week without use.
     evidence: claimed
@@ -59,7 +59,7 @@ resource_profile:
     as_of: 2026-10-06
   - text: Supabase's built-in test copies of a project (called branching) need a paid plan. A separate free test project does not.
     evidence: claimed
-    source_url: https://supabase.com/docs/guides/getting-started/mcp
+    source_url: https://supabase.com/docs/guides/ai-tools/mcp
     as_of: 2026-10-06
   - text: Every table your app can reach (a list of your app's data, like food logs) needs row-level security turned on. Without it, anyone allowed into a table can read and change all of it.
     evidence: claimed
@@ -82,7 +82,7 @@ distributions:
   - Use this only if you want the link to your Supabase account without Supabase's how-to guides. Then type claude /mcp in the window where you start Claude Code (the terminal). Pick Supabase, and sign in.
   compatibility: declared
   verified_on: 2026-10-06
-  source_url: https://supabase.com/docs/guides/getting-started/mcp
+  source_url: https://supabase.com/docs/guides/ai-tools/mcp
 - client: cursor
   method: deeplink
   link: cursor://anysphere.cursor-deeplink/mcp/install?name=supabase&config=eyJ1cmwiOiJodHRwczovL21jcC5zdXBhYmFzZS5jb20vbWNwIn0%3D
@@ -142,4 +142,8 @@ editorial:
   first_prompt: In my Supabase test project, plan where to keep each user's daily food log and saved foods. Include their calorie and macro goals. Use row-level security so each user sees only their own data. Explain the change in plain words, and show it to me before you make it.
   reviewer: Claude (AI), not yet a person
   reviewed_on: 2026-10-06
+found_on:
+  url: https://supabase.com/docs/guides/ai-tools/mcp
+  label: Supabase’s guide
+  snapshot_on: 2026-10-07
 last_verified_on: 2026-10-06

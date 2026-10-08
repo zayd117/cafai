@@ -85,4 +85,8 @@ editorial:
   first_prompt: Use the orders on this sheet. Add a Summary tab with last week's total sales, order count, average order value and top 5 products. Use formulas, so it updates when new rows are added.
   reviewer: Claude (AI), not yet a person
   reviewed_on: 2026-10-06
+found_on:
+  url: https://support.claude.com/en/articles/16951679-use-claude-in-google-docs-sheets-and-slides
+  label: Claude’s help page
+  snapshot_on: 2026-10-07
 last_verified_on: 2026-10-06

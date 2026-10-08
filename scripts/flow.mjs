@@ -26,6 +26,75 @@ async function newPage(width, height) {
   return page;
 }
 
+// The "Found on" line (UX_DECISIONS §11): pictures load only when asked for, come from Caf.ai, open on a rest or the
+// Preview button, close with Esc, stay inside the window, and use the phone picture on narrow screens.
+async function foundOnChecks(page, label, tag) {
+  const pictures = [];
+  page.on("request", (r) => { if (r.url().includes("/found-on/")) pictures.push(r.url()); });
+  // Resource timing covers everything this document fetched; data: masks in the CSS are not requests.
+  const fetched = () => page.evaluate(() => performance.getEntriesByType("resource").map((e) => e.name).filter((n) => /^https?:/.test(n)));
+  const elsewhere = (names) => names.filter((n) => !n.startsWith(new URL(base).origin));
+  const atLoad = await fetched();
+  expect(`${tag}: no picture or other site loaded with the page`, pictures.length === 0 && elsewhere(atLoad).length === 0 && !atLoad.some((n) => n.includes("/found-on/")));
+  const card = page.locator("article.card").first();
+  const link = card.locator(".found-link");
+  const btn = card.getByRole("button", { name: "Preview" });
+  const pop = card.locator(".found-pop");
+  const name = (await link.ariaSnapshot()).match(/link "(.*)"/)?.[1] ?? "";
+  expect(`${tag}: link is read as label, site, "opens in a new tab", no stray space (${name})`, /^\S.*\S [a-z0-9.-]+\.[a-z]+, opens in a new tab$/.test(name) && !name.includes("·"));
+  if (label === "desktop") {
+    const box = await link.boundingBox();
+    await page.mouse.move(box.x + 8, box.y + box.height / 2);
+    await page.mouse.move(box.x + 20, box.y + box.height / 2);
+    await page.waitForTimeout(150);
+    const early = await pop.isVisible();
+    await page.waitForTimeout(500);
+    expect(`${tag}: resting on the link opens the picture after a short wait, not at once`, !early && await pop.isVisible());
+    await pop.locator("img").evaluate((img) => img.decode());
+    const src = await pop.locator("img").evaluate((img) => img.currentSrc);
+    expect(`${tag}: computer picture from Caf.ai (${src.replace(base, "")})`, src.startsWith(base) && /\/found-on\/[a-z0-9-]+\.jpg$/.test(src) && pictures.length === 1);
+    await page.mouse.move(2, 2);
+    await page.waitForTimeout(400);
+    expect(`${tag}: moving away closes it`, !(await pop.isVisible()));
+    // Sliding across each link at about 0.5 px/ms, then off it: nothing opens.
+    const links = page.locator("article.card .found-link");
+    let opened = 0;
+    for (let i = 0; i < await links.count(); i++) {
+      const b = await links.nth(i).boundingBox();
+      for (let x = b.x - 10; x <= b.x + b.width + 10; x += 8) {
+        await page.mouse.move(x, b.y + b.height / 2);
+        await page.waitForTimeout(16);
+      }
+      await page.mouse.move(b.x + b.width + 10, b.y - 40);
+      await page.waitForTimeout(500);
+      opened += await page.locator(".found-pop:not([hidden])").count();
+    }
+    expect(`${tag}: sliding the mouse across the links opens nothing (${opened} opened)`, opened === 0);
+  }
+  await btn.click();
+  expect(`${tag}: Preview button opens the picture`, (await btn.getAttribute("aria-expanded")) === "true" && await pop.isVisible());
+  await pop.locator("img").evaluate((img) => img.decode());
+  const src = await pop.locator("img").evaluate((img) => img.currentSrc);
+  expect(`${tag}: ${label === "mobile" ? "phone" : "computer"} picture shown`, label === "mobile" ? src.endsWith("-phone.jpg") : !src.endsWith("-phone.jpg"));
+  expect(`${tag}: picture says when we took it`, /Snapshot from [A-Z][a-z]{2} \d{1,2}, \d{4}/.test(await pop.innerText()));
+  expect(`${tag}: no horizontal scroll with the picture open`, !(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)));
+  if (label === "desktop") await card.screenshot({ path: `${out}/14-found-on-preview-${label}.png` });
+  else await page.screenshot({ path: `${out}/14-found-on-preview-${label}.png` });
+  await page.keyboard.press("Escape");
+  expect(`${tag}: Esc closes it`, (await btn.getAttribute("aria-expanded")) === "false" && !(await pop.isVisible()));
+  // Near the bottom of the window it opens above the line.
+  const lastLine = page.locator("article.card .found-on").last();
+  await lastLine.evaluate((el) => window.scrollBy(0, el.getBoundingClientRect().bottom - window.innerHeight + 60));
+  await lastLine.getByRole("button", { name: "Preview" }).click();
+  const r = await lastLine.locator(".found-pop").boundingBox();
+  const vh = page.viewportSize().height;
+  expect(`${tag}: picture near the window's bottom stays inside it`, r && r.y >= 0 && r.y + r.height <= vh);
+  await page.mouse.click(2, 2);
+  expect(`${tag}: a click elsewhere closes it`, (await page.locator(".found-pop:not([hidden])").count()) === 0);
+  const after = elsewhere(await fetched());
+  expect(`${tag}: no request to any other site${after.length ? ` (${after.join(", ")})` : ""}`, after.length === 0);
+}
+
 for (const [label, width, height] of [["desktop", 1440, 1000], ["mobile", 390, 844]]) {
   const page = await newPage(width, height);
   await page.goto(`${base}/`, { waitUntil: "networkidle" });
@@ -194,6 +263,10 @@ for (const [label, width, height] of [["desktop", 1440, 1000], ["mobile", 390, 8
     expect(`${tag} has ${cards} real picks (got ${n})`, n === cards && (await page.locator("article.card h2, article.card h3").filter({ hasText: name }).count()) > 0);
     expect(`${tag} has no horizontal scroll`, !(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)));
     if (label === "desktop") await page.screenshot({ path: `${out}/13-saved-example-${chip.toLowerCase().replace(/\W+/g, "-")}-${label}.png`, fullPage: true });
+    const found = page.locator("article.card .found-link");
+    expect(`${tag}: every card has a "Found on" link opening in a new tab`, (await found.count()) === cards
+      && (await found.evaluateAll((as) => as.every((a) => a.target === "_blank" && a.rel.includes("noopener") && a.href.startsWith("https://")))));
+    if (chip === "Calorie tracker app") await foundOnChecks(page, label, tag);
     if (chip === "Calorie tracker app") {
       await page.getByRole("button", { name: /^Set up in/ }).click();
       await page.waitForURL(/\/setup\?/);

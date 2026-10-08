@@ -1,4 +1,4 @@
-import { cpSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import { loadCatalog } from "./load";
 
 const ROOT = fileURLToPath(new URL("../../catalog", import.meta.url));
+const PICTURES = fileURLToPath(new URL("../../public/found-on", import.meta.url));
 
 function copyCatalog(): string {
   const dir = mkdtempSync(join(tmpdir(), "cafai-catalog-"));
@@ -112,5 +113,38 @@ describe("loadCatalog", () => {
     edit(join(dir, "fixtures/offerings/fx-payments.yaml"), "vendor_official: true\n  namespace_verified: true", "vendor_official: false\n  namespace_verified: false");
     const res = loadCatalog({ root: dir, fixtures: true });
     expect(res.ok).toBe(false);
+  });
+
+  it("gives every real tool a \"Found on\" link to a page its facts cite, in house-style words", () => {
+    const res = loadCatalog({ root: ROOT });
+    if (!res.ok) throw new Error(JSON.stringify(res.errors, null, 2));
+    for (const o of res.snapshot.offerings) {
+      expect(o.found_on, o.id).toBeDefined();
+      expect(o.found_on!.label, o.id).not.toMatch(/\b(connectors?|servers?|databases?|betas?|MCPs?|stdio|OAuth|APIs?|SDKs?|JSON|CLI)\b/i);
+    }
+  });
+
+  it("has both pictures for every dated \"Found on\" link, within budget, and no stray pictures", () => {
+    const res = loadCatalog({ root: ROOT });
+    if (!res.ok) throw new Error(JSON.stringify(res.errors, null, 2));
+    const expected = res.snapshot.offerings.filter((o) => o.found_on?.snapshot_on).flatMap((o) => [`${o.id}.jpg`, `${o.id}-phone.jpg`]);
+    for (const f of expected) {
+      expect(existsSync(join(PICTURES, f)), f).toBe(true);
+      expect(statSync(join(PICTURES, f)).size, f).toBeLessThanOrEqual(100_000);
+    }
+    expect(readdirSync(PICTURES).sort()).toEqual(expected.sort());
+  });
+
+  it("rejects a \"Found on\" link to a page no fact cites, or a long label", () => {
+    const dir = copyCatalog();
+    const shopify = join(dir, "offerings/shopify-connector.yaml");
+    edit(shopify, "  url: https://help.shopify.com/en/manual/ai-powered-tools/connecting-ai-tools/shopify-connector-for-claude\n", "  url: https://example.com/somewhere-else\n");
+    edit(shopify, "label: Shopify’s help page", "label: Shopify’s own help page for this");
+    const res = loadCatalog({ root: dir });
+    expect(res.ok).toBe(false);
+    if (!res.ok) {
+      expect(res.errors.some((e) => e.message.includes("found_on.url must be one of its facts' source_url, got https://example.com/somewhere-else"))).toBe(true);
+      expect(res.errors.some((e) => e.message.includes("found_on.label has 6 words; the card allows 4"))).toBe(true);
+    }
   });
 });

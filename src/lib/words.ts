@@ -15,4 +15,5 @@ export const CATALOG_WORD_LIMITS = {
   "access.effort_short": 4,
   "access.first_step": 14,
   "cost.label": 4,
+  "found_on.label": 4,
 } as const;

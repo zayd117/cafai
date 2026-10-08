@@ -111,4 +111,8 @@ editorial:
   first_prompt: Add a phone alert to my Tampermonkey script. When a cell I watch changes, send a short note to https://ntfy.sh/[paste your alert name here]. Leave the cell values out of the note. Use Tampermonkey's own way of sending (GM_xmlhttpRequest), and add the @connect line it needs. Explain each change in plain words.
   reviewer: Claude (AI), not yet a person
   reviewed_on: 2026-10-06
+found_on:
+  url: https://docs.ntfy.sh/
+  label: ntfy’s guide
+  snapshot_on: 2026-10-07
 last_verified_on: 2026-10-06
