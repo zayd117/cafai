@@ -176,17 +176,20 @@ out (blocked by 7 of 11 sites and by our own security rules, and it let trackers
 - **Which page**: `found_on.url` must be a page the card's own facts cite (the loader refuses anything else). Three
   cited pages had moved (Expo, Supabase, Sentry's Expo guide), so those facts now cite where the page lives today.
 - **Picture**: the top of the page, computer (640×400) and phone (780×720) versions, served by Caf.ai from
-  `public/found-on/`, so the other site hears nothing until the link is clicked. Screens 600px wide or less get the
+  `public/found-on/<id>-<date>.jpg` (and `-phone`), so the other site hears nothing until the link is clicked. The date
+  in the name means a retake never replaces a picture an older run shows; keep old pictures while runs can cite them. Screens 600px wide or less get the
   phone picture. It loads only when someone points at the link or presses Preview, never with the page. The box says
   "Snapshot from {date}"; an entry without `snapshot_on` shows the link and no Preview, so no card claims a picture it
   does not have.
 - **Opening**: Preview toggles it on any device. On a computer, resting on the link for 0.4 s opens it too (sliding
   past opens nothing), and it stays open while the mouse moves into it. Tabbing to the link opens it after the same
-  wait; tabbing on closes it. Esc or a click elsewhere closes it. Taps on the link only open the page. One picture is
-  open at a time, and near the bottom of the window it opens above the line.
+  wait. Focus leaving the line closes it, however it opened, so it never hides the next control. Esc or a click
+  elsewhere closes it; after Esc it stays closed until the mouse leaves the link. Taps on the link only open the page.
+  One picture is open at a time. Near the bottom of the window it opens above the line, and in a short window the
+  picture shrinks, down to the words only.
 - **Fixed from the tested first version**: no picture downloads on page load (was 11, about 370 KB); readable phone
   picture (was a computer picture at 27% size); 44px targets on touch screens; no flash while tabbing; stays inside the
-  window near the bottom; no tooltip role around an image; no stray space before ", opens in a new tab"; label "USDA's
+  window near the bottom; no tooltip role around an image; the box no longer says "opens in a new tab" (it is not a link); no stray space before ", opens in a new tab"; label "USDA's
   guide" (the first version's label used a banned word); links to the cited page for Chrome, Healthchecks and Sentry.
 - **Retaking pictures**: `node scripts/capture-found-on.mjs [id ...]` where the open web is reachable (GitHub's
   runners). It keeps the old picture and date on a robot check, an error or a move to another site. Look at each new

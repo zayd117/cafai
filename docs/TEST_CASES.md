@@ -17,7 +17,7 @@ npm run flow -- http://localhost:3100 docs/figma-handoff/screens
 
 | Suite | Count | Covers |
 |---|---|---|
-| `src/catalog/load.test.ts` | 13 | Schema validation, fixture separation, referential rules, trust rule, stable snapshot version, card-copy word limits and short maker name, "Found on" link (cited by a fact, house-style label, both pictures present and under 100 KB, no stray pictures) |
+| `src/catalog/load.test.ts` | 13 | Schema validation, fixture separation, referential rules, trust rule, stable snapshot version, card-copy word limits and short maker name, "Found on" link (cited by a fact, house-style label, both dated pictures present and under 100 KB, only pictures of real tools) |
 | `src/engine/explain.test.ts` | 3 | Explanation word limits for the card's "Why it fits", "When" and "Skip if" lines, and the template keeping to them for every real tool |
 | `src/app/_components/cardCopy.test.ts` | 5 | Pick card decision pill and default order ticks, "your AI" → the person's AI tool, old "Add it" / "Skip it if" prefixes dropped, facts line with fallbacks for older snapshots |
 | `src/db/runs.db.test.ts` | 9 | Row-level security: tenant isolation, no enumeration of anonymous runs, child rows cannot claim another tenant, catalog write lock, append-only ledger, retention purge |
@@ -33,8 +33,8 @@ npm run flow -- http://localhost:3100 docs/figma-handoff/screens
 | `scripts/deploy-db.test.ts` | 5 | Production database URLs: Neon pooled → direct for admin steps, app on the pooler as `cafai_app` in `cafai`, sslmode for remote hosts |
 | `scripts/deploy-vercel.test.ts` | 10 | Vercel setup against a scripted API: project lookup (own scope, team fallback, missing project, bad token), env upsert (DATABASE_URL always, CAFAI_CATALOG and QUOTA_SALT only when missing, refusals reported), production deploy of main, failed build, smoke test (live, DB error, behind login) |
 | `npm run eval` | 4 fixture cases × arms × repeats | Release gate: harmful picks 0, invalid ids 0, no regression vs baseline; bake-off pass lines from `eval/bakeoff.json` |
-| `npm run flow` (Chromium) | 115 checks | See below. CI runs it on every change, in sample mode (fixture catalog, mock model) |
-| `scripts/a11y.mjs` (Chromium + axe) | 8 checks | CI runs it on every change. WCAG 2.2 AA scans (counter, results with every level open, results with a "Found on" picture open, setup, legal page), keyboard reach, visible focus ring, "Found on" picture by keyboard (Tab to the link or Preview + Enter, Esc keeps focus) |
+| `npm run flow` (Chromium) | 116 checks | See below. CI runs it on every change, in sample mode (fixture catalog, mock model) |
+| `scripts/a11y.mjs` (Chromium + axe) | 8 checks | CI runs it on every change. WCAG 2.2 AA scans (counter, results with every level open, results with a "Found on" picture open, setup, legal page), keyboard reach, visible focus ring, "Found on" picture by keyboard (Tab to the link or Preview + Enter, Esc keeps focus, tabbing on closes it) |
 | `scripts/controls-flow.mjs` (Chromium + DB) | 9 checks | Revoked pick annotated and setup hidden, AI off → degraded banner and read-back first, runs off → paused, quota cap, honeypot, flag audit |
 
 ### Browser checks (`scripts/flow.mjs`, desktop 1440 and mobile 390)
@@ -46,7 +46,7 @@ setup steps with a Copy button · Match and Confidence words under "More details
 copy button works (client JS under CSP) · Cursor config decoded before link · setup feedback round-trip ·
 404 for unknown run · nothing-needed outcome · out-of-scope outcome · saved examples: a "Found on" link opening in a new tab on every card;
 no picture or other site loaded with the page; link read as label, site, "opens in a new tab"; resting on the link opens the picture after a wait,
-sliding across links opens nothing, moving away closes it (desktop); Preview opens the computer or phone picture with its date; Esc and a click
+sliding across links opens nothing, moving away closes it, Esc keeps it closed while the mouse stays (desktop); Preview opens the computer or phone picture with its date; Esc and a click
 elsewhere close it; near the window's bottom it stays inside; no request to any other site · zero console errors, failed requests or HTTP errors.
 
 ## Manual (not automated yet)

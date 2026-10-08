@@ -124,15 +124,22 @@ describe("loadCatalog", () => {
     }
   });
 
-  it("has both pictures for every dated \"Found on\" link, within budget, and no stray pictures", () => {
+  it("has both pictures for every dated \"Found on\" link, within budget, and only pictures of real tools", () => {
     const res = loadCatalog({ root: ROOT });
     if (!res.ok) throw new Error(JSON.stringify(res.errors, null, 2));
-    const expected = res.snapshot.offerings.filter((o) => o.found_on?.snapshot_on).flatMap((o) => [`${o.id}.jpg`, `${o.id}-phone.jpg`]);
-    for (const f of expected) {
-      expect(existsSync(join(PICTURES, f)), f).toBe(true);
-      expect(statSync(join(PICTURES, f)).size, f).toBeLessThanOrEqual(100_000);
+    const dated = res.snapshot.offerings.filter((o) => o.found_on?.snapshot_on);
+    for (const o of dated) {
+      for (const f of [`${o.id}-${o.found_on!.snapshot_on}.jpg`, `${o.id}-${o.found_on!.snapshot_on}-phone.jpg`]) {
+        expect(existsSync(join(PICTURES, f)), f).toBe(true);
+        expect(statSync(join(PICTURES, f)).size, f).toBeLessThanOrEqual(100_000);
+      }
     }
-    expect(readdirSync(PICTURES).sort()).toEqual(expected.sort());
+    // Older dated pictures stay for runs made from older catalogs; anything else here is a mistake.
+    const ids = new Set(res.snapshot.offerings.map((o) => o.id));
+    for (const f of readdirSync(PICTURES)) {
+      const m = f.match(/^(.+)-(\d{4}-\d{2}-\d{2})(-phone)?\.jpg$/);
+      expect(m && ids.has(m[1]!), f).toBe(true);
+    }
   });
 
   it("rejects a \"Found on\" link to a page no fact cites, or a long label", () => {

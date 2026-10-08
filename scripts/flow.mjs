@@ -56,20 +56,32 @@ async function foundOnChecks(page, label, tag) {
     await page.mouse.move(2, 2);
     await page.waitForTimeout(400);
     expect(`${tag}: moving away closes it`, !(await pop.isVisible()));
+    // Esc while resting on the link keeps it closed, even if the mouse twitches, until the mouse leaves the link.
+    await page.mouse.move(box.x + 20, box.y + box.height / 2);
+    await page.waitForTimeout(600);
+    const reopened = await pop.isVisible();
+    await page.keyboard.press("Escape");
+    await page.mouse.move(box.x + 21, box.y + box.height / 2);
+    await page.waitForTimeout(600);
+    expect(`${tag}: Esc keeps it closed while the mouse stays on the link`, reopened && !(await pop.isVisible()));
+    await page.mouse.move(2, 2);
     // Sliding across each link at about 0.5 px/ms, then off it: nothing opens.
     const links = page.locator("article.card .found-link");
     let opened = 0;
+    let reached = 0;
     for (let i = 0; i < await links.count(); i++) {
+      await links.nth(i).scrollIntoViewIfNeeded();
       const b = await links.nth(i).boundingBox();
       for (let x = b.x - 10; x <= b.x + b.width + 10; x += 8) {
         await page.mouse.move(x, b.y + b.height / 2);
         await page.waitForTimeout(16);
+        if (x > b.x + b.width / 2 && x <= b.x + b.width / 2 + 8 && await links.nth(i).evaluate((a) => a.matches(":hover"))) reached++;
       }
       await page.mouse.move(b.x + b.width + 10, b.y - 40);
       await page.waitForTimeout(500);
       opened += await page.locator(".found-pop:not([hidden])").count();
     }
-    expect(`${tag}: sliding the mouse across the links opens nothing (${opened} opened)`, opened === 0);
+    expect(`${tag}: sliding the mouse across all ${reached} links opens nothing (${opened} opened)`, opened === 0 && reached === await links.count());
   }
   await btn.click();
   expect(`${tag}: Preview button opens the picture`, (await btn.getAttribute("aria-expanded")) === "true" && await pop.isVisible());

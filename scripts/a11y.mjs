@@ -61,10 +61,12 @@ const closed = !(await card.locator(".found-pop").isVisible()) && await card.loc
 await page.keyboard.press("Tab");
 await page.keyboard.press("Enter");
 const button = await card.getByRole("button", { name: "Preview" }).getAttribute("aria-expanded") === "true";
-await page.keyboard.press("Escape");
-const kbFound = opened && closed && button;
-results.push(`${kbFound ? "PASS" : "FAIL"} keyboard opens the Found on picture (Tab to link, or Preview + Enter), Esc closes it and keeps focus`);
-if (!kbFound) { failed = true; results.push(`    opened ${opened}, closed ${closed}, button ${button}`); }
+// Tabbing out of the line closes it, so it never covers the control that gets focus next.
+await page.keyboard.press("Tab");
+const tabbedOut = !(await card.locator(".found-pop").isVisible());
+const kbFound = opened && closed && button && tabbedOut;
+results.push(`${kbFound ? "PASS" : "FAIL"} keyboard opens the Found on picture (Tab to link, or Preview + Enter); Esc closes it and keeps focus; tabbing on closes it`);
+if (!kbFound) { failed = true; results.push(`    opened ${opened}, closed ${closed}, button ${button}, tabbed out ${tabbedOut}`); }
 await page.getByRole("button", { name: /^Set up in/ }).focus();
 await page.keyboard.press("Enter");
 await page.waitForURL(/\/setup/);

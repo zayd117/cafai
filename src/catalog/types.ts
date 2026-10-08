@@ -85,7 +85,7 @@ export interface Offering {
     third_party_grade?: { provider: string; grade: string; as_of: string };
   };
   editorial: { what_it_is: string; could_help_with: string; first_prompt: string; reviewer: string; reviewed_on: string };
-  /** The card's "Found on" link, added 2026-10-08. snapshot_on: the day of the pictures in public/found-on/. */
+  /** The card's "Found on" link, added 2026-10-08. snapshot_on: the day of the pictures in public/found-on/ (in their names). */
   found_on?: { url: string; label: string; snapshot_on?: string };
   last_verified_on: string;
 }

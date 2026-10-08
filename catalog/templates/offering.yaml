@@ -61,5 +61,5 @@ editorial:
 found_on:
   url: https://example.com/docs
   label: Maker’s guide # who runs it and what it is, at most 4 words
-  # snapshot_on: 2026-10-01 # only with pictures at public/found-on/<id>.jpg and <id>-phone.jpg (scripts/capture-found-on.mjs)
+  # snapshot_on: 2026-10-01 # only with pictures at public/found-on/<id>-<date>.jpg and <id>-<date>-phone.jpg (scripts/capture-found-on.mjs)
 last_verified_on: 2026-10-01
