@@ -4,7 +4,7 @@ import type pg from "pg";
 import type { CatalogSnapshot } from "@/catalog/types";
 import { budgetMicros } from "@/config/pricing";
 import { ANONYMOUS_RUN_DAYS } from "@/config/retention";
-import { withAccess } from "@/db/client";
+import { withAccess, type AccessContext } from "@/db/client";
 import { ENGINE_CONFIG } from "@/engine/config";
 import type { Constraints } from "@/engine/match";
 import { runPipeline } from "@/engine/pipeline";
@@ -61,6 +61,7 @@ export interface StoredPick {
 
 export interface StoredRun {
   id: string;
+  org_id: string | null;
   created_at: Date;
   expires_at: Date | null;
   outcome: RunOutcome;
@@ -146,8 +147,8 @@ export async function startRun(
   return id;
 }
 
-export async function loadRun(pool: pg.Pool, runId: string): Promise<StoredRun | null> {
-  return withAccess(pool, { runId }, async (c) => {
+export async function loadRun(pool: pg.Pool, runId: string, access: AccessContext = {}): Promise<StoredRun | null> {
+  return withAccess(pool, { ...access, runId }, async (c) => {
     const r = await c.query("SELECT * FROM recommendation_runs WHERE id = $1", [runId]);
     if (r.rowCount === 0) return null;
     const run = r.rows[0];
@@ -155,6 +156,7 @@ export async function loadRun(pool: pg.Pool, runId: string): Promise<StoredRun |
     const picks = await c.query("SELECT * FROM recommendations WHERE run_id = $1 ORDER BY rank", [runId]);
     return {
       id: run.id,
+      org_id: run.org_id,
       created_at: run.created_at,
       expires_at: run.expires_at,
       outcome: run.outcome,

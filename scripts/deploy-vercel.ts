@@ -91,7 +91,8 @@ export async function smoke(f: Fetch, base: string): Promise<string> {
   const home = await f(`${base}/`);
   if (home.status === 401) return `${base} is behind Vercel's login (Deployment Protection), so the smoke test was skipped`;
   const html = await home.text();
-  if (home.status !== 200 || !html.includes("What are you working on?")) throw new Error(`smoke test: ${base}/ answered ${home.status}`);
+  const heading = /<h1\b[^>]*>([\s\S]*?)<\/h1>/i.exec(html)?.[1]?.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+  if (home.status !== 200 || heading !== "What are you working on?") throw new Error(`smoke test: ${base}/ answered ${home.status}`);
   const run = await f(`${base}/r/00000000-0000-4000-8000-000000000000`);
   if (run.status !== 404) throw new Error(`smoke test: the database check answered ${run.status}, expected 404 for an unknown run`);
   return `${base} is live and reaches its database`;

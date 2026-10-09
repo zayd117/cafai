@@ -4,6 +4,7 @@ import type { Capability } from "@/catalog/types";
 import { ENGINE_CONFIG } from "./config";
 import { BilledError, type LlmProvider, type TaxonomyEntryForModel, type Usage } from "./providers/types";
 import { validateUnderstanding } from "./schemas";
+import { redact } from "./redact";
 import { cleanSuggestions, cleanTag, shortTag } from "./tags";
 import type { CapabilityNeed, NeedType, ProfileItem, UnderstandingOutput } from "./types";
 
@@ -54,18 +55,32 @@ async function callWithRetry(llm: LlmProvider, req: Parameters<LlmProvider["unde
   return null;
 }
 
-/** Deterministic rule (§9 "rules first"): a taxonomy job phrase found in the text is a stated need, quoted. */
+// Direct rejection immediately before a job phrase. Other negation belongs to the model, not a sentence-wide guess.
+const REJECTED = /\b(?:(?:(?:do|does|did|will|would|should|can)\s+not|don't|doesn't|didn't|won't|wouldn't|shouldn't|can't|cannot|no longer)\s+(?:(?:need|want|use|require|plan)(?:\s+to)?\s+)?|without\s+|no\s+(?:need\s+for\s+)?)(?:(?:a|an|the|any)\s+)?$/;
+const UNCERTAIN = /\b(?:not sure|unsure|maybe|perhaps|might|whether)\b/;
+
+/** Explicit job phrases become stated needs or exclusions; questions and uncertainty are left to the model. */
 function ruleNeeds(text: string, taxonomy: Capability[]): { need: CapabilityNeed; sentence: string }[] {
   const sentences = text.split(/(?<=[.!?])\s+|\n+/).map((s) => s.trim()).filter(Boolean);
   const out: { need: CapabilityNeed; sentence: string }[] = [];
   for (const c of taxonomy) {
-    for (const phrase of c.job_phrases) {
-      const sentence = sentences.find((s) => norm(s).includes(norm(phrase)));
-      if (sentence) {
-        out.push({ need: { capability_id: c.id, need_type: "stated", evidence_ids: [], source: "rule" }, sentence });
-        break;
+    const mentions: { sentence: string; rejected: boolean }[] = [];
+    for (const sentence of sentences) {
+      const normalized = norm(sentence);
+      for (const phrase of c.job_phrases.map(norm).filter(Boolean)) {
+        for (let at = normalized.indexOf(phrase); at >= 0; at = normalized.indexOf(phrase, at + phrase.length)) {
+          const before = normalized.slice(0, at).split(/[,;:]|\b(?:but|and|however)\b/).at(-1)!;
+          const rejected = REJECTED.test(before);
+          if (rejected || (!UNCERTAIN.test(before) && !normalized.endsWith("?"))) mentions.push({ sentence, rejected });
+        }
       }
     }
+    const mention = mentions.find((m) => !m.rejected) ?? mentions[0];
+    if (mention) out.push({
+      sentence: mention.sentence,
+      need: { capability_id: c.id, need_type: mention.rejected ? "not_relevant" : "stated", evidence_ids: [], source: "rule",
+        ...(mention.rejected ? { reason: "You explicitly ruled this out." } : {}) },
+    });
   }
   return out;
 }
@@ -135,10 +150,11 @@ export async function understand(args: {
     }
     const newId = freshId();
     idMap.set(it.id, newId);
-    const tag = cleanTag(it.tag) ?? shortTag(it.text);
+    const itemText = redact(it.text, 400).text;
+    const tag = cleanTag(it.tag) ?? shortTag(itemText);
     const suggestions = cleanSuggestions(it.suggestions, tag);
     items.push({
-      id: newId, kind: it.kind, text: it.text, quote: it.quote, tag,
+      id: newId, kind: it.kind, text: itemText, quote: it.quote, tag,
       ...(suggestions.length ? { suggestions } : {}),
       ...(args.locked ? { is_new: true } : {}),
     });
@@ -174,7 +190,7 @@ export async function understand(args: {
     });
   }
 
-  // Rules first: a job-phrase hit is a stated need. It upgrades model needs and adds its sentence as evidence.
+  // Explicit exclusions win; a bare phrase never overrides an existing "present" or "not relevant" classification.
   for (const { need, sentence } of ruleNeeds(evidenceText, taxonomy)) {
     let item = items.find((i) => [i.quote, i.text].some((q) => quoteIsInText(q, sentence) || quoteIsInText(sentence, q)));
     if (!item) {
@@ -184,9 +200,9 @@ export async function understand(args: {
     }
     const existing = needs.get(need.capability_id);
     if (existing && existing.need_type === "present") continue; // the user already has it
+    if (need.need_type === "stated" && existing?.need_type === "not_relevant") continue;
     needs.set(need.capability_id, {
-      capability_id: need.capability_id,
-      need_type: "stated",
+      ...need,
       evidence_ids: [...new Set([...(existing?.evidence_ids ?? []), item.id])],
       source: existing ? "rule+model" : "rule",
     });

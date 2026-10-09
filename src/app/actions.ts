@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { isUuid } from "@/db/client";
 import { addFeedback, type FeedbackKind } from "@/db/runs";
 import type { UserItem } from "@/engine/understand";
+import { redact } from "@/engine/redact";
 import { DisabledProvider } from "@/engine/providers/mock";
 import { budgetSpent, clientKey, hitQuota, readFlags } from "@/server/controls";
 import { getRealSnapshot, getRuntime, isPublished, mockProvidersFor } from "@/server/runtime";
@@ -22,6 +23,7 @@ function parseList(raw: string): string[] {
   }
 }
 const ITEM_KINDS = new Set(["goal", "task", "problem", "environment", "constraint", "current_tool", "interest", "possible_need"]);
+const fieldText = (value: FormDataEntryValue | undefined | null, maxChars: number) => redact(String(value ?? ""), maxChars).text;
 
 /** Checks before any run (plan §14 denial of wallet, §17 kill switches). Redirects instead of running when refused. */
 async function guarded(form: FormData, back: string) {
@@ -63,7 +65,7 @@ export async function submitOrder(form: FormData) {
   if (!text) redirect("/?error=empty");
   const g = await guarded(form, "/");
   const declaredClients = form.getAll("clients").map(String).filter((c) => CLIENTS.has(c));
-  const specific = String(form.get("specific") || "").trim().slice(0, 300);
+  const specific = fieldText(form.get("specific"), 300);
   const userItems: UserItem[] = specific ? [{ id: "s1", kind: "interest", text: specific }] : [];
   // Only the example buttons use saved answers; the same words typed in, or extra detail, go through the normal path.
   const example = form.get("example") && !specific ? savedExampleFor(text) : null;
@@ -90,10 +92,10 @@ export async function rerun(form: FormData) {
   const suggestions = form.getAll("item_suggestions").map(String);
   const removed = String(form.get("remove") || ""); // the × on a tag, when the page runs without JavaScript
   ids.forEach((id, i) => {
-    const t = (texts[i] ?? "").trim().slice(0, 300);
+    const t = fieldText(texts[i], 300);
     if (id === removed || !t || !/^[a-z0-9]{1,12}$/i.test(id) || !ITEM_KINDS.has(kinds[i] ?? "")) return;
-    const tag = (tags[i] ?? "").trim().slice(0, 60);
-    const quote = (quotes[i] ?? "").trim().slice(0, 1000);
+    const tag = fieldText(tags[i], 60);
+    const quote = fieldText(quotes[i], 1000);
     const swap = parseList(suggestions[i] ?? "");
     items.push({ id, kind: kinds[i] as UserItem["kind"], text: t, ...(tag ? { tag } : {}), ...(quote ? { quote } : {}), suggestions: swap });
   });
@@ -107,8 +109,8 @@ export async function rerun(form: FormData) {
     }
   }
   // A sentence added in the read-back joins what they said; Claude turns it into new tags.
-  const added = String(form.get("add_item") || "").trim().slice(0, 300);
-  const answer = String(form.get("answer") || "").trim().slice(0, 120);
+  const added = fieldText(form.get("add_item"), 300);
+  const answer = fieldText(form.get("answer"), 120);
   if (answer) items.push({ id: `q${items.length + 1}`, kind: "constraint", text: answer, tag: answer });
 
   // A saved example still applies while the read-back is unchanged (Refine, or Update with no edits).

@@ -51,19 +51,22 @@ export function loadCatalog(opts: LoadOptions): LoadResult {
   const dataDir = opts.fixtures ? join(opts.root, "fixtures") : opts.root;
 
   const ajv = createAjv();
-  const compile = (name: string): ValidateFunction =>
-    ajv.compile(JSON.parse(readFileSync(join(opts.root, "schema", name), "utf8")));
-  const vClients = compile("clients.schema.json");
-  const vTaxonomy = compile("taxonomy.schema.json");
-  const vOffering = compile("offering.schema.json");
+  const compile = <T>(name: string): ValidateFunction<T> =>
+    ajv.compile<T>(JSON.parse(readFileSync(join(opts.root, "schema", name), "utf8")));
+  const vClients = compile<ClientRecord[]>("clients.schema.json");
+  const vTaxonomy = compile<Capability[]>("taxonomy.schema.json");
+  const vOffering = compile<Offering>("offering.schema.json");
 
   const clientsFile = join(opts.root, "clients.yaml");
-  const clients = (readYaml(clientsFile, issues) ?? []) as ClientRecord[];
-  if (!vClients(clients)) fmt(vClients.errors).forEach((m) => issues.push({ file: clientsFile, message: m }));
+  const clients = readYaml(clientsFile, issues) ?? [];
+  const clientsValid = vClients(clients);
+  if (!clientsValid) fmt(vClients.errors).forEach((m) => issues.push({ file: clientsFile, message: m }));
 
   const taxonomyFile = join(dataDir, "taxonomy.yaml");
-  const taxonomy = (existsSync(taxonomyFile) ? readYaml(taxonomyFile, issues) ?? [] : []) as Capability[];
-  if (!vTaxonomy(taxonomy)) fmt(vTaxonomy.errors).forEach((m) => issues.push({ file: taxonomyFile, message: m }));
+  const taxonomy = existsSync(taxonomyFile) ? readYaml(taxonomyFile, issues) ?? [] : [];
+  const taxonomyValid = vTaxonomy(taxonomy);
+  if (!taxonomyValid) fmt(vTaxonomy.errors).forEach((m) => issues.push({ file: taxonomyFile, message: m }));
+  if (!clientsValid || !taxonomyValid) return { ok: false, errors: issues };
 
   const offeringsDir = join(dataDir, "offerings");
   const offerings: Offering[] = [];
@@ -76,21 +79,20 @@ export function loadCatalog(opts: LoadOptions): LoadResult {
       fmt(vOffering.errors).forEach((m) => issues.push({ file, message: m }));
       continue;
     }
-    const o = doc as Offering;
+    const o = doc;
     if (f !== `${o.id}.yaml`) issues.push({ file, message: `file name must be ${o.id}.yaml` });
     offerings.push(o);
   }
 
-  // Referential and policy integrity. Only reached meaningfully when the shapes above are valid.
+  // Referential and policy integrity over schema-validated records.
   const dupes = (ids: string[]) => ids.filter((id, i) => ids.indexOf(id) !== i);
-  const tax = Array.isArray(taxonomy) ? taxonomy : [];
-  const capIds = new Set(tax.map((c) => c.id));
-  const clientById = new Map((Array.isArray(clients) ? clients : []).map((c) => [c.id, c]));
+  const capIds = new Set(taxonomy.map((c) => c.id));
+  const clientById = new Map(clients.map((c) => [c.id, c]));
   for (const id of dupes(offerings.map((o) => o.id))) issues.push({ file: offeringsDir, message: `duplicate offering id ${id}` });
-  for (const id of dupes(tax.map((c) => c.id))) issues.push({ file: taxonomyFile, message: `duplicate capability id ${id}` });
-  for (const id of dupes((Array.isArray(clients) ? clients : []).map((c) => c.id))) issues.push({ file: clientsFile, message: `duplicate client id ${id}` });
+  for (const id of dupes(taxonomy.map((c) => c.id))) issues.push({ file: taxonomyFile, message: `duplicate capability id ${id}` });
+  for (const id of dupes(clients.map((c) => c.id))) issues.push({ file: clientsFile, message: `duplicate client id ${id}` });
 
-  for (const c of tax) {
+  for (const c of taxonomy) {
     for (const n of c.native_coverage ?? []) {
       if (!clientById.has(n.client)) issues.push({ file: taxonomyFile, message: `${c.id}: unknown client "${n.client}" in native_coverage` });
     }
@@ -151,7 +153,7 @@ export function loadCatalog(opts: LoadOptions): LoadResult {
 
   // Fixture separation: sample data must never pass as real.
   const records: { file: string; id: string; fixture?: boolean }[] = [
-    ...tax.map((c) => ({ file: taxonomyFile, id: c.id, fixture: c.fixture })),
+    ...taxonomy.map((c) => ({ file: taxonomyFile, id: c.id, fixture: c.fixture })),
     ...offerings.map((o) => ({ file: join(offeringsDir, `${o.id}.yaml`), id: o.id, fixture: o.fixture })),
   ];
   for (const r of records) {

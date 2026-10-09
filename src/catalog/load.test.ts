@@ -39,6 +39,14 @@ describe("loadCatalog", () => {
     expect(res.snapshot.taxonomy.every((c) => c.fixture === true)).toBe(true);
   });
 
+  it.each(["clients.yaml", "fixtures/taxonomy.yaml"])("returns schema issues for malformed %s instead of entering semantic checks", (file) => {
+    const dir = copyCatalog();
+    writeFileSync(join(dir, file), "- null\n");
+    const res = loadCatalog({ root: dir, fixtures: true });
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(res.errors).toContainEqual(expect.objectContaining({ file: join(dir, file), message: expect.stringContaining("must be object") }));
+  });
+
   it("produces a stable content-addressed version", () => {
     const a = loadCatalog({ root: ROOT, fixtures: true });
     const b = loadCatalog({ root: ROOT, fixtures: true });

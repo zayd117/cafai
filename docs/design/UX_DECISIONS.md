@@ -197,3 +197,11 @@ out (blocked by 7 of 11 sites and by our own security rules, and it let trackers
 - **Known limits** (REGISTER A-043): the pictures show other sites' words, including ones our house style bans; on a
   computer the picture is too small to read and mainly shows what kind of page it is; storing pictures of other sites
   is not yet cleared; nothing retakes them on a schedule.
+
+## 12. Original design restored; interaction feedback pending review (2026-10-09)
+
+The owner rejected the draft visual refresh and requested their original BEFORE layout across desktop, mobile, results and setup. The original global CSS, intake and shell/footer are restored from `33cacaa`; the five replacement style files are removed. The original typography, palette, geometry and native controls are the visual baseline.
+
+`feedback.css` adds only interaction states: tactile press, brief choice/disclosure animation and a restrained loading sheen. The intake reuses `SubmitButton` for pending labels/disabled actions. A null-rendering client boundary requests one short vibration for intentional button/disclosure activation and checkbox/radio selection when supported; no load-time pulse, no behavior changes, and live reduced-motion preferences suppress it. Browser tests verify requests/fallbacks; physical feel still needs a supported phone.
+
+The audited code fixes are retained. Current measurements, verification and screenshot approval status are in `docs/code-audit/`, particularly `07-interaction-update.md`. The earlier visual-refresh directory is historical. No merge/deployment without explicit owner approval after fresh screenshots.

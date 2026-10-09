@@ -1,6 +1,7 @@
 import { ENGINE_CONFIG } from "@/engine/config";
 import { submitOrder } from "./actions";
 import { ProjectInput } from "./_components/ProjectInput";
+import { SubmitButton } from "./_components/SubmitButton";
 
 export const dynamic = "force-dynamic";
 
@@ -64,10 +65,10 @@ export default async function Counter({ searchParams }: { searchParams: Promise<
                 </label>
               ))}
             </fieldset>
-            <button type="submit" className="btn primary send">
+            <SubmitButton className="btn primary send" pendingText="Finding your picks…">
               What do you recommend?
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
-            </button>
+            </SubmitButton>
           </div>
         </div>
         <div className="row small muted under" id="text-help">
@@ -93,8 +94,8 @@ export default async function Counter({ searchParams }: { searchParams: Promise<
           <h2 id="examples" className="small muted">Or try an example</h2>
           <div className="example-chips">
             {EXAMPLES.map(([label, text]) => (
-              <button key={label} type="submit" name="example" value={text} className="example-chip" formNoValidate
-                aria-label={`${label}: ${text}`} title={text}>{label}</button>
+              <SubmitButton key={label} name="example" value={text} className="example-chip" formNoValidate pendingText="Preparing this example…"
+                aria-label={`${label}: ${text}`} title={text}>{label}</SubmitButton>
             ))}
           </div>
         </section>

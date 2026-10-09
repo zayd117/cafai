@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 import { Bricolage_Grotesque, Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import { ModeBanner } from "./_components/ModeBanner";
+import { InteractionFeedback } from "./_components/InteractionFeedback";
 import "./tokens.css";
 import "./globals.css";
+import "./feedback.css";
 
 // Faces from the design system (docs/design); self-hosted by next/font at build (no runtime font host, CSP font-src 'self').
 const sans = Instrument_Sans({ subsets: ["latin"], variable: "--font-instrument-sans" });
@@ -21,6 +23,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable} ${wordmark.variable}`}>
       <body>
+        <InteractionFeedback />
         <a className="skip-link" href="#main">Skip to content</a>
         <header className="topbar">
           <a href="/" className="brand" aria-label="Caf.ai home">

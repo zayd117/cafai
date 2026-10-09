@@ -17,24 +17,32 @@ npm run flow -- http://localhost:3100 docs/figma-handoff/screens
 
 | Suite | Count | Covers |
 |---|---|---|
-| `src/catalog/load.test.ts` | 13 | Schema validation, fixture separation, referential rules, trust rule, stable snapshot version, card-copy word limits and short maker name, "Found on" link (cited by a fact, house-style label, both dated pictures present and under 100 KB, only pictures of real tools) |
+| `src/catalog/load.test.ts` | 15 | Schema validation, fixture separation, referential rules, trust rule, stable snapshot version, card-copy word limits and short maker name, "Found on" link (cited by a fact, house-style label, both dated pictures present and under 100 KB, only pictures of real tools) |
+| `src/engine/understand.test.ts` | 33 | Positive/rejected phrase pairs for all 20 fixture/real capability families, mixed and repeated clauses, uncertainty, bare mentions, model contradictions |
+| `src/engine/tags.test.ts` | 8 | Tag fallback and suggestions, edit/remove semantics, model/user label redaction |
 | `src/engine/explain.test.ts` | 3 | Explanation word limits for the card's "Why it fits", "When" and "Skip if" lines, and the template keeping to them for every real tool |
 | `src/app/_components/cardCopy.test.ts` | 5 | Pick card decision pill and default order ticks, "your AI" → the person's AI tool, old "Add it" / "Skip it if" prefixes dropped, facts line with fallbacks for older snapshots |
-| `src/db/runs.db.test.ts` | 9 | Row-level security: tenant isolation, no enumeration of anonymous runs, child rows cannot claim another tenant, catalog write lock, append-only ledger, retention purge |
+| `src/db/runs.db.test.ts` | 10 | Website's actual startRun/loadRun path, stored redaction canary, raw-text trimming, row-level security: tenant isolation, no enumeration of anonymous runs, child rows cannot claim another tenant, catalog write lock, append-only ledger, retention purge |
 | `src/engine/redact.test.ts` | 14 | 9 canary secrets, key assignments, URL credentials, private keys, length cap, injection flag |
-| `src/engine/pipeline.test.ts` | 17 | Lanes and caps, flagged never shown, closed world, evidence checks, latent-signal rule, explanation validator and fallback, outcomes, deterministic fallback, Checked held back, client filter, staleness, secret canary, injection has no ranking effect |
-| `src/engine/providers/anthropic.test.ts` | 5 | Request shape (fenced data, schema, fallback), refusal/cut-off handling, served-model recording (stub client, not live) |
+| `src/engine/pipeline.test.ts` | 21 | Lanes and caps, flagged never shown, closed world, evidence checks, latent-signal rule, explanation validator and fallback, outcomes, deterministic fallback, Checked held back, client filter, staleness, secret canary, injection has no ranking effect |
+| `src/engine/providers/anthropic.test.ts` | 7 | Request shape (fenced data, schema, fallback), refusal/cut-off handling, served-model recording (stub client, not live) |
 | `src/eval/bakeoff.test.ts` | 5 | False-positive rate, calibration error, repeat consistency, Jev win rule, H4 guard |
 | `src/engine/providers/jev.test.ts` | 6 | Jev request shape (read-back state only, no raw text, pinned model, question set), answer mapping and thresholds, intent without an item → none, engine quote check end to end, API error → degrade, key env names |
 | `src/discover/bakeoff.test.ts` | 12 | Discovery bake-off: precision/recall/false-positive/overlap maths, labelled vs unlabelled summaries, unknown price never free, search cache, arm runner (kept/dropped queries, per-run usage, failure as error), Claude rater (fenced data, clamping, batching, defaults), recorded subagent ratings (replay, gaps are errors, unmetered arms show unknown) |
 | `src/eval/metrics.test.ts` | 5 | Metrics, release gate, pricing, blind pairs |
 | `src/server/controls.db.test.ts` | 4 | Quota hashing and cap, budget breaker, app-role purge, flag audit and grants |
-| `src/setup/handoff.test.ts` | 6 | Danger detection, Cursor link decoding (incl. "+"), hostnames, route choice, paste message |
-| `scripts/deploy-db.test.ts` | 5 | Production database URLs: Neon pooled → direct for admin steps, app on the pooler as `cafai_app` in `cafai`, sslmode for remote hosts |
-| `scripts/deploy-vercel.test.ts` | 10 | Vercel setup against a scripted API: project lookup (own scope, team fallback, missing project, bad token), env upsert (DATABASE_URL always, CAFAI_CATALOG and QUOTA_SALT only when missing, refusals reported), production deploy of main, failed build, smoke test (live, DB error, behind login) |
-| `npm run eval` | 4 fixture cases × arms × repeats | Release gate: harmful picks 0, invalid ids 0, no regression vs baseline; bake-off pass lines from `eval/bakeoff.json` |
+| `src/setup/handoff.test.ts` | 7 | Danger detection, Cursor link decoding (incl. "+"), hostnames, route choice, paste message |
+| `scripts/deploy-db.test.ts` | 6 | Production database URLs: Neon pooled → direct for admin steps, app on the pooler as `cafai_app` in `cafai`, sslmode for remote hosts |
+| `scripts/deploy-vercel.test.ts` | 12 | Vercel setup against a scripted API: project lookup (own scope, team fallback, missing project, bad token), env upsert (DATABASE_URL always, CAFAI_CATALOG and QUOTA_SALT only when missing, refusals reported), production deploy of main, failed build, smoke test (live, DB error, behind login) |
+| `src/config/pricing.test.ts` | 2 | Unknown models remain unknown in reports and count conservatively toward the budget |
+| `src/discover/discover.test.ts` | 9 | Listing sanitation, transport retry, interpretation IDs, ranking math, batched scoring and the stubbed discovery loop |
+| `src/server/savedExamples.test.ts` | 6 | Prepared examples stay tied to their script, catalog and unchanged read-back |
+| `src/engine/providers/index.test.ts` | 3 | Mock/live selection and per-call environment overrides |
+| `src/app/api/health/route.test.ts` | 1 | Health response shape and no-store cache headers |
+| `npm run eval` | 5 fixture cases × arms × repeats | Release gate: harmful picks 0, invalid ids 0, no regression vs baseline; bake-off pass lines from `eval/bakeoff.json` |
 | `npm run flow` (Chromium) | 116 checks | See below. CI runs it on every change, in sample mode (fixture catalog, mock model) |
 | `scripts/a11y.mjs` (Chromium + axe) | 8 checks | CI runs it on every change. WCAG 2.2 AA scans (counter, results with every level open, results with a "Found on" picture open, setup, legal page), keyboard reach, visible focus ring, "Found on" picture by keyboard (Tab to the link or Preview + Enter, Esc keeps focus, tabbing on closes it) |
+| `scripts/design-flow.mjs` (Chromium) | 62 checks | Six original-layout widths (320/390/700/701/1024/1440), native press/selection/disclosure/pending feedback, supported/unsupported haptic calls, live reduced motion, crafted read-back redaction and native no-JS forms |
 | `scripts/controls-flow.mjs` (Chromium + DB) | 9 checks | Revoked pick annotated and setup hidden, AI off → degraded banner and read-back first, runs off → paused, quota cap, honeypot, flag audit |
 
 ### Browser checks (`scripts/flow.mjs`, desktop 1440 and mobile 390)

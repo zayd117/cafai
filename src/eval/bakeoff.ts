@@ -2,7 +2,7 @@
 // the run (eval/bakeoff.json). Adds the three measures the Jev decision is judged on: false positives, confidence
 // calibration and consistency across repeat runs. GPT/ChatGPT is the A0 baseline only (blind pairs), never an arm.
 import type { Ablations } from "@/engine/pipeline";
-import { summarize, type Report } from "./metrics";
+import { isUseful, summarize, type Report } from "./metrics";
 import type { CaseResult, EvalCase } from "./types";
 
 export interface ArmSpec {
@@ -22,9 +22,6 @@ export const ARMS: Record<string, ArmSpec> = {
 };
 export const DEFAULT_ARMS = ["llm", "no_expansion", "forward_only", "evidence_gates_off"];
 
-const useful = (c: EvalCase, p: { offering_id: string; capability_id: string }) =>
-  c.labels.must_recommend.includes(p.capability_id) || c.labels.acceptable_offerings.includes(p.offering_id) || c.labels.potentially_missed.includes(p.capability_id);
-
 /** Share of shown picks that are not useful by the labels (lower is better). */
 export function falsePositiveRate(cases: EvalCase[], results: CaseResult[]): number | null {
   let picks = 0, fp = 0;
@@ -32,7 +29,7 @@ export function falsePositiveRate(cases: EvalCase[], results: CaseResult[]): num
     const c = cases.find((x) => x.id === r.case_id)!;
     for (const p of r.picks) {
       picks++;
-      if (!useful(c, p)) fp++;
+      if (!isUseful(c, p)) fp++;
     }
   }
   return picks ? fp / picks : null;
@@ -45,7 +42,7 @@ export function falsePositiveRate(cases: EvalCase[], results: CaseResult[]): num
 export function calibrationError(cases: EvalCase[], results: CaseResult[], bins = 5): number | null {
   const pts = results.flatMap((r) => {
     const c = cases.find((x) => x.id === r.case_id)!;
-    return r.picks.map((p) => ({ s: p.confidence_score, y: useful(c, p) ? 1 : 0 }));
+    return r.picks.map((p) => ({ s: p.confidence_score, y: isUseful(c, p) ? 1 : 0 }));
   });
   if (!pts.length) return null;
   let err = 0;

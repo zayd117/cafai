@@ -35,6 +35,13 @@ describe("read-back tags", () => {
     expect(cleanSuggestions(["iPhone app", "Phone app", "iphone app", "Website", "Android app"], "Phone app")).toEqual(["iPhone app", "Website", "Android app"]);
   });
 
+  it("redacts contact details and keys before shortening labels or suggestions", () => {
+    const key = "sk-CANARYcanary1234567890";
+    expect(cleanTag("canary@example.com")).toBe("[redacted]");
+    expect(cleanSuggestions([key, "canary@example.com", "Website"], "Phone app")).toEqual(["[redacted]", "Website"]);
+    expect(shortTag(`I use ${key}`)).toBe("[redacted]");
+  });
+
   it("keeps the model's tags and suggestions, and fills in a missing tag", async () => {
     const u = await understand({ llm: model(ITEMS, NEEDS), text: TEXT, declaredClients: [], taxonomy });
     expect(u.output.items.map((i) => i.tag)).toEqual(["Phone app", "Claude Code"]);
