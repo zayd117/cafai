@@ -1,6 +1,7 @@
 import { ENGINE_CONFIG } from "@/engine/config";
 import { submitOrder } from "./actions";
 import { ProjectInput } from "./_components/ProjectInput";
+import { SubmitButton } from "./_components/SubmitButton";
 
 export const dynamic = "force-dynamic";
 
@@ -34,73 +35,79 @@ const CLIENTS = [
 export default async function Counter({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error } = await searchParams;
   return (
-    <main className="page">
-      <form action={submitOrder} className="counter">
-        <div className="hero">
-          <h1>What are you working on?</h1>
-          <p className="lede">You bring the work. We know the menu.</p>
-        </div>
-
-        <ol className="steps" aria-label="How it works">
-          {STEPS.map((s, n) => (
-            <li key={s} {...(n === 0 ? { "aria-current": "step" as const } : {})}><span className="step-n" aria-hidden="true">{n + 1}</span>{s}</li>
-          ))}
-        </ol>
-
-        <div className="composer">
-          <label htmlFor="text" className="sr-only">Your project</label>
-          <ProjectInput
-            id="text" name="text" className="textarea" maxLength={ENGINE_CONFIG.input.maxChars} hints={HINTS}
-            aria-describedby="text-help" {...(error === "empty" ? { "aria-invalid": true } : {})}
-          />
-          {error && ERRORS[error] && <p className="small error" role="alert">{ERRORS[error]}</p>}
-          <div className="composer-bar">
-            <fieldset className="chips compact">
-              <legend className="small muted">AI tools I use <span className="sr-only">(optional)</span></legend>
-              {CLIENTS.map(([id, label]) => (
-                <label key={id} className="chip">
-                  <input type="checkbox" name="clients" value={id} />
-                  <span>{label}</span>
-                </label>
-              ))}
-            </fieldset>
-            <button type="submit" className="btn primary send">
-              What do you recommend?
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
-            </button>
-          </div>
-        </div>
-        <div className="row small muted under" id="text-help">
-          <span>Plain words are fine, no tool names needed. Don&apos;t paste secrets; we redact them.</span>
-          <span>Up to {ENGINE_CONFIG.input.maxChars.toLocaleString("en-US")} characters</span>
-        </div>
-
-        <details className="more">
-          <summary>Something specific in mind? <span className="muted">Optional</span></summary>
-          <div className="field">
-            <label htmlFor="specific" className="sr-only">Something specific in mind?</label>
-            <input id="specific" name="specific" className="input" maxLength={300} placeholder="e.g. something to help me analyze Excel data" />
-            <span className="small muted">Naming a tool works too. It only sharpens the picks; you never have to.</span>
-          </div>
-        </details>
-
-        <div className="hp" aria-hidden="true">
-          <label htmlFor="website">Leave this empty</label>
-          <input id="website" name="website" tabIndex={-1} autoComplete="off" />
-        </div>
-
-        <section aria-labelledby="examples" className="try">
-          <h2 id="examples" className="small muted">Or try an example</h2>
-          <div className="example-chips">
-            {EXAMPLES.map(([label, text]) => (
-              <button key={label} type="submit" name="example" value={text} className="example-chip" formNoValidate
-                aria-label={`${label}: ${text}`} title={text}>{label}</button>
+    <main className="page intake-page">
+      <div className="intake-layout">
+        <section className="hero intake-intro" aria-labelledby="project-heading">
+          <p className="intake-kicker"><span aria-hidden="true" />A little help choosing what comes next</p>
+          <h1 id="project-heading">What are you <span>working on?</span></h1>
+          <p className="lede">You bring the work. <br />We know the menu.</p>
+          <p className="intake-description">Tell us what you&apos;re making. We&apos;ll help you choose a few tools, explain why they fit, and show you the next step.</p>
+          <ol className="steps" aria-label="How it works">
+            {STEPS.map((s, n) => (
+              <li key={s} {...(n === 0 ? { "aria-current": "step" as const } : {})}><span className="step-n" aria-hidden="true">{n + 1}</span>{s}</li>
             ))}
+          </ol>
+          <div className="intake-signoff" aria-hidden="true">
+            <img src="/brand/cafai-mark.svg" width={56} height={56} alt="" />
+            <span>Less noise.<br /><strong>A clearer next step.</strong></span>
           </div>
         </section>
+        <form action={submitOrder} className="counter">
+          <div className="composer">
+            <label htmlFor="text" className="composer-label">Your project</label>
+            <ProjectInput
+              id="text" name="text" className="textarea" maxLength={ENGINE_CONFIG.input.maxChars} hints={HINTS}
+              aria-describedby="text-help" {...(error === "empty" ? { "aria-invalid": true } : {})}
+            />
+            {error && ERRORS[error] && <p className="small error" role="alert">{ERRORS[error]}</p>}
+            <div className="composer-bar">
+              <fieldset className="chips compact">
+                <legend className="small muted">AI tools I use <span className="sr-only">(optional)</span></legend>
+                {CLIENTS.map(([id, label]) => (
+                  <label key={id} className="chip">
+                    <input type="checkbox" name="clients" value={id} />
+                    <span>{label}</span>
+                  </label>
+                ))}
+              </fieldset>
+              <SubmitButton className="btn primary send" pendingText="Finding your picks…">
+                What do you recommend?
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
+              </SubmitButton>
+            </div>
+          </div>
+          <div className="row small muted under" id="text-help">
+            <span>Plain words are fine, no tool names needed. Don&apos;t paste secrets; we redact them.</span>
+            <span>Up to {ENGINE_CONFIG.input.maxChars.toLocaleString("en-US")} characters</span>
+          </div>
 
-        <p className="muted small hero">No sign-up needed. Caf.ai never installs anything for you.</p>
-      </form>
+          <details className="more">
+            <summary>Something specific in mind? <span className="muted">Optional</span></summary>
+            <div className="field">
+              <label htmlFor="specific" className="sr-only">Something specific in mind?</label>
+              <input id="specific" name="specific" className="input" maxLength={300} placeholder="e.g. something to help me analyze Excel data" />
+              <span className="small muted">Naming a tool works too. It only sharpens the picks; you never have to.</span>
+            </div>
+          </details>
+
+          <div className="hp" aria-hidden="true">
+            <label htmlFor="website">Leave this empty</label>
+            <input id="website" name="website" tabIndex={-1} autoComplete="off" />
+          </div>
+
+          <section aria-labelledby="examples" className="try">
+            <h2 id="examples" className="small muted">Or try an example</h2>
+            <div className="example-chips">
+              {EXAMPLES.map(([label, text]) => (
+                <SubmitButton key={label} name="example" value={text} className="example-chip" formNoValidate pendingText="Opening example…"
+                  aria-label={`${label}: ${text}`} title={text}>{label}</SubmitButton>
+              ))}
+            </div>
+          </section>
+
+          <p className="muted small intake-promise">No sign-up needed. Caf.ai never installs anything for you.</p>
+        </form>
+      </div>
     </main>
   );
 }

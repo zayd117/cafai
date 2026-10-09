@@ -197,3 +197,11 @@ out (blocked by 7 of 11 sites and by our own security rules, and it let trackers
 - **Known limits** (REGISTER A-043): the pictures show other sites' words, including ones our house style bans; on a
   computer the picture is too small to read and mainly shows what kind of page it is; storing pictures of other sites
   is not yet cleared; nothing retakes them on a schedule.
+
+## 12. Visual refresh pending review (2026-10-09)
+
+The user requested a visual rebuild using the existing audit and selected engineering/design resources, followed by screenshots and explicit approval before merge. The draft refresh covers the intake and shared shell, and refines results/setup styling without changing their information architecture. The prior intake-pixel-preservation constraint is superseded by this new redesign request; field names, journeys and core behaviors remain intact.
+
+The CSS is now owned by `src/app/styles/base.css`, `intake.css`, `results.css`, `setup.css` and `responsive.css`, imported by `globals.css`. Pending intake actions reuse `SubmitButton`. The brief entrance uses native CSS with reduced-motion support; GSAP, Lenis and React Bits dependencies are not needed for this effect. The approved logo and palette stay in use.
+
+Review notes, tool research, measured size changes and exact verification are in `docs/design/visual-refresh/`. The visual decision is **pending user approval**, not a replacement for the existing product-validation gates.

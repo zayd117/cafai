@@ -1,0 +1,19 @@
+# Requested tools: researched and applied selectively
+
+Reviewed 2026-10-09. “ponytial.dev” was interpreted as **Ponytail.dev** after locating its official site and repository. No matching authoritative source for the exact misspelling was established. “pstack” has several similarly named repositories; the Lauren Tan workflow and its Michael Denyer cross-runtime port fit this request.
+
+| Resource | What it is | Decision for this change |
+| --- | --- | --- |
+| [Ponytail](https://ponytail.dev/) / [official repo](https://github.com/DietrichGebert/ponytail) | Agent guidance for the smallest complete change, reuse and practical verification. | Saved the core skill with its license; used its dependency and abstraction checks. Upstream benchmark percentages are not evidence of savings in Caf.ai. |
+| [pstack cross-runtime port](https://github.com/michael-denyer/pstack-claude) | Engineering workflows derived from Lauren Tan's pstack, with runtime adapters and optional orchestration. | Saved selected pstack-informed principles in the Caf.ai skill. The complete plugin and model-routing hooks were not installed. Avoided imposing another orchestration system on this app. |
+| [Thermo Nuclear review](https://github.com/michael-denyer/pstack-claude/tree/main/plugins/pstack/skills/thermo-nuclear-code-quality-review) | Strict review for structural complexity, duplication, boundaries and file growth. | Saved the skill with MIT licenses and provenance. Used it in an independent review of the actual diff; removed the unnecessary GSAP subsystem. |
+| [Ahrefs MCP](https://ahrefs.com/seo-mcp) / [tool groups](https://docs.ahrefs.com/en/mcp/docs/tool-categories) | Account-backed keyword, competitor and search-performance data, including connected GSC groups. | Ahrefs and a Search Console connector were offered through ChatGPT. Their account connections are still required. No SEO rankings, traffic or indexing data was retrieved, and no client-side analytics dependency was added. |
+| [GSAP React documentation](https://gsap.com/resources/React/) | Animation runtime with a React hook for scoped cleanup. | Guidance saved for future choreography. Evaluated a working client entrance, then removed its two dependencies because CSS fully handles the current effect. |
+| [Lenis](https://github.com/darkroomengineering/lenis) | Smooth scrolling with React integration and GSAP synchronization options. | Guidance saved; runtime adoption deferred. Native scrolling is a better fit for forms, sticky order panels, source previews, anchors and keyboard navigation in this change. |
+| [React Bits](https://github.com/DavidHDev/react-bits) | Source components for animated and interactive React interfaces. | Read the AnimatedContent implementation and current license. Its initial hidden state, inline style and ScrollTrigger dependency were unnecessary here. No component source was copied; kept content visible and used a small native effect. |
+
+The React Bits repository currently includes an MIT + Commons Clause condition. Treat component redistribution separately from use within a site; recheck the exact selected component's license before future copying. GSAP, Lenis and React Bits are frontend resources rather than authenticated ChatGPT integrations. Saving skill guidance does not install their packages or grant account access.
+
+Saved skill set: Ponytail, Thermo Nuclear Code Quality Review, and Caf.ai Review and Design. The last skill carries the selected pstack workflow plus tool-selection references for GSAP, Lenis, React Bits and SEO services. No whole-library bulk import or unreviewed installation script was run.
+
+Source snapshots for imported guidance: Ponytail `9cc65d03aa2da1db7121b912d03596409ee340b8`; pstack port `60ae9e25610744bccd45bd405c211413a471aaf8`. Existing Caf.ai docs, routes and test contracts take precedence over external suggestions.
