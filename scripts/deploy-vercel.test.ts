@@ -100,6 +100,14 @@ describe("smoke", () => {
   it("passes when the page renders and an unknown run is a 404", async () => {
     expect(await smoke(site(200, 404), "https://cafai.vercel.app")).toMatch(/is live/);
   });
+  it("accepts the same headline when responsive typography adds inline markup", async () => {
+    const { f } = fake({ "GET /": [200, '<h1 id="project-heading">What are you <span>working on?</span></h1>'], "GET /r/00000000-0000-4000-8000-000000000000": [404, ""] });
+    expect(await smoke(f, "https://cafai.vercel.app")).toMatch(/is live/);
+  });
+  it("does not mistake a headline mentioned in an error page for the working composer", async () => {
+    const { f } = fake({ "GET /": [200, '<h1>Unavailable</h1><p>What are you working on?</p>'] });
+    await expect(smoke(f, "https://cafai.vercel.app")).rejects.toThrow(/smoke test/);
+  });
   it("fails when the database lookup errors", async () => {
     await expect(smoke(site(200, 500), "https://cafai.vercel.app")).rejects.toThrow(/answered 500/);
   });

@@ -42,7 +42,7 @@ export interface Report {
   by_input_type: Record<string, { cases: number; recall_at_5: number | null; precision_at_3: number | null }>;
 }
 
-const isUseful = (c: EvalCase, p: { offering_id: string; capability_id: string }) =>
+export const isUseful = (c: EvalCase, p: { offering_id: string; capability_id: string }) =>
   c.labels.must_recommend.includes(p.capability_id) || c.labels.acceptable_offerings.includes(p.offering_id) || c.labels.potentially_missed.includes(p.capability_id);
 
 export function perCase(c: EvalCase, r: CaseResult) {

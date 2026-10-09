@@ -3,14 +3,20 @@ import { fileURLToPath } from "node:url";
 import pg from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { loadCatalog } from "@/catalog/load";
+import type { CatalogSnapshot } from "@/catalog/types";
 import { CONTROLS } from "@/config/controls";
-import { createAnonymousRun, publishSnapshot, recordUsage } from "@/db/runs";
+import { withAccess } from "@/db/client";
+import { publishSnapshot } from "@/db/runs";
+import { scriptedFor } from "@/eval/run";
+import type { EvalCase } from "@/eval/types";
+import caseData from "../../eval/cases/fixture/fx-d-calorie-tracker.json";
 import { migrate } from "../../scripts/migrate";
 import { budgetSpent, clientKey, hitQuota, readFlags } from "./controls";
+import { startRun } from "./runService";
 
 const PW = process.env.CAFAI_DEV_DB_PASSWORD ?? "cafai_dev_only";
 const url = (role: string) => `postgres://${role}:${PW}@${process.env.PGHOST_TEST ?? "localhost"}:5432/cafai_test`;
-let owner: pg.Pool, app: pg.Pool, catalog: pg.Pool, version: string;
+let owner: pg.Pool, app: pg.Pool, catalog: pg.Pool, snapshot: CatalogSnapshot;
 
 beforeAll(async () => {
   owner = new pg.Pool({ connectionString: url("cafai_owner") });
@@ -21,7 +27,7 @@ beforeAll(async () => {
   const res = loadCatalog({ root: fileURLToPath(new URL("../../catalog", import.meta.url)), fixtures: true });
   if (!res.ok) throw new Error("fixture catalog invalid");
   await publishSnapshot(catalog, res.snapshot);
-  version = res.snapshot.version;
+  snapshot = res.snapshot;
 });
 afterAll(async () => Promise.all([owner?.end(), app?.end(), catalog?.end()]));
 
@@ -40,8 +46,12 @@ describe("controls", () => {
 
   it("trips the budget breaker once today's recorded spend reaches the cap", async () => {
     expect(await budgetSpent(app)).toBe(false);
-    const id = await createAnonymousRun(app, { catalogVersion: version, pipelineVersions: {}, redactedText: "t", declaredClients: [] });
-    await recordUsage(app, {}, id, { kind: "model_call", model: "claude-sonnet-5-5", inputTokens: 1, outputTokens: 1, costUsdMicros: CONTROLS.dailyAiBudgetUsd * 1_000_000 });
+    const p = scriptedFor(caseData as EvalCase);
+    const id = await startRun({ pool: app, snapshot, llm: p, decision: p }, { text: caseData.text, declaredClients: [], confirmed: true });
+    await withAccess(app, { runId: id }, (c) => c.query(
+      "INSERT INTO usage_events (run_id, kind, model, input_tokens, output_tokens, cost_usd_micros) VALUES ($1, 'model_call', 'claude-sonnet-5-5', 1, 1, $2)",
+      [id, CONTROLS.dailyAiBudgetUsd * 1_000_000],
+    ));
     expect(await budgetSpent(app)).toBe(true);
   });
 

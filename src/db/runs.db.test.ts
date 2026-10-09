@@ -3,16 +3,21 @@ import { fileURLToPath } from "node:url";
 import pg from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { loadCatalog } from "@/catalog/load";
+import type { CatalogSnapshot } from "@/catalog/types";
+import { scriptedFor } from "@/eval/run";
+import type { EvalCase } from "@/eval/types";
+import { loadRun, startRun } from "@/server/runService";
+import caseData from "../../eval/cases/fixture/fx-d-calorie-tracker.json";
 import { migrate } from "../../scripts/migrate";
 import { withAccess } from "./client";
-import { addFeedback, createAnonymousRun, getRun, publishSnapshot, purgeExpired, recordUsage, saveRecommendations } from "./runs";
+import { addFeedback, publishSnapshot } from "./runs";
 
 const PW = process.env.CAFAI_DEV_DB_PASSWORD ?? "cafai_dev_only";
 const HOST = process.env.PGHOST_TEST ?? "localhost";
 const url = (role: string) => `postgres://${role}:${PW}@${HOST}:5432/cafai_test`;
 
 let owner: pg.Pool, app: pg.Pool, catalog: pg.Pool;
-let catalogVersion: string;
+let snapshot: CatalogSnapshot;
 
 beforeAll(async () => {
   owner = new pg.Pool({ connectionString: url("cafai_owner") });
@@ -24,42 +29,29 @@ beforeAll(async () => {
   const res = loadCatalog({ root: fileURLToPath(new URL("../../catalog", import.meta.url)), fixtures: true });
   if (!res.ok) throw new Error("fixture catalog invalid");
   await publishSnapshot(catalog, res.snapshot);
-  catalogVersion = res.snapshot.version;
+  snapshot = res.snapshot;
 });
 
 afterAll(async () => {
   await Promise.all([owner?.end(), app?.end(), catalog?.end()]);
 });
 
-const newRun = () =>
-  createAnonymousRun(app, {
-    catalogVersion,
-    pipelineVersions: { prompt: "test", model: "MOCK", taxonomy: "fixture" },
-    redactedText: "test project",
-    declaredClients: ["claude_code"],
-  });
-
-const rec = {
-  offering_id: "fx-browser-check",
-  lane: "direct" as const,
-  rank: 1,
-  capability_id: "click-through-testing",
-  need_type: "stated" as const,
-  match_band: "good" as const,
-  match_components: {},
-  confidence_band: "medium" as const,
-  confidence_inputs: {},
-  evidence_ids: ["u1"],
+const newRun = () => {
+  const p = scriptedFor(caseData as EvalCase);
+  return startRun({ pool: app, snapshot, llm: p, decision: p }, { text: caseData.text, declaredClients: caseData.declared_clients, confirmed: true });
 };
 
 describe("recommendation runs with row-level security", () => {
   it("creates an anonymous run readable by its id, with a retention expiry", async () => {
     const id = await newRun();
-    const run = await getRun(app, {}, id);
+    const run = await loadRun(app, id);
     expect(run?.id).toBe(id);
     expect(run?.org_id).toBeNull();
     expect(run?.expires_at).toBeInstanceOf(Date);
-    expect(run?.context?.declared_clients).toEqual(["claude_code"]);
+    expect(run?.declared_clients).toEqual(["claude_code"]);
+    expect(run?.outcome).toBe("picks");
+    expect(run?.catalog_version).toBe(snapshot.version);
+    expect(run?.details.readback).toHaveLength(2);
   });
 
   it("does not let the app role enumerate anonymous runs", async () => {
@@ -76,21 +68,22 @@ describe("recommendation runs with row-level security", () => {
     const [a, b] = orgs.rows.map((r) => r.id as string);
     const run = await owner.query(
       "INSERT INTO recommendation_runs (org_id, catalog_version) VALUES ($1, $2) RETURNING id",
-      [a, catalogVersion],
+      [a, snapshot.version],
     );
     const runId = run.rows[0].id as string;
-    expect(await getRun(app, { orgId: b }, runId)).toBeNull();
-    expect((await getRun(app, { orgId: a }, runId))?.id).toBe(runId);
+    expect(await loadRun(app, runId, { orgId: b })).toBeNull();
+    expect((await loadRun(app, runId, { orgId: a }))?.id).toBe(runId);
     // Knowing the id is not enough for an org-owned run.
-    expect(await getRun(app, {}, runId)).toBeNull();
+    expect(await loadRun(app, runId)).toBeNull();
   });
 
   it("stores recommendations as ids, bands and components, and child rows cannot claim another tenant", async () => {
     const id = await newRun();
-    await saveRecommendations(app, {}, id, [rec]);
-    const run = await getRun(app, {}, id);
-    expect(run?.recommendations).toHaveLength(1);
-    expect(run?.recommendations[0]).toMatchObject({ offering_id: "fx-browser-check", match_band: "good", catalog_version: catalogVersion });
+    const run = await loadRun(app, id);
+    expect(run?.picks).toHaveLength(4);
+    expect(run?.picks.find((p) => p.offering_id === "fx-browser-check")).toMatchObject({ match_band: "good", lane: "also_worth_knowing" });
+    const stored = await withAccess(app, { runId: id }, (c) => c.query("SELECT catalog_version, match_components FROM recommendations WHERE run_id = $1", [id]));
+    expect(stored.rows.every((p) => p.catalog_version === snapshot.version && Object.keys(p.match_components).length === 6)).toBe(true);
 
     const org = (await owner.query("INSERT INTO organizations DEFAULT VALUES RETURNING id")).rows[0].id;
     await expect(
@@ -98,8 +91,8 @@ describe("recommendation runs with row-level security", () => {
         c.query(
           `INSERT INTO recommendations (run_id, org_id, offering_id, catalog_version, lane, rank, capability_id, need_type,
              match_band, match_components, confidence_band, confidence_inputs)
-           VALUES ($1, $2, 'x', $3, 'direct', 2, 'c', 'stated', 'good', '{}', 'low', '{}')`,
-          [id, org, catalogVersion],
+           VALUES ($1, $2, 'x', $3, 'direct', 99, 'c', 'stated', 'good', '{}', 'low', '{}')`,
+          [id, org, snapshot.version],
         ),
       ),
     ).rejects.toThrow(/row-level security/);
@@ -117,8 +110,7 @@ describe("recommendation runs with row-level security", () => {
 
   it("records feedback and rejects a recommendation id from another run", async () => {
     const id = await newRun();
-    await saveRecommendations(app, {}, id, [rec]);
-    const recId = (await getRun(app, {}, id))!.recommendations[0]!.id;
+    const recId = (await loadRun(app, id))!.picks[0]!.id;
     await addFeedback(app, {}, id, { recommendationId: recId, kind: "useful", value: true });
     const other = await newRun();
     await expect(addFeedback(app, {}, other, { recommendationId: recId, kind: "useful" })).rejects.toThrow("recommendation not found");
@@ -133,20 +125,43 @@ describe("recommendation runs with row-level security", () => {
 
   it("keeps the usage ledger append-only for the app", async () => {
     const id = await newRun();
-    await recordUsage(app, {}, id, { kind: "model_call", stage: "understanding", model: "MOCK", inputTokens: 1, outputTokens: 1, costUsdMicros: 0 });
+    const usage = await withAccess(app, { runId: id }, (c) => c.query("SELECT stage, cost_usd_micros FROM usage_events WHERE run_id = $1 ORDER BY id", [id]));
+    expect(usage.rows.map((u) => u.stage)).toEqual(["understanding", "judgment", "explanation"]);
+    expect(usage.rows.every((u) => Number(u.cost_usd_micros) === 0)).toBe(true);
     await expect(withAccess(app, { runId: id }, (c) => c.query("UPDATE usage_events SET cost_usd_micros = 0"))).rejects.toThrow(/permission denied/);
     await expect(withAccess(app, { runId: id }, (c) => c.query("DELETE FROM usage_events"))).rejects.toThrow(/permission denied/);
   });
 
   it("purges expired anonymous runs and trims expired raw text", async () => {
     const id = await newRun();
+    const retained = await newRun();
     await owner.query("UPDATE recommendation_runs SET expires_at = now() - interval '1 second' WHERE id = $1", [id]);
-    const out = await purgeExpired(owner);
+    await owner.query("UPDATE context_snapshots SET raw_text_expires_at = now() - interval '1 second' WHERE run_id = $1", [retained]);
+    const out = (await app.query("SELECT * FROM purge_expired()")).rows[0];
     expect(out.runs).toBeGreaterThanOrEqual(1);
-    expect(await getRun(app, {}, id)).toBeNull();
+    expect(out.raw_texts).toBeGreaterThanOrEqual(1);
+    expect(await loadRun(app, id)).toBeNull();
+    const trimmed = await loadRun(app, retained);
+    expect(trimmed?.text).toBeNull();
+    expect(trimmed?.picks).toHaveLength(4);
   });
 
   it("rejects malformed ids before touching the database", async () => {
-    await expect(getRun(app, {}, "not-a-uuid")).rejects.toThrow("invalid id");
+    await expect(loadRun(app, "not-a-uuid")).rejects.toThrow("invalid id");
+  });
+
+  it("persists only redacted read-back fields through the website's run path", async () => {
+    const p = scriptedFor(caseData as EvalCase);
+    const key = "sk-CANARYcanary1234567890";
+    const email = "canary@example.com";
+    const id = await startRun({ pool: app, snapshot, llm: p, decision: p }, {
+      text: `${caseData.text} Email ${email}.`, declaredClients: ["claude_code"], confirmed: true, lockedReadback: true,
+      userItems: [{ id: "u1", kind: "goal", text: `Tracker ${key}`, tag: email, quote: email, suggestions: [key, "Tracker"] }],
+    });
+    const rows = await withAccess(app, { runId: id }, (c) => c.query("SELECT raw_text, profile FROM context_snapshots WHERE run_id = $1", [id]));
+    const saved = JSON.stringify({ run: await loadRun(app, id), context: rows.rows, requests: p.requests });
+    expect(saved).not.toContain(key);
+    expect(saved).not.toContain(email);
+    expect(saved).toContain("[redacted]");
   });
 });

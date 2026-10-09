@@ -27,7 +27,7 @@ Format: MD section → requirement → engineering task → files → test. Kind
 | §9 taxonomy | Capability: job phrases, need signals, skip conditions, native-client coverage | CONFIRMED | `taxonomy.schema.json` | schema |
 | §13, A-002 | Three first clients with handoff mechanics | CONFIRMED | `catalog/clients.yaml` | "loads the real catalog" |
 | §11 | Every run stores the catalog snapshot version | CONFIRMED (version produced here; stored from L2/L3) | `load.ts` `snapshotVersion` | "stable content-addressed version" |
-| A-006, A-007 | Real taxonomy and offerings | BLOCKED | `catalog/taxonomy.yaml` (empty), `catalog/offerings/` (empty) | check prints BLOCKED note |
+| A-006, A-007 | Real taxonomy and offerings | DRAFT; human curation remains BLOCKED | `catalog/taxonomy.yaml` (14 capabilities), `catalog/offerings/` (11 tools for 3 saved examples) | Schema/semantic checks pass; no real labeled quality evaluation |
 | — | Dev/test data | FIXTURE | `catalog/fixtures/**` (every record `fixture: true`) | "rejects fixture records in the real catalog" |
 | §11 | Referential integrity: capability ids, client ids, install method per client | NECESSARY | `load.ts` | two rejection tests |
 
@@ -37,13 +37,13 @@ Format: MD section → requirement → engineering task → files → test. Kind
 |---|---|---|---|---|
 | §17 | Managed Postgres (local Postgres 16 for dev/test) | CONFIRMED | `scripts/db-bootstrap.sh`, `scripts/migrate.ts`, `db/migrations/001_core.sql` | migrate applies once, then "up to date" |
 | §14, §19 | org_id on tenant rows; row-level security as a second wall; other tenants' ids behave as missing (404) | CONFIRMED | RLS policies in `001_core.sql`; `src/db/client.ts` `withAccess` (transaction-local settings) | "isolates tenants", "does not let the app role enumerate anonymous runs", child-row tenant checks |
-| §8, §18 | Anonymous first run; runs shareable and resumable by URL | CONFIRMED | `createAnonymousRun`, `getRun` (unguessable UUID is the read capability) | "creates an anonymous run readable by its id" |
-| §19 | Recommendation stores offering id, catalog version, score components; not rendered text | CONFIRMED | `recommendations` table, `saveRecommendations` | "stores recommendations as ids, bands and components" |
+| §8, §18 | Anonymous first run; runs shareable and resumable by URL | CONFIRMED | `src/server/runService.ts` `startRun`, `loadRun` (unguessable UUID is the read capability) | "creates an anonymous run readable by its id" |
+| §19 | Recommendation stores offering id, catalog version, score components; catalog facts re-render from the snapshot | CONFIRMED | `recommendations` table, `startRun` | "stores recommendations as ids, bands and components" |
 | §2, §11 | Every run stores model, prompt, taxonomy and catalog versions | CONFIRMED | `recommendation_runs.catalog_version`, `pipeline_versions` | schema FK to `catalog_snapshots` |
 | §19 | Catalog readable by everyone, writable only by the catalog pipeline | CONFIRMED | grants; `publishSnapshot` via `cafai_catalog` | "keeps the catalog writable only by the catalog pipeline" |
 | §19 | Feedback with reason codes | CONFIRMED (reason list OPEN) | `feedback`, `addFeedback` | "records feedback and rejects a recommendation id from another run" |
-| §19 | Append-only usage and AI cost ledger | CONFIRMED | `usage_events`, `recordUsage` | "keeps the usage ledger append-only" |
-| §12, A-010 | Anonymous run content deleted after 30 days; raw text trimmed after its window | CONFIRMED (windows are ASSUMPTIONS) | `src/config/retention.ts`, `purgeExpired` | "purges expired anonymous runs" |
+| §19 | Append-only usage and AI cost ledger | CONFIRMED | `usage_events`, `startRun` (same transaction as the result) | "keeps the usage ledger append-only" |
+| §12, A-010 | Anonymous run content deleted after 30 days; raw text trimmed after its window | CONFIRMED (windows are ASSUMPTIONS) | `src/config/retention.ts`, `purge_expired()` via the app-role worker | "purges expired anonymous runs and trims expired raw text" |
 | §17, §14 | Kill-switch flag rows | CONFIRMED (read path built in L8) | `flags` table | — |
 | §15 | Users, identities, memberships, sessions | DEFERRED to L7 (A-003) | — | — |
 
@@ -52,8 +52,10 @@ Format: MD section → requirement → engineering task → files → test. Kind
 | Plan § | Requirement | Kind | Files | Test |
 |---|---|---|---|---|
 | §9 st.1, §12 | Normalize, redact keys/tokens/emails/phones, cap length before storing or any model call | CONFIRMED (cap number PLACEHOLDER) | `src/engine/redact.ts` | `redact.test.ts` (9 canaries), "never sends secrets to any model" |
+| Audit F-02 | Apply the same redaction to edited read-back text, labels, quotes and suggestions | CONFIRMED | `actions.ts`, `pipeline.ts`, `tags.ts`, `understand.ts` | Pipeline and DB persistence canaries; Chromium crafted-form rerun |
 | §9 st.2-3 | One schema-bound call: profile items with quoted evidence; concepts mapped to taxonomy ids; unmatched terms logged as gaps | CONFIRMED | `understand.ts`, `schemas.ts` | "drops read-back items whose quote is not…", "logs unmatched expansion terms" |
 | §9 st.4 | Need types present/stated/implied/latent/not relevant; rules first, model fills gaps; latent only from curated signals, max one | CONFIRMED | `understand.ts` | "accepts latent needs only through curated signals" |
+| Audit F-01 | Directly rejected job phrases do not become stated needs; questions and uncertainty remain with the model | CONFIRMED for the documented English patterns | `understand.ts`, `understand.test.ts`, `fx-c-negated-payments.json` | Positive/rejected pairs for all 20 fixture/real capability families; mixed clauses and incorrect model need |
 | §9 st.5-7 | Catalog-only discovery; filter by declared clients, constraints, trust eligibility, staleness; INFERRED-only cannot justify a pick | CONFIRMED | `match.ts` `discoverAndFilter` | "filters by declared clients", "removes offerings unverified…", "never recommends flagged" |
 | §9 st.8 | Two-way match: one call over ≤12 candidates; closed world; quotes must be the user's words; forward and backward | CONFIRMED | `match.ts` `judge` | "ignores invented candidate ids" |
 | §9 st.9-10 | Match and Confidence separate, bands; evidence check | CONFIRMED (weights/cut-points PLACEHOLDER, A-009) | `match.ts` `score`, `evidenceCheck`, `config.ts` | "keeps Match and Confidence separate" |
@@ -123,7 +125,7 @@ Format: MD section → requirement → engineering task → files → test. Kind
 | §24 | Pasting a manifest | NOT BUILT: no mapping from dependency names to capabilities in the plan or catalog schema (A-036) | — | — |
 | §24 | Glossary tooltips | NOT BUILT: wording unspecified (A-029) | — | — |
 | §24 | Priced Pro waitlist | NOT BUILT: price is a range to test and needs an email provider (A-005) | — | — |
-| §24 | Automated weekly catalog checks | NOT BUILT: real catalog is empty (A-006) | — | — |
+| §24 | Automated weekly catalog checks | NOT BUILT: a small draft exists; scheduled source rechecks and human curation remain open (A-006) | — | — |
 | §13, §24 | Anonymous read-only `recommend` MCP tool | BLOCKED (A-037): SDK lacks spec 2026-07-28 | — | — |
 
 ## L10 QA and production readiness

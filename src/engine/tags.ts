@@ -1,5 +1,6 @@
 // Read-back tags: the short labels people see for each understood item ("Phone app", "Claude Code").
 // The model writes them; code checks their length and falls back to a label cut from the item's own words.
+import { redact } from "./redact";
 
 export const TAG_MAX = 40;
 export const SUGGESTIONS_MAX = 3;
@@ -10,6 +11,7 @@ const ARTICLE = /^(?:a|an|the|my|your|our)\s+/i;
 
 /** A short label cut from a sentence: drops "You're making a", keeps four words. */
 export function shortTag(text: string): string {
+  text = redact(text, 400).text;
   const s = text.trim().replace(/\s+/g, " ").replace(/[.!?]+$/, "").replace(LEAD, "").replace(VERB, "").replace(ARTICLE, "");
   const words = s.split(" ").filter(Boolean);
   let out = words.slice(0, 4).join(" ");
@@ -21,7 +23,7 @@ export function shortTag(text: string): string {
 /** A model or form tag, tidied; null when missing or too long to read as a tag. */
 export function cleanTag(tag: unknown): string | null {
   if (typeof tag !== "string") return null;
-  const t = tag.replace(/\s+/g, " ").trim().replace(/[.!?]+$/, "");
+  const t = redact(tag, Infinity).text.replace(/\s+/g, " ").trim().replace(/[.!?]+$/, "");
   return t && t.length <= TAG_MAX ? t : null;
 }
 

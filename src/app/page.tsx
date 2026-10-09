@@ -47,10 +47,6 @@ export default async function Counter({ searchParams }: { searchParams: Promise<
               <li key={s} {...(n === 0 ? { "aria-current": "step" as const } : {})}><span className="step-n" aria-hidden="true">{n + 1}</span>{s}</li>
             ))}
           </ol>
-          <div className="intake-signoff" aria-hidden="true">
-            <img src="/brand/cafai-mark.svg" width={56} height={56} alt="" />
-            <span>Less noise.<br /><strong>A clearer next step.</strong></span>
-          </div>
         </section>
         <form action={submitOrder} className="counter">
           <div className="composer">

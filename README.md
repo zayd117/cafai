@@ -7,6 +7,9 @@ Built from **Caf.ai Master Plan v3.1**. Status: pre-validation build (plan §25 
 **Sample mode.** Until curated data exists, the app runs on a labeled FIXTURE catalog and, without an API key, a MOCK
 model. The site says so on every page. Nothing in sample mode is a real recommendation.
 
+The three saved examples use a small real-catalog draft (14 capabilities, 11 tools). Those prepared examples do not
+validate open-ended recommendations; human curation and the real labeled evaluation set remain open.
+
 ## Docs
 
 | File | What it holds |
@@ -19,6 +22,7 @@ model. The site says so on every page. Nothing in sample mode is a real recommen
 | `docs/DEPLOY.md` | Going live on Vercel + Neon (free plans): one-time setup, day-to-day deploys, adding an API key later |
 | `docs/PHASE0_INTAKE.md` | Turning interviews and concierge runs into test cases, capabilities and tools; running the bake-off |
 | `docs/figma-handoff/screens/` | Real Chromium screenshots, desktop and mobile |
+| `docs/code-audit/README.md` | Full code review, measured cleanup, fixes and remaining decisions |
 
 ## Run locally
 
@@ -43,8 +47,9 @@ Real model calls: set `ANTHROPIC_API_KEY` (and optionally `CAFAI_MODEL_*`); see 
 
 ```
 npm run typecheck && npm run catalog:check && npm run cases:check && npm test && npm run eval
-npm run flow -- http://localhost:3100 docs/figma-handoff/screens     # 47 Chromium checks (CI runs it too)
+npm run flow -- http://localhost:3100 docs/figma-handoff/screens     # 116 Chromium checks (CI runs it too)
 npm run a11y -- http://localhost:3100                                # axe WCAG 2.2 AA + keyboard (CI runs it too)
+node scripts/design-flow.mjs http://localhost:3100 .screenshots/design # responsive layout, motion, pending, redaction, no-JS
 DATABASE_OWNER_URL=... node scripts/controls-flow.mjs http://localhost:3101   # server with CAFAI_RUNS_PER_HOUR=3
 ```
 

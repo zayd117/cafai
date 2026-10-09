@@ -1,0 +1,27 @@
+{
+  "id": "fx-c-negated-payments",
+  "fixture": true,
+  "input_type": "C",
+  "text": "I do not need to accept payments.",
+  "declared_clients": ["claude_code"],
+  "labels": {
+    "must_recommend": [],
+    "acceptable_offerings": [],
+    "must_not_recommend": ["payments"],
+    "potentially_missed": [],
+    "probably_not_needed": ["payments"],
+    "expected_outcome": "no_good_pick"
+  },
+  "mock": {
+    "understand": {
+      "in_scope": true,
+      "confidence": "high",
+      "items": [{"id": "m1", "kind": "constraint", "text": "No payments needed", "quote": "I do not need to accept payments."}],
+      "concepts": [],
+      "needs": [{"capability_id": "payments", "need_type": "stated", "evidence_ids": ["m1"]}],
+      "clarifying_question": null
+    },
+    "judge": "all_direct",
+    "explain": "template"
+  }
+}
