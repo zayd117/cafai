@@ -27,6 +27,7 @@ Measurement: UTF-8 bytes and physical lines from `git show <baseline>:src/app/gl
 | Global CSS entrypoint | 427 lines | 6 lines | **98.59% smaller** | Import-only entrypoint; this is restructuring, not total debloat. |
 | All CSS source | 427 lines | 465 lines | **8.90% larger** | Added the redesigned layout and motion. |
 | All CSS source bytes | 39,134 | 41,433 | **5.87% larger** | No claim of net CSS payload reduction. |
+| Production source lines (`src`, TS/TSX/CSS, excluding `.test.ts`) | 6,731 | 6,779 | **0.71% larger** | Added presentation code; the whole source tree did not shrink. |
 | Runtime dependencies | 9 | 9 | **0% growth** | Package manifests and lockfile are unchanged from the baseline. |
 | Shared button transition definitions | 2 | 1 | **50% fewer** | One canonical button rule replaces the competing scoped definition. |
 | Pending/disabled styling blocks in the first redesign draft | 2 | 1 | **50% fewer** | Consolidated result-button and intake-button behavior. Draft comparison, not the old site. |

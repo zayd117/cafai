@@ -7,7 +7,7 @@ const [base='http://localhost:3100',out='.screenshots/design']=process.argv.slic
 mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium',args:['--no-sandbox']});
 const checks=[];
-const check=(label,value)=>{assert.ok(value,label);checks.push(`PASS ${label}`);};
+ const check=(label,value)=>{assert.ok(value,label);checks.push(`PASS ${label}`);console.log(checks.at(-1));};
 try {
  for(const width of [320,390,760,1440]){
   const page=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});
@@ -16,6 +16,7 @@ try {
   check(`${width}px: motion is absent under reduced motion`,await page.locator('.counter').evaluate(el=>getComputedStyle(el).transform==='none'));
   check(`${width}px: textarea is visible`,await page.getByRole('textbox',{name:'Your project',exact:true}).isVisible());
   check(`${width}px: submit has a 44px target`,(await page.getByRole('button',{name:'What do you recommend?'}).boundingBox()).height>=44);
+  await page.screenshot({path:`${out}/intake-${width}px.png`,fullPage:true});
   await page.close();
  }
  const page=await browser.newPage({viewport:{width:1440,height:1000}});
@@ -45,15 +46,16 @@ try {
  await native.goto(base);
  check('No JS: project composer remains visible',await native.getByRole('textbox',{name:'Your project',exact:true}).isVisible());
  await native.getByRole('textbox',{name:'Your project',exact:true}).fill('I am making a calorie tracker app for phones.');
- await native.getByRole('button',{name:'What do you recommend?'}).click();
+ // Native keyboard activation avoids Playwright's animation-stability polling in a JS-disabled context.
+ // Pointer activation and motion are covered above; this exercises actual browser form submission.
+ await native.getByRole('button',{name:'What do you recommend?'}).press('Enter');
  await native.waitForURL(/\/r\//);
  check('No JS: native project submission reaches results',native.url().includes('/r/'));
  await native.screenshot({path:`${out}/no-js-results.png`,fullPage:true});
  await native.goto(base);
- await native.getByRole('button',{name:/Calorie tracker app:/}).click();
+ await native.getByRole('button',{name:/Calorie tracker app:/}).press('Enter');
  await native.waitForURL(/\/r\//);
  check('No JS: saved example submits natively',await native.getByText('Expo',{exact:true}).count()>0);
  await ctx.close();
- console.log(checks.join('\n'));
  console.log(`${checks.length} design behavior checks passed`);
 } finally {await browser.close();}
