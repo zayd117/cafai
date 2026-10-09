@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
 import { Bricolage_Grotesque, Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import { ModeBanner } from "./_components/ModeBanner";
+import { InteractionFeedback } from "./_components/InteractionFeedback";
 import "./tokens.css";
 import "./globals.css";
+import "./feedback.css";
 
 // Faces from the design system (docs/design); self-hosted by next/font at build (no runtime font host, CSP font-src 'self').
 const sans = Instrument_Sans({ subsets: ["latin"], variable: "--font-instrument-sans" });
@@ -21,6 +23,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable} ${wordmark.variable}`}>
       <body>
+        <InteractionFeedback />
         <a className="skip-link" href="#main">Skip to content</a>
         <header className="topbar">
           <a href="/" className="brand" aria-label="Caf.ai home">
@@ -38,18 +41,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           {children}
         </div>
         <footer className="footer">
-          <div className="footer-intro"><span className="wordmark" translate="no">caf<span className="wordmark-dot">.</span>ai</span><span>A few good tools. A place to start.</span></div>
-          <div className="footer-detail">
-            {/* Disclaimers the plan requires (§14 self-audit: "the UI says so plainly"; §24 legal set; §5 principles 6 and 10). */}
-            <p>Picks and explanations are written with AI help and can be wrong. Check a tool before you add it.</p>
-            <p>We check the tools we suggest, but once you install a tool we cannot stop it from misbehaving. Caf.ai never installs anything and holds no keys to your other services.</p>
-            <p>Nobody can pay for a place in our picks.</p>
-            <nav aria-label="Legal" className="row small">
-              <a href="/terms">Terms</a>
-              <a href="/privacy">Privacy</a>
-              <a href="/security">Security contact</a>
-            </nav>
-          </div>
+          {/* Disclaimers the plan requires (§14 self-audit: "the UI says so plainly"; §24 legal set; §5 principles 6 and 10). */}
+          <p>Picks and explanations are written with AI help and can be wrong. Check a tool before you add it.</p>
+          <p>We check the tools we suggest, but once you install a tool we cannot stop it from misbehaving. Caf.ai never installs anything and holds no keys to your other services.</p>
+          <p>Nobody can pay for a place in our picks.</p>
+          <nav aria-label="Legal" className="row small">
+            <a href="/terms">Terms</a>
+            <a href="/privacy">Privacy</a>
+            <a href="/security">Security contact</a>
+          </nav>
         </footer>
       </body>
     </html>

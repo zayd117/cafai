@@ -56,7 +56,7 @@ jobs:
         run: CHROMIUM_PATH=$(command -v google-chrome) npm run flow -- http://localhost:3100 "$RUNNER_TEMP/screens"
       - name: Accessibility (8 checks)
         run: CHROMIUM_PATH=$(command -v google-chrome) npm run a11y -- http://localhost:3100
-      - name: Visual refresh contracts
+      - name: Original layout and interaction contracts
         run: CHROMIUM_PATH=$(command -v google-chrome) node scripts/design-flow.mjs http://localhost:3100 "$RUNNER_TEMP/screens"
       - if: always()
         uses: actions/upload-artifact@v4

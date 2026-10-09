@@ -198,10 +198,10 @@ out (blocked by 7 of 11 sites and by our own security rules, and it let trackers
   computer the picture is too small to read and mainly shows what kind of page it is; storing pictures of other sites
   is not yet cleared; nothing retakes them on a schedule.
 
-## 12. Visual refresh pending review (2026-10-09)
+## 12. Original design restored; interaction feedback pending review (2026-10-09)
 
-The user requested a visual rebuild using the existing audit and selected engineering/design resources, followed by screenshots and explicit approval before merge. The draft refresh covers the intake and shared shell, and refines results/setup styling without changing their information architecture. The prior intake-pixel-preservation constraint is superseded by this new redesign request; field names, journeys and core behaviors remain intact.
+The owner rejected the draft visual refresh and requested their original BEFORE layout across desktop, mobile, results and setup. The original global CSS, intake and shell/footer are restored from `33cacaa`; the five replacement style files are removed. The original typography, palette, geometry and native controls are the visual baseline.
 
-The CSS is now owned by `src/app/styles/base.css`, `intake.css`, `results.css`, `setup.css` and `responsive.css`, imported by `globals.css`. Pending intake actions reuse `SubmitButton`. The brief entrance uses native CSS with reduced-motion support; GSAP, Lenis and React Bits dependencies are not needed for this effect. The approved logo and palette stay in use.
+`feedback.css` adds only interaction states: tactile press, brief choice/disclosure animation and a restrained loading sheen. The intake reuses `SubmitButton` for pending labels/disabled actions. A null-rendering client boundary requests one short vibration for intentional button/disclosure activation and checkbox/radio selection when supported; no load-time pulse, no behavior changes, and live reduced-motion preferences suppress it. Browser tests verify requests/fallbacks; physical feel still needs a supported phone.
 
-Review notes, tool research, measured size changes and exact verification are in `docs/design/visual-refresh/`. The visual decision is **pending user approval**, not a replacement for the existing product-validation gates.
+The audited code fixes are retained. Current measurements, verification and screenshot approval status are in `docs/code-audit/`, particularly `07-interaction-update.md`. The earlier visual-refresh directory is historical. No merge/deployment without explicit owner approval after fresh screenshots.

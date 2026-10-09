@@ -4,12 +4,13 @@ Reviewed the complete current production TS/TSX/CSS module set, operational scri
 
 Existing tests were executed and the changed/nearest regression suites were inspected. This does not claim a new manual line-by-line review of every pre-existing test, third-party package, catalog fact, image, legal statement or external account.
 
-## Production modules (78)
+## Production modules (75)
 
 | Module | Decision | Ownership / reason |
 | --- | --- | --- |
 | `src/app/_components/CopyButton.tsx` | Keep | Keep component/route ownership, forms, focus and feedback contracts. |
 | `src/app/_components/FoundOn.tsx` | Keep | Keep component/route ownership, forms, focus and feedback contracts. |
+| `src/app/_components/InteractionFeedback.tsx` | Added | One optional haptic boundary; no rendered markup or handler changes. |
 | `src/app/_components/LegalPlaceholder.tsx` | Keep | Keep component/route ownership, forms, focus and feedback contracts. |
 | `src/app/_components/ModeBanner.tsx` | Keep | Keep component/route ownership, forms, focus and feedback contracts. |
 | `src/app/_components/OrderSummary.tsx` | Keep | Keep component/route ownership, forms, focus and feedback contracts. |
@@ -26,20 +27,16 @@ Existing tests were executed and the changed/nearest regression suites were insp
 | `src/app/actions.ts` | Changed | Redact form fields before truncation. |
 | `src/app/api/health/route.ts` | Keep | Keep component/route ownership, forms, focus and feedback contracts. |
 | `src/app/error.tsx` | Keep | Keep component/route ownership, forms, focus and feedback contracts. |
-| `src/app/globals.css` | Changed | Style ownership imports; not counted as deletion. |
-| `src/app/layout.tsx` | Changed | Existing shell and font ownership; prior typography refresh. |
+| `src/app/feedback.css` | Added | Interaction states only; reduced-motion aware. |
+| `src/app/globals.css` | Restored | Byte-for-byte original styles, including results/setup and mobile rules. |
+| `src/app/layout.tsx` | Changed | Original shell/footer plus null-rendering feedback boundary. |
 | `src/app/not-found.tsx` | Keep | Keep component/route ownership, forms, focus and feedback contracts. |
-| `src/app/page.tsx` | Changed | One shared responsive intake; remove unused signoff. |
+| `src/app/page.tsx` | Changed | Original intake markup with existing pending-submit feedback. |
 | `src/app/privacy/page.tsx` | Keep | Keep component/route ownership, forms, focus and feedback contracts. |
 | `src/app/r/[runId]/not-found.tsx` | Keep | Keep component/route ownership, forms, focus and feedback contracts. |
 | `src/app/r/[runId]/page.tsx` | Keep | Keep component/route ownership, forms, focus and feedback contracts. |
 | `src/app/r/[runId]/setup/page.tsx` | Keep | Keep component/route ownership, forms, focus and feedback contracts. |
 | `src/app/security/page.tsx` | Keep | Keep component/route ownership, forms, focus and feedback contracts. |
-| `src/app/styles/base.css` | Changed | Style ownership split; preserved UI/CSP/native interaction contracts. |
-| `src/app/styles/intake.css` | Changed | Original desktop composition; preferred mobile style. |
-| `src/app/styles/responsive.css` | Changed | Style ownership split; preserved UI/CSP/native interaction contracts. |
-| `src/app/styles/results.css` | Changed | Style ownership split; preserved UI/CSP/native interaction contracts. |
-| `src/app/styles/setup.css` | Changed | Style ownership split; preserved UI/CSP/native interaction contracts. |
 | `src/app/terms/page.tsx` | Keep | Keep component/route ownership, forms, focus and feedback contracts. |
 | `src/app/tokens.css` | Keep | Keep component/route ownership, forms, focus and feedback contracts. |
 | `src/catalog/load.ts` | Changed | Typed schema boundary; early invalid-shape return. |

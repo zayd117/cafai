@@ -1,4 +1,4 @@
-// Additional contracts for the visual refresh: narrow screens, native scrolling, motion preferences, pending and no-JS.
+// Original presentation and interaction contracts: narrow screens, motion/haptics, pending and no-JS.
 // Uses the same fixture/mock database preparation and Chromium path as scripts/flow.mjs.
 import assert from 'node:assert/strict';
 import { mkdirSync } from 'node:fs';
@@ -7,37 +7,51 @@ const [base='http://localhost:3100',out='.screenshots/design']=process.argv.slic
 mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium',args:['--no-sandbox']});
 const checks=[];
- const check=(label,value)=>{assert.ok(value,label);checks.push(`PASS ${label}`);console.log(checks.at(-1));};
+const check=(label,value)=>{assert.ok(value,label);checks.push(`PASS ${label}`);console.log(checks.at(-1));};
 try {
- for(const width of [320,390,760,761,1024,1440]){
+ for(const width of [320,390,700,701,1024,1440]){
   const page=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});
   await page.goto(base,{waitUntil:'networkidle'});
   check(`${width}px: no horizontal overflow`,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-  check(`${width}px: motion is absent under reduced motion`,await page.locator('.counter').evaluate(el=>getComputedStyle(el).transform==='none'));
+  check(`${width}px: page has no entrance transform`,await page.locator('.counter').evaluate(el=>getComputedStyle(el).transform==='none'));
   check(`${width}px: textarea is visible`,await page.getByRole('textbox',{name:'Your project',exact:true}).isVisible());
   check(`${width}px: submit has a 44px target`,(await page.getByRole('button',{name:'What do you recommend?'}).boundingBox()).height>=44);
   check(`${width}px: one shared project form`,await page.locator('form.counter').count()===1);
-  if(width>760){
-   const intro=await page.locator('.intake-intro').boundingBox();
-   const form=await page.locator('.counter').boundingBox();
-   check(`${width}px: original centered desktop composition`,intro.y+intro.height<=form.y&&Math.abs(intro.x+intro.width/2-width/2)<1&&Math.abs(form.x+form.width/2-width/2)<1);
-   check(`${width}px: desktop headline keeps original text color`,await page.locator('.hero h1').evaluate(el=>getComputedStyle(el).color===getComputedStyle(el.querySelector('span')).color));
-  }else{
-   check(`${width}px: mobile keeps the expanded introduction`,await page.locator('.intake-description').isVisible());
-  }
+  check(`${width}px: original 880px maximum composer`,await page.locator('.counter').evaluate(el=>getComputedStyle(el).maxWidth==='880px'));
+  check(`${width}px: original centered heading`,await page.locator('.hero').first().evaluate(el=>getComputedStyle(el).textAlign==='center'));
   await page.screenshot({path:`${out}/intake-${width}px.png`,fullPage:true});
   await page.close();
  }
- const page=await browser.newPage({viewport:{width:1440,height:1000}});
+ const page=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'no-preference'});
  const errors=[];
  page.on('pageerror',e=>errors.push(e.message));
  page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+ await page.addInitScript(()=>{window.hapticCalls=[];Object.defineProperty(navigator,'vibrate',{configurable:true,value:ms=>{window.hapticCalls.push(ms);return true;}});});
  await page.goto(base,{waitUntil:'networkidle'});
- await page.waitForTimeout(800);
- check('Entrance transform clears after completion',await page.locator('.counter').evaluate(el=>getComputedStyle(el).transform==='none'));
- check('Entrance does not capture focus',await page.evaluate(()=>document.activeElement===document.body));
+ check('Haptics do not run on page load',await page.evaluate(()=>hapticCalls.length===0));
+ const chip=page.getByRole('checkbox',{name:'Claude Code',exact:true});
+ await chip.check();
+ check('One short haptic pulse per selection',await page.evaluate(()=>JSON.stringify(hapticCalls)==='[8]'));
+ check('Selection has a brief feedback animation',await chip.evaluate(el=>getComputedStyle(el.closest('.chip')).animationName==='choice-feedback'));
+ await chip.press('Space');
+ check('Keyboard selection has one pulse, without duplicate click feedback',await page.evaluate(()=>JSON.stringify(hapticCalls)==='[8,8]'));
+ const submit=page.getByRole('button',{name:'What do you recommend?'});
+ const box=await submit.boundingBox(),form=await page.locator('.counter').boundingBox();
+ await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();
+ await page.waitForTimeout(120);
+ check('Pressed button gives tactile visual feedback',await submit.evaluate(el=>getComputedStyle(el).transform!=='none'));
+ check('Press does not move the surrounding layout',JSON.stringify(await page.locator('.counter').boundingBox())===JSON.stringify(form));
+ await page.screenshot({path:`${out}/pressed-button.png`,fullPage:true});
+ await page.mouse.move(0,0);await page.mouse.up();
  await page.emulateMedia({reducedMotion:'reduce'});
- check('Changing motion preference removes transforms',await page.locator('.counter').evaluate(el=>getComputedStyle(el).transform==='none'));
+ await chip.check();
+ check('Live reduced-motion preference suppresses haptics',await page.evaluate(()=>hapticCalls.length===2));
+ check('Reduced motion removes selection animation',await chip.evaluate(el=>getComputedStyle(el.closest('.chip')).animationName==='none'));
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.locator('.more > summary').click();
+ check('Native disclosure opens with a brief reveal',await page.locator('.more .field').evaluate(el=>getComputedStyle(el).animationName==='detail-reveal'&&el.getBoundingClientRect().height>0));
+ check('Disclosure keeps native focus',await page.locator('.more > summary').evaluate(el=>document.activeElement===el));
+ await page.locator('.more > summary').click();
  await page.getByRole('textbox',{name:'Your project',exact:true}).fill('I am making a calorie tracker app for phones.');
  let release;
  const pending=new Promise(r=>release=r);
@@ -45,7 +59,14 @@ try {
  await page.getByRole('button',{name:'What do you recommend?'}).click();
  await page.getByRole('button',{name:'Finding your picks…'}).waitFor();
  check('Primary and example submits disable during a request',await page.locator('.counter button').evaluateAll(els=>els.length===4&&els.every(el=>el.disabled)));
+ check('Pending action has a subtle loading animation',await page.locator('.send').evaluate(el=>getComputedStyle(el).animationName==='request-sheen'&&el.getAttribute('aria-busy')==='true'));
  await page.screenshot({path:`${out}/pending-request.png`,fullPage:true});
+ if(process.env.CAFAI_CAPTURE_MOTION==='1'){
+  mkdirSync(`${out}/motion`,{recursive:true});
+  for(let i=0;i<16;i++){await page.locator('.composer').screenshot({path:`${out}/motion/frame-${String(i).padStart(2,'0')}.png`,animations:'allow'});await page.waitForTimeout(80);}
+ }
+ await page.emulateMedia({reducedMotion:'reduce'});
+ check('Changing preference stops pending animation',await page.locator('.send').evaluate(el=>getComputedStyle(el).animationName==='none'));
  release();
  await page.waitForURL(/\/r\//);
  await page.unroute('**/*');
@@ -66,7 +87,14 @@ try {
  check('Rerun action removes secrets from every posted read-back field',!savedHtml.includes(key)&&!savedHtml.includes(email)&&savedHtml.includes('Tracker [redacted]'));
  await page.screenshot({path:`${out}/redacted-readback.png`,fullPage:true});
  await page.close();
- const ctx=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
+ const unsupported=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'no-preference'});
+ unsupported.on('pageerror',e=>errors.push(e.message));
+ await unsupported.addInitScript(()=>Object.defineProperty(navigator,'vibrate',{configurable:true,value:undefined}));
+ await unsupported.goto(base,{waitUntil:'networkidle'});
+ await unsupported.getByRole('checkbox',{name:'Claude Code',exact:true}).check();
+ check('Unsupported vibration leaves native controls working',await unsupported.getByRole('checkbox',{name:'Claude Code',exact:true}).isChecked());
+ await unsupported.close();
+ const ctx=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844},reducedMotion:'reduce'});
  const native=await ctx.newPage();
  await native.goto(base);
  check('No JS: project composer remains visible',await native.getByRole('textbox',{name:'Your project',exact:true}).isVisible());
@@ -82,5 +110,6 @@ try {
  await native.waitForURL(/\/r\//);
  check('No JS: saved example submits natively',await native.getByText('Expo',{exact:true}).count()>0);
  await ctx.close();
+ check('No errors in the unsupported-browser fallback',errors.length===0);
  console.log(`${checks.length} design behavior checks passed`);
 } finally {await browser.close();}

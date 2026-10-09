@@ -29,6 +29,6 @@ The suites have 14 tests (10 run/security tests and 4 controls tests). They run 
 
 `db/runs.ts`: 179 → 33 lines, 81.56% fewer; 8,149 → 1,686 bytes, 79.31% fewer. Across all three persistence owners (`db/client`, `db/runs`, `server/runService`): 387 → 243 lines, 37.21% fewer. Run-creation and run-reading implementations each fall from two to one (50% fewer implementations). Six obsolete helper entrypoints fall to zero (100% of that obsolete set removed).
 
-These scoped figures are not whole-repository savings. Production source overall is 1.10% smaller by lines.
+These scoped figures are not whole-repository savings. Production source overall is 1.20% smaller by lines.
 
 No SQL migration, grant relaxation, RLS bypass or removal of retention/security assertions was made. Atomic budget reservations and per-call failure accounting remain open audit work. The existing usage transaction and breaker semantics are preserved rather than silently redesigned.

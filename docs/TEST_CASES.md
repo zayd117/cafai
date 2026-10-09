@@ -42,7 +42,7 @@ npm run flow -- http://localhost:3100 docs/figma-handoff/screens
 | `npm run eval` | 5 fixture cases × arms × repeats | Release gate: harmful picks 0, invalid ids 0, no regression vs baseline; bake-off pass lines from `eval/bakeoff.json` |
 | `npm run flow` (Chromium) | 116 checks | See below. CI runs it on every change, in sample mode (fixture catalog, mock model) |
 | `scripts/a11y.mjs` (Chromium + axe) | 8 checks | CI runs it on every change. WCAG 2.2 AA scans (counter, results with every level open, results with a "Found on" picture open, setup, legal page), keyboard reach, visible focus ring, "Found on" picture by keyboard (Tab to the link or Preview + Enter, Esc keeps focus, tabbing on closes it) |
-| `scripts/design-flow.mjs` (Chromium) | 48 checks | Six widths including both sides of the breakpoint, shared form, desktop composition/mobile introduction, reduced motion and preference changes, pending labels/disabled buttons, crafted read-back redaction, native no-JS submissions |
+| `scripts/design-flow.mjs` (Chromium) | 62 checks | Six original-layout widths (320/390/700/701/1024/1440), native press/selection/disclosure/pending feedback, supported/unsupported haptic calls, live reduced motion, crafted read-back redaction and native no-JS forms |
 | `scripts/controls-flow.mjs` (Chromium + DB) | 9 checks | Revoked pick annotated and setup hidden, AI off → degraded banner and read-back first, runs off → paused, quota cap, honeypot, flag audit |
 
 ### Browser checks (`scripts/flow.mjs`, desktop 1440 and mobile 390)

@@ -1,33 +1,15 @@
-# Web and responsive design review
+# Original presentation and interaction feedback
 
-## Integrating the owner's desktop and mobile preferences
+The owner rejected the draft visual rebuild and asked to keep their BEFORE presentation across all screens. Original `globals.css` is restored byte-for-byte from `33cacaa`; the original intake markup and shell/footer are restored, with only the existing pending-submit component and a null-rendering haptic boundary added. The five replacement styling files are removed. Results/setup layouts, typography, original mobile wrapping, card styling and order panel are the originals again.
 
-The intake uses one introduction and one project form. At widths 761px and above, CSS restores the original desktop composition: centered black Instrument Sans headline, centered tagline and steps, wide rounded composer, inline AI choices, pill submit, green/amber background glow and centered examples.
+`feedback.css` owns interaction states only. Buttons depress by 1px/2% while pressed. Selected chips pulse for 180ms as a whole label, preserving the checkbox’s click target. Open native disclosures translate 4px over 180ms, keeping text fully opaque for contrast throughout. A pending action shows the existing working label, disables sibling submits and adds a subtle loading sheen. All new animations are absent under reduced motion, including live preference changes.
 
-At widths 760px and below, it keeps the preferred mobile version: green accent in the headline, short explanatory introduction, compact steps, stacked composer controls, large touch targets and a full-width submit. The mobile-only introductory copy hides on desktop. No duplicate form/action state or separate device-specific page was introduced. An unused decorative signoff was removed.
+`InteractionFeedback` renders nothing and attaches one client event boundary for optional 8ms vibration requests on intentional button/disclosure activation or checkbox/radio change. It has no model/DB/navigation responsibility, no page-load vibration, and no listeners when the API is missing. It respects live reduced-motion preference. Existing handlers, focus, forms, copy feedback and live order updates remain native.
 
-Existing results and setup improvements from the prior visual pass are retained: clearer selected-card feedback and order-panel hierarchy. Existing copy feedback, live selection/order updates and FoundOn previews predate this pass and are not presented as new functionality.
+## Verification
 
-## Motion and request feedback
+Own Chromium 153 compares original and changed source with matching fixture/mock data at desktop 1440×1000 and mobile 390×844. All six settled intake/results/setup captures match the original pixels exactly with reduced motion enabled on both versions. Current check results are recorded in [the latest update](07-interaction-update.md) and screenshot package.
 
-The previous draft's shared submit component remains: active requests display a pending label and disable the primary/example submits through form status. A brief native entrance uses opacity/16px translation; content starts visible, focus is unchanged, transforms clear after completion, and reduced-motion settings remove the effect, including changes after page load.
+Existing flow tests exercise 116 journeys/checks; axe/keyboard covers 8 checks; the interaction suite covers 62 checks including six widths, unsupported haptics, one pulse per keyboard/pointer selection, no layout movement on press, native disclosures/focus, loading motion, live preferences, server redaction and no-JS forms. A click-target problem in the first chip animation and transient text-contrast loss in a fade were caught and corrected before review; the animation now belongs to the whole label and disclosures retain full opacity.
 
-No smooth-scroll interception or animation framework is required. GSAP, Lenis and React Bits guidance was considered but no runtime package/component was added. This preserves native scroll, anchors, forms, sticky summaries and the existing CSP.
-
-## Browser evidence
-
-Own Chromium 153.0.8010.0 captured original commit `33cacaafa9648bd11bc1acbcf33763c4b7778fcd` and the changed source with the same fixture/mock data and viewports: desktop 1440×1000 and mobile 390×844. Both versions passed 116 existing flow checks and 8 accessibility checks.
-
-The changed source also passed 48 design/behavior checks:
-
-- Six viewport widths: 320, 390, 760, 761, 1024, 1440; no horizontal overflow, visible textarea, at least 44px submit target and one project form.
-- Mobile introduction and original desktop centered composition/text color on the appropriate side of the breakpoint.
-- Reduced motion, completion cleanup, focus preservation and live preference changes.
-- Four disabled submit controls while a POST is held; screenshot captures the pending state.
-- No uncaught/CSP console errors.
-- A crafted read-back post demonstrates server redaction and saved edited output.
-- Native project and saved-example submission with JavaScript disabled.
-
-The captures show sample-mode disclosure. No visual performance claim is based on screenshots. Automated axe/keyboard checks do not replace Safari or a full assistive-technology review.
-
-All source CSS is 560 → 605 lines (+8.04%), including tokens and imports. Splitting the former monolithic CSS was ownership restructuring, not a claim of CSS deletion. The responsive adaptation has a real styling cost and is included in the overall production totals.
+Physical haptic feel requires supported browser/device hardware and is not verified by desktop Chromium. [MDN vibration reference](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/vibrate). No GSAP, Lenis or React Bits runtime is added; dependencies remain nine. The browser fixture tests do not prove live recommendation quality. No merge/deployment before screenshot review and explicit approval.

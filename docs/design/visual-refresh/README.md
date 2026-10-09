@@ -1,3 +1,7 @@
+# Historical visual draft — superseded
+
+The owner rejected this presentation on 2026-10-09. The current draft restores the original design with interaction-only feedback; see [the current update](../../code-audit/07-interaction-update.md). Metrics and screenshots below describe the earlier draft, not the current visual decision.
+
 # Caf.ai visual refresh: review before merge
 
 Baseline: `33cacaafa9648bd11bc1acbcf33763c4b7778fcd` (`main`, the exact commit in the supplied repository audit). Date: 2026-10-09.
