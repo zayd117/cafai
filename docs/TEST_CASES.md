@@ -27,8 +27,10 @@ npm run flow -- http://localhost:3100 docs/figma-handoff/screens
 | `src/eval/bakeoff.test.ts` | 5 | False-positive rate, calibration error, repeat consistency, Jev win rule, H4 guard |
 | `src/engine/providers/jev.test.ts` | 6 | Jev request shape (read-back state only, no raw text, pinned model, question set), answer mapping and thresholds, intent without an item → none, engine quote check end to end, API error → degrade, key env names |
 | `src/discover/bakeoff.test.ts` | 12 | Discovery bake-off: precision/recall/false-positive/overlap maths, labelled vs unlabelled summaries, unknown price never free, search cache, arm runner (kept/dropped queries, per-run usage, failure as error), Claude rater (fenced data, clamping, batching, defaults), recorded subagent ratings (replay, gaps are errors, unmetered arms show unknown) |
-| `src/eval/metrics.test.ts` | 5 | Metrics, release gate, pricing, blind pairs |
-| `src/server/controls.db.test.ts` | 4 | Quota hashing and cap, budget breaker, app-role purge, flag audit and grants |
+| `src/eval/metrics.test.ts` | 6 | Metrics (Not needed credit only for capabilities shown there), release gate, pricing, blind pairs |
+| `src/server/controls.db.test.ts` | 6 | Quota hashing and cap, budget holds (10 at once, only the affordable ones pass; released when the run is saved), budget breaker, app-role purge, flag audit and grants (app cannot write audit events) |
+| `src/server/readbackForm.test.ts` | 4 | Read-back form: edits kept, a hidden item the earlier run never had is dropped, kind from the earlier run, duplicates and no-JS removal |
+| `src/engine/prompts.test.ts` | 3 | Data fence: a literal `</data>` (any case or spacing, also inside JSON) cannot close or open a fence |
 | `src/setup/handoff.test.ts` | 6 | Danger detection, Cursor link decoding (incl. "+"), hostnames, route choice, paste message |
 | `scripts/deploy-db.test.ts` | 5 | Production database URLs: Neon pooled → direct for admin steps, app on the pooler as `cafai_app` in `cafai`, sslmode for remote hosts |
 | `scripts/deploy-vercel.test.ts` | 10 | Vercel setup against a scripted API: project lookup (own scope, team fallback, missing project, bad token), env upsert (DATABASE_URL always, CAFAI_CATALOG and QUOTA_SALT only when missing, refusals reported), production deploy of main, failed build, smoke test (live, DB error, behind login) |

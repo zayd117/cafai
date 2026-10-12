@@ -1,27 +1,19 @@
 "use server";
 // Server actions for the counter and results pages. Forms post without client JS (progressive enhancement).
+import { randomUUID } from "node:crypto";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { isUuid } from "@/db/client";
 import { addFeedback, type FeedbackKind } from "@/db/runs";
 import type { UserItem } from "@/engine/understand";
 import { DisabledProvider } from "@/engine/providers/mock";
-import { budgetSpent, clientKey, hitQuota, readFlags } from "@/server/controls";
+import { budgetSpent, clientKey, hitQuota, readFlags, reserveBudget } from "@/server/controls";
 import { getRealSnapshot, getRuntime, isPublished, mockProvidersFor } from "@/server/runtime";
+import { postedReadback } from "@/server/readbackForm";
 import { loadRun, startRun, type StartRun } from "@/server/runService";
 import { sameReadback, savedExampleById, savedExampleFor, savedProviders, type SavedExample } from "@/server/savedExamples";
 
 const CLIENTS = new Set(["claude_code", "cursor", "claude_desktop", "other"]);
-/** A posted JSON list of strings; anything else reads as empty. */
-function parseList(raw: string): string[] {
-  try {
-    const v: unknown = JSON.parse(raw.slice(0, 1000));
-    return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string").slice(0, 5) : [];
-  } catch {
-    return [];
-  }
-}
-const ITEM_KINDS = new Set(["goal", "task", "problem", "environment", "constraint", "current_tool", "interest", "possible_need"]);
 
 /** Checks before any run (plan §14 denial of wallet, §17 kill switches). Redirects instead of running when refused. */
 async function guarded(form: FormData, back: string) {
@@ -49,11 +41,15 @@ async function run(g: Awaited<ReturnType<typeof guarded>>, input: StartRun, exam
     const p = savedProviders(saved);
     return startRun({ pool: rt.pool, snapshot, llm: p, decision: p }, { ...input, savedExample: saved.id });
   }
-  const off = aiOff ? new DisabledProvider(aiOff) : null;
+  // A paid run reserves its share of the daily budget first, so runs near the ceiling can't all get through (§14).
+  const budgetHold = !aiOff && !rt.mock ? randomUUID() : undefined;
+  const refused = budgetHold && !(await reserveBudget(rt.pool, budgetHold)) ? "disabled:budget" : null;
+  const disabled = aiOff ?? refused;
+  const off = disabled ? new DisabledProvider(disabled) : null;
   const scripted = !off && rt.mock ? mockProvidersFor(input.text) : null;
   return startRun(
     { pool: rt.pool, snapshot, llm: off ?? scripted?.llm ?? rt.llm, decision: off ?? scripted?.decision ?? rt.decision },
-    input,
+    { ...input, ...(budgetHold && !refused ? { budgetHold } : {}) },
   );
 }
 
@@ -81,22 +77,7 @@ export async function rerun(form: FormData) {
   if (!prev || prev.text === null) redirect(`/r/${parent}?error=expired`);
 
   // The read-back form sends every tag still shown, so a missing one was removed and must stay out of the new run.
-  const items: UserItem[] = [];
-  const ids = form.getAll("item_id").map(String);
-  const kinds = form.getAll("item_kind").map(String);
-  const texts = form.getAll("item_text").map(String);
-  const tags = form.getAll("item_tag").map(String);
-  const quotes = form.getAll("item_quote").map(String);
-  const suggestions = form.getAll("item_suggestions").map(String);
-  const removed = String(form.get("remove") || ""); // the × on a tag, when the page runs without JavaScript
-  ids.forEach((id, i) => {
-    const t = (texts[i] ?? "").trim().slice(0, 300);
-    if (id === removed || !t || !/^[a-z0-9]{1,12}$/i.test(id) || !ITEM_KINDS.has(kinds[i] ?? "")) return;
-    const tag = (tags[i] ?? "").trim().slice(0, 60);
-    const quote = (quotes[i] ?? "").trim().slice(0, 1000);
-    const swap = parseList(suggestions[i] ?? "");
-    items.push({ id, kind: kinds[i] as UserItem["kind"], text: t, ...(tag ? { tag } : {}), ...(quote ? { quote } : {}), suggestions: swap });
-  });
+  const items = postedReadback(form, prev.details.readback);
   let locked = form.has("readback");
   // Refine sends no read-back. Keep the person's earlier changes instead of reading their words afresh (which would
   // bring back tags they removed and undo their edits).

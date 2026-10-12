@@ -5,12 +5,16 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { loadCatalog } from "@/catalog/load";
 import { CONTROLS } from "@/config/controls";
 import { createAnonymousRun, publishSnapshot, recordUsage } from "@/db/runs";
+import type { CatalogSnapshot } from "@/catalog/types";
+import { HeuristicMockProvider } from "@/engine/providers/mock";
 import { migrate } from "../../scripts/migrate";
-import { budgetSpent, clientKey, hitQuota, readFlags } from "./controls";
+import { startRun } from "./runService";
+import { randomUUID } from "node:crypto";
+import { budgetSpent, clientKey, hitQuota, readFlags, reserveBudget } from "./controls";
 
 const PW = process.env.CAFAI_DEV_DB_PASSWORD ?? "cafai_dev_only";
 const url = (role: string) => `postgres://${role}:${PW}@${process.env.PGHOST_TEST ?? "localhost"}:5432/cafai_test`;
-let owner: pg.Pool, app: pg.Pool, catalog: pg.Pool, version: string;
+let owner: pg.Pool, app: pg.Pool, catalog: pg.Pool, version: string, snapshot: CatalogSnapshot;
 
 beforeAll(async () => {
   owner = new pg.Pool({ connectionString: url("cafai_owner") });
@@ -22,6 +26,7 @@ beforeAll(async () => {
   if (!res.ok) throw new Error("fixture catalog invalid");
   await publishSnapshot(catalog, res.snapshot);
   version = res.snapshot.version;
+  snapshot = res.snapshot;
 });
 afterAll(async () => Promise.all([owner?.end(), app?.end(), catalog?.end()]));
 
@@ -36,6 +41,30 @@ describe("controls", () => {
     expect(last.allowed).toBe(false);
     expect(last.retryAfterSec).toBe(45 * 60);
     expect((await hitQuota(app, key, new Date("2026-10-01T11:00:00Z"))).allowed).toBe(true); // new window
+  });
+
+  it("lets only as many runs reserve as the budget covers, even all at once", async () => {
+    const holdUsd = CONTROLS.dailyAiBudgetUsd / 4;
+    const ids = Array.from({ length: 10 }, () => randomUUID());
+    const ok = await Promise.all(ids.map((id) => reserveBudget(app, id, holdUsd)));
+    expect(ok.filter(Boolean)).toHaveLength(4);
+    expect(await budgetSpent(app)).toBe(true); // open holds count as spent
+    // Releasing a hold frees its share; the app role can't touch holds directly.
+    const held = ids.filter((_, i) => ok[i]);
+    await app.query("SELECT budget_release($1)", [held[0]]);
+    expect(await reserveBudget(app, randomUUID(), holdUsd + 0.01)).toBe(false);
+    expect(await reserveBudget(app, randomUUID(), holdUsd)).toBe(true);
+    await expect(app.query("SELECT * FROM budget_holds")).rejects.toThrow(/permission denied/);
+    await owner.query("DELETE FROM budget_holds");
+    expect(await budgetSpent(app)).toBe(false);
+  });
+
+  it("swaps a run's hold for its recorded usage when the run is saved", async () => {
+    const hold = randomUUID();
+    expect(await reserveBudget(app, hold)).toBe(true);
+    const m = new HeuristicMockProvider();
+    await startRun({ pool: app, snapshot, llm: m, decision: m }, { text: "I build a calorie tracker app", declaredClients: [], budgetHold: hold });
+    expect((await owner.query("SELECT count(*)::int AS n FROM budget_holds")).rows[0].n).toBe(0);
   });
 
   it("trips the budget breaker once today's recorded spend reaches the cap", async () => {
@@ -59,5 +88,6 @@ describe("controls", () => {
     const audit = await owner.query("SELECT kind, subject FROM audit_events ORDER BY id");
     expect(audit.rows).toEqual([{ kind: "flag_insert", subject: "ai_off" }, { kind: "flag_insert", subject: "revoke:fx-payments" }]);
     await expect(app.query("UPDATE flags SET enabled = false")).rejects.toThrow(/permission denied/);
+    await expect(app.query("INSERT INTO audit_events (kind) VALUES ('forged')")).rejects.toThrow(/permission denied/);
   });
 });

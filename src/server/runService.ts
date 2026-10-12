@@ -26,6 +26,8 @@ export interface StartRun {
   parentRunId?: string;
   /** Id of the intake example whose saved answer produced this run (catalog/examples). */
   savedExample?: string;
+  /** Budget hold taken for this run (reserveBudget); released when its real usage is recorded. */
+  budgetHold?: string;
 }
 
 /** Everything a results page needs besides catalog facts. */
@@ -135,6 +137,7 @@ export async function startRun(
         [id, u.stage, u.model, u.input_tokens, u.output_tokens, budgetMicros(u)],
       );
     }
+    if (input.budgetHold) await c.query("SELECT budget_release($1)", [input.budgetHold]);
   });
   // Redacted structured log: ids, outcome and counts only, never description text (§14, §17).
   console.log(JSON.stringify({
