@@ -33,8 +33,16 @@ export async function hitQuota(pool: pg.Pool, key: string, now = new Date()): Pr
   return { allowed: count <= CONTROLS.runsPerHourPerClient, retryAfterSec: Math.ceil((windowStart.getTime() + 3_600_000 - now.getTime()) / 1000) };
 }
 
-/** Global daily budget with a circuit breaker (§14): when spent, no model calls today. */
+/** Global daily budget with a circuit breaker (§14): when spent, no model calls today. Counts open holds too. */
 export async function budgetSpent(pool: pg.Pool): Promise<boolean> {
   const r = await pool.query<{ spend_today_micros: string }>("SELECT spend_today_micros()");
   return Number(r.rows[0]!.spend_today_micros) >= CONTROLS.dailyAiBudgetUsd * 1_000_000;
+}
+
+/** Reserves a run's hold under one lock (§14): false when it would take today's spend past the ceiling. */
+export async function reserveBudget(pool: pg.Pool, holdId: string, holdUsd = CONTROLS.runHoldUsd): Promise<boolean> {
+  const r = await pool.query<{ budget_reserve: boolean }>("SELECT budget_reserve($1, $2, $3)", [
+    holdId, Math.round(holdUsd * 1_000_000), Math.round(CONTROLS.dailyAiBudgetUsd * 1_000_000),
+  ]);
+  return r.rows[0]!.budget_reserve;
 }

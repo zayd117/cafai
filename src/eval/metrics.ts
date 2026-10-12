@@ -53,8 +53,9 @@ export function perCase(c: EvalCase, r: CaseResult) {
   const harmful = r.picks.filter((p) => c.labels.must_not_recommend.includes(p.offering_id) || c.labels.must_not_recommend.includes(p.capability_id)).length;
   const useful = r.picks.filter((p) => isUseful(c, p));
   const novel = useful.filter((p) => c.labels.potentially_missed.includes(p.capability_id)).length;
+  // Credit only for capabilities actually shown under "Not needed now", never for ones merely left out.
   const pnn = ratio(
-    c.labels.probably_not_needed.filter((cap) => !r.picked_capabilities.includes(cap)).length,
+    c.labels.probably_not_needed.filter((cap) => r.not_needed_capabilities.includes(cap) && !r.picked_capabilities.includes(cap)).length,
     c.labels.probably_not_needed.length,
   );
   const outcomeOk = c.labels.expected_outcome ? (c.labels.expected_outcome === r.outcome ? 1 : 0) : null;

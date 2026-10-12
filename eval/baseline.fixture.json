@@ -5,7 +5,7 @@
   "novelty_rate": 0.2,
   "evidence_faithfulness": 1,
   "expansion_coverage": 0.6666666666666666,
-  "probably_not_needed_accuracy": 1,
+  "probably_not_needed_accuracy": 0.3333333333333333,
   "outcome_accuracy": 1,
   "useful_rate_by_match_band": {
     "strong": 1,

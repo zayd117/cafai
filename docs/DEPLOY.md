@@ -95,7 +95,10 @@ The site's searches never use Jev yet; it is only checked here (REGISTER A-040).
    search says "Our AI helper was unavailable" and uses simpler rules.
 2. In Vercel, open **Project → Settings → Environment Variables** and add `ANTHROPIC_API_KEY` for Production.
 3. Optionally change `CAFAI_DAILY_AI_BUDGET_USD` (default 1). The app turns AI off for the rest of the day once that
-   much is spent (plan §14); calls whose model has no known price count at the highest known price.
+   much is spent (plan §14); calls whose model has no known price count at the highest known price. Each paid run
+   first reserves `CAFAI_RUN_HOLD_USD` (default 0.25) under a database lock and swaps it for its real cost when saved,
+   so runs started together can't all slip past the cap. A run that costs more than its hold can still go over by
+   the difference.
 4. Open **Deployments**, then **Redeploy** the latest production deployment.
 
 Each search makes three Claude calls (understanding, judgment, explanation). They think at effort `medium`, `medium`

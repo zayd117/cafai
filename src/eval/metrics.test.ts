@@ -9,9 +9,9 @@ const c: EvalCase = {
 };
 const pick = (offering_id: string, capability_id: string, match_band = "good", confidence_band = "high") =>
   ({ offering_id, capability_id, lane: "direct", match_band, confidence_band, confidence_score: confidence_band === "high" ? 0.9 : confidence_band === "medium" ? 0.6 : 0.3, need_type: "implied", evidence_ok: true });
-const result = (picks: ReturnType<typeof pick>[]): CaseResult => ({
+const result = (picks: ReturnType<typeof pick>[], notNeeded: string[] = ["pay"]): CaseResult => ({
   case_id: "c1", input_type: "D", outcome: "picks", picked_capabilities: picks.map((p) => p.capability_id), picked_offerings: picks.map((p) => p.offering_id),
-  picks, not_needed_capabilities: [], concepts_total: 2, concepts_mapped: 1, input_tokens: 0, output_tokens: 0, cost_usd: 0, latency_ms: 10, degraded: null, invalid_ids: [],
+  picks, not_needed_capabilities: notNeeded, concepts_total: 2, concepts_mapped: 1, input_tokens: 0, output_tokens: 0, cost_usd: 0, latency_ms: 10, degraded: null, invalid_ids: [],
 });
 
 describe("eval metrics", () => {
@@ -22,6 +22,12 @@ describe("eval metrics", () => {
     expect(r.novelty_rate).toBeCloseTo(1 / 3); // one of three useful picks is a potentially missed need
     expect(r.expansion_coverage).toBe(0.5);
     expect(r.probably_not_needed_accuracy).toBe(1);
+  });
+
+  it("credits Not needed only when the capability is shown there", () => {
+    expect(summarize([c], [result([pick("o-a", "a")], [])]).probably_not_needed_accuracy).toBe(0); // left out, not shown
+    expect(summarize([c], [result([pick("o-a", "a")], ["pay"])]).probably_not_needed_accuracy).toBe(1);
+    expect(summarize([c], [result([pick("o-pay", "pay")], ["pay"])]).probably_not_needed_accuracy).toBe(0); // also picked
   });
 
   it("counts harmful picks and fails the gate on any", () => {

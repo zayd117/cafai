@@ -39,5 +39,8 @@ For each pick, write short plain sentences. They appear on a card next to the la
 - summary: a one-line summary, at most 25 words.
 Never use the words MCP, stdio, OAuth, API, SDK, JSON or CLI. Never include links, commands, prices, or claims that something is safe, secure, best or guaranteed. Use only facts given to you.`;
 
+/** Untrusted text can't open or close a fence of its own: any `<data` or `</data` inside loses its `<`. */
+const defang = (s: string) => s.replace(/<(?=\s*\/?\s*data\b)/gi, "&lt;");
+
 export const fence = (label: string, value: unknown) =>
-  `<data name="${label}">\n${typeof value === "string" ? value : JSON.stringify(value, null, 2)}\n</data>`;
+  `<data name="${label}">\n${defang(typeof value === "string" ? value : JSON.stringify(value, null, 2))}\n</data>`;

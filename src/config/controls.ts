@@ -5,6 +5,9 @@ const num = (v: string | undefined, d: number) => (v && Number.isFinite(Number(v
 export const CONTROLS = {
   runsPerHourPerClient: num(process.env.CAFAI_RUNS_PER_HOUR, 10),
   dailyAiBudgetUsd: num(process.env.CAFAI_DAILY_AI_BUDGET_USD, 1),
+  // Held against the daily budget while a paid run is in flight, then swapped for its real cost. PLACEHOLDER: about
+  // twice a typical Sonnet run; a run that costs more than its hold can still overshoot the ceiling by the difference.
+  runHoldUsd: num(process.env.CAFAI_RUN_HOLD_USD, 0.25),
 } as const;
 
 // Kill switches (plan §14 incident response, §17 flag rows read on each request).
